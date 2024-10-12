@@ -557,8 +557,3 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/bsp/cmake_install.cmake")
 endif()
 
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/cmake_install.cmake")
-endif()
-

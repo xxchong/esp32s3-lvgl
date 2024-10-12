@@ -843,10 +843,3 @@
 /home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/bsp/CMakeFiles/install.dir
 /home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/bsp/CMakeFiles/install/local.dir
 /home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/bsp/CMakeFiles/install/strip.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/__idf_port.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/edit_cache.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/rebuild_cache.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/list_install_components.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/install.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/install/local.dir
-/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/port/CMakeFiles/install/strip.dir
