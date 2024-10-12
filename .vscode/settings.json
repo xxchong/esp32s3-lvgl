@@ -17,6 +17,7 @@
     "files.associations": {
         "lvgl.h": "c",
         "lv_demos.h": "c",
-        "st7789_driver.h": "c"
+        "st7789_driver.h": "c",
+        "button_driver.h": "c"
     }
 }
