@@ -213,3 +213,5 @@
 9994	10635	1728717327529580476	/home/xxchong/esp32s3_lvgl_st7789/build/bootloader/.bin_timestamp	c71175c094b5bd5
 10635	10965	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	8a64aaf01e8df7d
 10635	10965	0	/home/xxchong/esp32s3_lvgl_st7789/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	8a64aaf01e8df7d
+52	185	0	esp-idf/esptool_py/CMakeFiles/bootloader_check_size	8a64aaf01e8df7d
+52	185	0	/home/xxchong/esp32s3_lvgl_st7789/build/bootloader/esp-idf/esptool_py/CMakeFiles/bootloader_check_size	8a64aaf01e8df7d
