@@ -10,10 +10,13 @@
 #include "button_driver.h"
 
 static lv_disp_drv_t disp_drv;
+
 static const char *TAG = "lv_port";
 
-#define LCD_WIDTH   280
-#define LCD_HEIGHT  240
+lv_indev_t *button_indev;
+
+#define LCD_WIDTH 240
+#define LCD_HEIGHT 280
 
 /**
  * @brief LVGL定时器时钟
@@ -22,20 +25,19 @@ static const char *TAG = "lv_port";
  */
 static void lv_tick_inc_cb(void *data)
 {
-    uint32_t tick_inc_period_ms = *((uint32_t *) data);
+    uint32_t tick_inc_period_ms = *((uint32_t *)data);
     lv_tick_inc(tick_inc_period_ms);
 }
 
 /**
  * @brief 通知LVGL写入数据完毕
  */
-static void lv_port_flush_ready(void* param)
+static void lv_port_flush_ready(void *param)
 {
     lv_disp_flush_ready(&disp_drv);
 
     /* portYIELD_FROM_ISR (true) or not (false). */
 }
-
 
 /**
  * @brief 写入显示数据
@@ -46,8 +48,8 @@ static void lv_port_flush_ready(void* param)
  */
 static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p)
 {
-    (void) disp_drv;
-    st7789_flush(area->x1 + 20, area->x2 + 1 + 20, area->y1,area->y2 + 1, color_p);
+    (void)disp_drv;
+    st7789_flush(area->x1, area->x2 + 1, area->y1 + 20, area->y2 + 1 + 20, color_p);
 }
 
 /**
@@ -57,13 +59,14 @@ static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_
 static void lv_port_disp_init(void)
 {
     static lv_disp_draw_buf_t draw_buf_dsc;
-    size_t disp_buf_height = 40;
+    size_t disp_buf_height = 60;
 
     /* 必须从内部RAM分配显存，这样刷新速度快 */
     lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
     lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
     ESP_LOGI(TAG, "Try allocate two %u * %u display buffer, size:%u Byte", LCD_WIDTH, disp_buf_height, LCD_WIDTH * disp_buf_height * sizeof(lv_color_t) * 2);
-    if (NULL == p_disp_buf1 || NULL == p_disp_buf2) {
+    if (NULL == p_disp_buf1 || NULL == p_disp_buf2)
+    {
         ESP_LOGE(TAG, "No memory for LVGL display buffer");
         esp_system_abort("Memory allocation failed");
     }
@@ -75,8 +78,8 @@ static void lv_port_disp_init(void)
     lv_disp_drv_init(&disp_drv);
 
     /*设置水平和垂直宽度*/
-    disp_drv.hor_res = LCD_WIDTH;       //水平宽度
-    disp_drv.ver_res = LCD_HEIGHT;      //垂直宽度
+    disp_drv.hor_res = LCD_WIDTH;  // 水平宽度
+    disp_drv.ver_res = LCD_HEIGHT; // 垂直宽度
 
     /* 设置刷新数据函数 */
     disp_drv.flush_cb = disp_flush;
@@ -88,7 +91,6 @@ static void lv_port_disp_init(void)
     lv_disp_drv_register(&disp_drv);
 }
 
-
 /**
  * @brief 获取输入设备数据
  *
@@ -96,35 +98,35 @@ static void lv_port_disp_init(void)
  * @param data      数据
  * @return 无
  */
-void IRAM_ATTR indev_read(struct _lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
-    static int16_t last_key = 0;
-    uint8_t button = get_button();
+    static bool but_flag = true;
+    lv_indev_state_t encoder_act;
+    int32_t encoder_diff = 0;
+    uint32_t KEY_VAL = get_button();
+    if (KEY_VAL == 2)                    // 编码器的按键
+        encoder_act = LV_INDEV_STATE_PR; // 按下
+    else
+        encoder_act = LV_INDEV_STATE_REL; // 松开
 
-    if (button != 0) {
-        switch (button) {
-            case 1: // 向左旋转
-                data->enc_diff = -1;
-                last_key = LV_KEY_LEFT;
-                break;
-            case 2: // 按下
-                data->state = LV_INDEV_STATE_PRESSED;
-                last_key = LV_KEY_ENTER;
-                break;
-            case 3: // 向右旋转
-                data->enc_diff = 1;
-                last_key = LV_KEY_RIGHT;
-                break;
-            default:
-                data->enc_diff = 0;
-                break;
-        }
-    } else {
-        data->enc_diff = 0;
-        data->state = LV_INDEV_STATE_RELEASED;
+    if ((KEY_VAL == 1) && but_flag) // 编码器左转
+    {
+        encoder_diff--;
+        but_flag = false;
+    }
+    else if ((KEY_VAL == 3) && but_flag) // 编码器右转
+    {
+        encoder_diff++;
+        but_flag = false;
+    }
+    else
+    {
+        but_flag = true;
     }
 
-    data->key = last_key;
+    data->enc_diff = encoder_diff;
+    data->state = encoder_act;
+    encoder_diff = 0;
 }
 /**
  * @brief 注册LVGL输入驱动
@@ -133,11 +135,11 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t * indev_drv, lv_indev_data_t * 
  */
 static esp_err_t lv_port_indev_init(void)
 {
-    static lv_indev_drv_t   indev_drv;
+    static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_ENCODER;
     indev_drv.read_cb = indev_read;
-    lv_indev_drv_register(&indev_drv);
+    button_indev = lv_indev_drv_register(&indev_drv);
     return ESP_OK;
 }
 
@@ -177,18 +179,16 @@ static void lcd_init(void)
     st7789_config.cs = GPIO_NUM_5;
     st7789_config.dc = GPIO_NUM_17;
     st7789_config.rst = GPIO_NUM_21;
-    st7789_config.bl = GPIO_NUM_26;
-    st7789_config.spi_fre = 40*1000*1000;       //SPI时钟频率
-    st7789_config.width = LCD_WIDTH;            //屏宽
-    st7789_config.height = LCD_HEIGHT;          //屏高
-    st7789_config.spin = 1;                     //顺时针旋转90度
-    st7789_config.done_cb = lv_port_flush_ready;    //数据写入完成回调函数
-    st7789_config.cb_param = &disp_drv;         //回调函数参数
+    st7789_config.bl = GPIO_NUM_15;
+    st7789_config.spi_fre = 40 * 1000 * 1000;    // SPI时钟频率
+    st7789_config.width = LCD_WIDTH;             // 屏宽
+    st7789_config.height = LCD_HEIGHT;           // 屏高
+    st7789_config.spin = 0;                      // 顺时针旋转90度
+    st7789_config.done_cb = lv_port_flush_ready; // 数据写入完成回调函数
+    st7789_config.cb_param = &disp_drv;          // 回调函数参数
 
     st7789_driver_hw_init(&st7789_config);
 }
-
-
 
 esp_err_t lv_port_init(void)
 {
@@ -203,7 +203,7 @@ esp_err_t lv_port_init(void)
 
     /*按键初始化*/
     button_driver_init();
- 
+
     /* 注册输入驱动*/
     lv_port_indev_init();
 
@@ -212,4 +212,3 @@ esp_err_t lv_port_init(void)
 
     return ESP_OK;
 }
-

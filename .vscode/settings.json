@@ -11,7 +11,7 @@
         "interface/ftdi/esp32_devkitj_v1.cfg",
         "target/esp32s3.cfg"
     ],
-    "idf.port": "/dev/ttyS1",
+    "idf.port": "/dev/ttyUSB0",
     "idf.pythonBinPath": "/home/xxchong/.espressif/python_env/idf5.3_py3.12_env/bin/python",
     "idf.toolsPath": "/home/xxchong/.espressif",
     "files.associations": {
@@ -19,5 +19,6 @@
         "lv_demos.h": "c",
         "st7789_driver.h": "c",
         "button_driver.h": "c"
-    }
+    },
+    "idf.flashType": "UART"
 }
