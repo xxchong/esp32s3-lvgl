@@ -9,13 +9,13 @@
 // 主函数
 void app_main(void)
 {
-    ESP_ERROR_CHECK(lv_port_init());    //初始化LVGL
+    ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
     // lv_demo_widgets();              //初始化控件demo程序
     // lv_demo_stress();
-    st7789_lcd_backlight(true);         //打开背光
-    while(1)
+    st7789_lcd_backlight(true); // 打开背光huioyhuyh
+    while (1)
     {
         vTaskDelay(pdMS_TO_TICKS(10));
-        lv_task_handler();          //LVGL循环处理
+        lv_task_handler(); // LVGL循环处理
     }
 }
