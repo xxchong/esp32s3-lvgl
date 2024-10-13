@@ -1,0 +1,187 @@
+#include "sys.h"
+
+LV_FONT_DECLARE(weather_font_cn_40_t);
+extern struct tm timeinfo;
+
+extern lv_indev_t *indev;
+extern lv_group_t *group;
+extern lv_obj_t *root;
+
+Notification_t *Notification;
+
+static void btn_cb(lv_event_t *e)
+{
+    lv_scr_load_anim(root, LV_SCR_LOAD_ANIM_MOVE_TOP, 500, 100, false);
+
+    lv_indev_set_group(indev, group);
+}
+
+static void time_refresh(lv_timer_t *timer)
+{
+    // getLocalTime(&timeinfo);
+    // lv_label_set_text_fmt(Notification->label_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+}
+
+static void my_slider_cb(lv_event_t *e)
+{
+    lv_obj_t *slider = lv_event_get_target(e);
+    char buf[8];
+    int val = (int)lv_slider_get_value(slider);
+
+    // 计算PWM值，范围从0到256
+    int pwm_value = (int)(val * 256 / 5);                                // 将滑块值从0-5映射到PWM范围0-256
+    pwm_value = pwm_value < 0 ? 0 : (pwm_value > 256 ? 256 : pwm_value); // 确保PWM值在0到256之间
+
+    printf("val:%d, pwm_value:%d\n", val, pwm_value);
+
+    // // 更新显示的百分比
+    // sprintf(buf, "%d%%", (int)((val * 100) / 5)); // 显示当前滑块值的百分比
+
+    // ledcWrite(CHANNEL, pwm_value);
+
+    // 更新滑块的值
+    // lv_slider_set_value(slider, val, LV_ANIM_OFF); // 确保滑块的值被更新
+}
+
+void create_Notification(void)
+{
+
+    // 确保 gpio_app 已经被分配内存
+    if (Notification == NULL)
+    {
+        Notification = (Notification_t *)malloc(sizeof(Notification_t));
+        if (Notification == NULL)
+        {
+            // 处理内存分配失败的情况
+            printf("Failed to allocate memory for gpio_app\n");
+            return;
+        }
+        // 初始化成员变量
+        Notification->bluetooth_btn = NULL;
+        Notification->label = NULL;
+        Notification->root = NULL;
+        Notification->slider_brightness = NULL;
+        Notification->slider_volume = NULL;
+        Notification->wifi_btn = NULL;
+        Notification->group = NULL;
+        Notification->label_time = NULL;
+        Notification->return_btm = NULL;
+    }
+
+    Notification->group = lv_group_create();
+
+    static lv_style_t style_btn_default;
+    lv_style_init(&style_btn_default);
+    lv_style_set_bg_color(&style_btn_default, lv_color_hex(0x708890));
+    lv_style_set_radius(&style_btn_default, 10);
+    lv_style_set_shadow_opa(&style_btn_default, 0);
+
+    static lv_style_t style_btn_checked;
+    lv_style_init(&style_btn_checked);
+    lv_style_set_bg_color(&style_btn_checked, lv_color_hex(0x3482ff));
+
+    static lv_style_t style_slider_part_main;
+    lv_style_init(&style_slider_part_main);
+    lv_style_set_bg_color(&style_slider_part_main, lv_color_hex(0x14351c));
+    lv_style_set_radius(&style_slider_part_main, 10);
+
+    static lv_style_t style_slider_part_indicator;
+    lv_style_init(&style_slider_part_indicator);
+    lv_style_set_bg_color(&style_slider_part_indicator, lv_color_hex(0xffffff));
+    lv_style_set_radius(&style_slider_part_indicator, 10);
+
+    static lv_style_t style_slider_part_knob;
+    lv_style_init(&style_slider_part_knob);
+    lv_style_set_bg_color(&style_slider_part_knob, lv_color_hex(0xffffff));
+    lv_style_set_bg_opa(&style_slider_part_knob, LV_OPA_TRANSP);
+    lv_style_set_border_width(&style_slider_part_knob, 0);
+    lv_style_set_radius(&style_slider_part_knob, 0);
+
+    Notification->root = lv_obj_create(NULL);
+    lv_obj_center(Notification->root);
+    lv_obj_set_size(Notification->root, 240, 280);
+    lv_obj_set_style_pad_all(Notification->root, 0, 0);
+    lv_obj_set_style_bg_color(Notification->root, lv_color_hex(0x97a1b6), 0);
+    lv_obj_set_style_border_width(Notification->root, 0, 0);
+    lv_obj_set_style_radius(Notification->root, 0, 0);
+
+    Notification->label_time = lv_label_create(Notification->root);
+    lv_obj_set_style_text_font(Notification->label_time, &weather_font_cn_40_t, 0);
+    lv_obj_set_style_text_color(Notification->label_time, lv_color_white(), 0);
+    lv_label_set_text(Notification->label_time, "11:23");
+    lv_obj_align(Notification->label_time, LV_ALIGN_TOP_MID, 0, 20);
+
+    Notification->wifi_btn = lv_btn_create(Notification->root);
+    lv_obj_set_size(Notification->wifi_btn, 80, 50);
+    lv_obj_align(Notification->wifi_btn, LV_ALIGN_LEFT_MID, 5, -30);
+    lv_obj_add_style(Notification->wifi_btn, &style_btn_default, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(Notification->wifi_btn, &style_btn_checked, LV_STATE_CHECKED);
+    Notification->label = lv_label_create(Notification->wifi_btn);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_label_set_text(Notification->label, LV_SYMBOL_WIFI);
+    lv_obj_center(Notification->label);
+    lv_obj_add_flag(Notification->wifi_btn, LV_OBJ_FLAG_CHECKABLE); /* 开启状态切换 */
+
+    Notification->bluetooth_btn = lv_btn_create(Notification->root);
+    lv_obj_set_size(Notification->bluetooth_btn, 80, 50);
+    lv_obj_align_to(Notification->bluetooth_btn, Notification->wifi_btn, LV_ALIGN_OUT_BOTTOM_MID, 0, 31);
+    Notification->label = lv_label_create(Notification->bluetooth_btn);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_label_set_text(Notification->label, LV_SYMBOL_BLUETOOTH);
+    lv_obj_center(Notification->label);
+    lv_obj_add_style(Notification->bluetooth_btn, &style_btn_default, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(Notification->bluetooth_btn, &style_btn_checked, LV_STATE_CHECKED);
+    lv_obj_add_flag(Notification->bluetooth_btn, LV_OBJ_FLAG_CHECKABLE); /* 开启状态切换 */
+
+    Notification->slider_volume = lv_slider_create(Notification->root);
+    lv_obj_set_size(Notification->slider_volume, 65, 132);             /* 高度>宽度时，滑块为纵向 */
+    lv_slider_set_value(Notification->slider_volume, 50, LV_ANIM_OFF); /* 设置当前值 */
+    lv_slider_set_range(Notification->slider_volume, 0, 100);          /* 设置范围值 */
+    lv_obj_align_to(Notification->slider_volume, Notification->wifi_btn, LV_ALIGN_OUT_RIGHT_TOP, 10, 0);
+    Notification->label = lv_label_create(Notification->slider_volume);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_color(Notification->label, lv_color_black(), 0);
+    lv_label_set_text(Notification->label, LV_SYMBOL_VOLUME_MAX);
+    lv_obj_align(Notification->label, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_add_style(Notification->slider_volume, &style_slider_part_indicator, LV_PART_INDICATOR);
+    lv_obj_add_style(Notification->slider_volume, &style_slider_part_main, LV_PART_MAIN);
+    lv_obj_add_style(Notification->slider_volume, &style_slider_part_knob, LV_PART_KNOB);
+
+    Notification->slider_brightness = lv_slider_create(Notification->root);
+    lv_obj_set_size(Notification->slider_brightness, 65, 132);              /* 高度>宽度时，滑块为纵向 */
+    lv_slider_set_range(Notification->slider_brightness, 0, 5);             /* 设置范围值 */
+    lv_slider_set_value(Notification->slider_brightness, 100, LV_ANIM_OFF); /* 设置当前值 */
+    lv_obj_align_to(Notification->slider_brightness, Notification->slider_volume, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
+    Notification->label = lv_label_create(Notification->slider_brightness);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_color(Notification->label, lv_color_black(), 0);
+    lv_label_set_text(Notification->label, LV_SYMBOL_EYE_OPEN);
+    lv_obj_align(Notification->label, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_add_style(Notification->slider_brightness, &style_slider_part_main, LV_PART_MAIN);
+    lv_obj_add_style(Notification->slider_brightness, &style_slider_part_indicator, LV_PART_INDICATOR);
+    lv_obj_add_style(Notification->slider_brightness, &style_slider_part_knob, LV_PART_KNOB);
+    lv_obj_add_event_cb(Notification->slider_brightness, my_slider_cb, LV_EVENT_VALUE_CHANGED, NULL); // 亮度回调函数
+
+    Notification->return_btm = lv_btn_create(Notification->root);
+    lv_obj_set_size(Notification->return_btm, 40, 30);
+    lv_obj_align(Notification->return_btm, LV_ALIGN_BOTTOM_MID, 0, -3);
+    lv_obj_set_style_bg_color(Notification->return_btm, lv_color_hex(0x97a1b6), 0);
+    lv_obj_set_style_border_width(Notification->return_btm, 0, 0);
+    Notification->label = lv_label_create(Notification->return_btm);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_label_set_text(Notification->label, LV_SYMBOL_DOWN);
+    lv_obj_center(Notification->label);
+    lv_obj_add_event_cb(Notification->return_btm, btn_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_set_style_outline_color(Notification->slider_brightness, lv_color_black(), LV_STATE_EDITED);
+    lv_obj_set_style_outline_color(Notification->slider_volume, lv_color_black(), LV_STATE_EDITED);
+
+    lv_group_add_obj(Notification->group, Notification->wifi_btn);
+    lv_group_add_obj(Notification->group, Notification->bluetooth_btn);
+    lv_group_add_obj(Notification->group, Notification->slider_volume);
+    lv_group_add_obj(Notification->group, Notification->slider_brightness);
+    lv_group_add_obj(Notification->group, Notification->return_btm);
+    lv_group_focus_obj(Notification->wifi_btn);
+
+    lv_timer_create(time_refresh, 5000, NULL);
+}

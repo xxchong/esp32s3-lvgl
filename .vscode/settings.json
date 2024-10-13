@@ -18,7 +18,16 @@
         "lvgl.h": "c",
         "lv_demos.h": "c",
         "st7789_driver.h": "c",
-        "button_driver.h": "c"
+        "button_driver.h": "c",
+        "root_page.h": "c",
+        "sys.h": "c",
+        "lv_port.h": "c",
+        "calculators1.h": "c",
+        "wooden_fish.h": "c",
+        "notification.h": "c",
+        "tools.h": "c",
+        "wifi_connection.h": "c"
     },
-    "idf.flashType": "UART"
+    "idf.flashType": "UART",
+    "C_Cpp.errorSquiggles": "disabled"
 }

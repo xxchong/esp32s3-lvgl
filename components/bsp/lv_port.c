@@ -13,7 +13,7 @@ static lv_disp_drv_t disp_drv;
 
 static const char *TAG = "lv_port";
 
-lv_indev_t *button_indev;
+lv_indev_t *indev;
 
 #define LCD_WIDTH 240
 #define LCD_HEIGHT 280
@@ -109,12 +109,12 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
     else
         encoder_act = LV_INDEV_STATE_REL; // 松开
 
-    if ((KEY_VAL == 1) && but_flag) // 编码器左转
+    if ((KEY_VAL == 3) && but_flag) // 编码器左转
     {
         encoder_diff--;
         but_flag = false;
     }
-    else if ((KEY_VAL == 3) && but_flag) // 编码器右转
+    else if ((KEY_VAL == 1) && but_flag) // 编码器右转
     {
         encoder_diff++;
         but_flag = false;
@@ -139,7 +139,7 @@ static esp_err_t lv_port_indev_init(void)
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_ENCODER;
     indev_drv.read_cb = indev_read;
-    button_indev = lv_indev_drv_register(&indev_drv);
+    indev = lv_indev_drv_register(&indev_drv);
     return ESP_OK;
 }
 

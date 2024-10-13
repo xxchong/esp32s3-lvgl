@@ -37,6 +37,12 @@ uint8_t get_button(void)
         current_state = 3;
     }
 
+    if (current_state == 2) // 确认键特殊处理
+    {
+        ESP_LOGI(TAG, "确认键按下");
+        return current_state;
+    }
+
     if (current_state != 0 && current_state != last_button_state)
     {
         last_button_state = current_state;
@@ -44,9 +50,6 @@ uint8_t get_button(void)
         {
         case 1:
             ESP_LOGI(TAG, "右键按下");
-            break;
-        case 2:
-            ESP_LOGI(TAG, "确认键按下");
             break;
         case 3:
             ESP_LOGI(TAG, "左键按下");
@@ -62,7 +65,6 @@ uint8_t get_button(void)
 
     return 0;
 }
-
 static void configure_button(void)
 {
     gpio_config_t io_conf = {};
