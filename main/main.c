@@ -17,8 +17,9 @@ void lv_demo(void)
     lv_group_set_default(group);
     lv_indev_set_group(indev, group);
     // lv_obj_t *root = create_root(scr);
-    create_Notification();
-    create_second_page();
+    // create_Notification();
+    // create_second_page();
+    // create_root(NULL);
     // lv_scr_load(root);
 
     lv_obj_t *disp = lv_obj_create(lv_scr_act());
