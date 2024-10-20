@@ -29,6 +29,10 @@
 #include "apps/widgets/wooden_fish_widget/wooden_fish.h"
 #include "lv_port.h"
 #include "root_page.h"
+
+#include "apps/Game/Tetris.h"
+#include <stdbool.h>
+#include <time.h>
 #define USE_ENCODER_BY_BUTTON 1
 
 #endif

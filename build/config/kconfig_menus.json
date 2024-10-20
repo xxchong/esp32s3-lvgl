@@ -6224,6 +6224,193 @@
                 "children": [
                     {
                         "children": [],
+                        "depends_on": null,
+                        "help": "SSID (network name) of the AP for the example to connect to.",
+                        "id": "ESP_WIFI_AP_SSID",
+                        "name": "ESP_WIFI_AP_SSID",
+                        "range": null,
+                        "title": "WiFi AP SSID",
+                        "type": "string"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "WiFi password of the AP for the example to use.",
+                        "id": "ESP_WIFI_AP_PASSWORD",
+                        "name": "ESP_WIFI_AP_PASSWORD",
+                        "range": null,
+                        "title": "WiFi AP Password",
+                        "type": "string"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "WiFi channel (network channel) of the AP for the example to use.",
+                        "id": "ESP_WIFI_AP_CHANNEL",
+                        "name": "ESP_WIFI_AP_CHANNEL",
+                        "range": [
+                            1,
+                            14
+                        ],
+                        "title": "WiFi AP Channel",
+                        "type": "int"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Max number of the STA connects to AP.",
+                        "id": "ESP_MAX_STA_CONN_AP",
+                        "name": "ESP_MAX_STA_CONN_AP",
+                        "range": null,
+                        "title": "Maximal STA connections",
+                        "type": "int"
+                    }
+                ],
+                "depends_on": null,
+                "id": "mywifi-configuration-softap-configuration",
+                "title": "SoftAP Configuration",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "SSID (network name) for the example's sta to connect to.",
+                        "id": "ESP_WIFI_REMOTE_AP_SSID",
+                        "name": "ESP_WIFI_REMOTE_AP_SSID",
+                        "range": null,
+                        "title": "WiFi Remote AP SSID",
+                        "type": "string"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "WiFi password for the example to use.",
+                        "id": "ESP_WIFI_REMOTE_AP_PASSWORD",
+                        "name": "ESP_WIFI_REMOTE_AP_PASSWORD",
+                        "range": null,
+                        "title": "WiFi Remote AP Password",
+                        "type": "string"
+                    },
+                    {
+                        "children": [],
+                        "depends_on": null,
+                        "help": "Set the maximum retry value to prevent the station from continuously\nattempting to reconnect to the Access Point (AP) when the AP doesn't exist.",
+                        "id": "ESP_MAXIMUM_STA_RETRY",
+                        "name": "ESP_MAXIMUM_STA_RETRY",
+                        "range": null,
+                        "title": "Maximum retry",
+                        "type": "int"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_OPEN",
+                                "name": "ESP_WIFI_AUTH_OPEN",
+                                "range": null,
+                                "title": "OPEN",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WEP",
+                                "name": "ESP_WIFI_AUTH_WEP",
+                                "range": null,
+                                "title": "WEP",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WPA_PSK",
+                                "name": "ESP_WIFI_AUTH_WPA_PSK",
+                                "range": null,
+                                "title": "WPA PSK",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WPA2_PSK",
+                                "name": "ESP_WIFI_AUTH_WPA2_PSK",
+                                "range": null,
+                                "title": "WPA2 PSK",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WPA_WPA2_PSK",
+                                "name": "ESP_WIFI_AUTH_WPA_WPA2_PSK",
+                                "range": null,
+                                "title": "WPA/WPA2 PSK",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WPA3_PSK",
+                                "name": "ESP_WIFI_AUTH_WPA3_PSK",
+                                "range": null,
+                                "title": "WPA3 PSK",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WPA2_WPA3_PSK",
+                                "name": "ESP_WIFI_AUTH_WPA2_WPA3_PSK",
+                                "range": null,
+                                "title": "WPA2/WPA3 PSK",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD>",
+                                "help": null,
+                                "id": "ESP_WIFI_AUTH_WAPI_PSK",
+                                "name": "ESP_WIFI_AUTH_WAPI_PSK",
+                                "range": null,
+                                "title": "WAPI PSK",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "The weakest authmode to accept in the scan mode.\nThis value defaults to ESP_WIFI_AUTH_WPA2_PSK in case password is present\nand ESP_WIFI_AUTH_OPEN is used. Please select ESP_WIFI_AUTH_WEP / ESP_WIFI_AUTH_WPA_PSK\nin case AP is operating in WEP / WPA mode.",
+                        "id": "mywifi-configuration-sta-configuration-wifi-scan-auth-mode-threshold",
+                        "name": "ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD",
+                        "title": "WiFi Scan auth mode threshold",
+                        "type": "choice"
+                    }
+                ],
+                "depends_on": null,
+                "id": "mywifi-configuration-sta-configuration",
+                "title": "STA Configuration",
+                "type": "menu"
+            }
+        ],
+        "depends_on": null,
+        "id": "mywifi-configuration",
+        "title": "MyWiFi Configuration",
+        "type": "menu"
+    },
+    {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
                         "depends_on": "<choice COMPILER_OPTIMIZATION>",
                         "help": null,
                         "id": "COMPILER_OPTIMIZATION_DEBUG",

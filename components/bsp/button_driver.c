@@ -14,9 +14,9 @@
 
 static const char *TAG = "button_driver";
 
-#define BUTTON_RIGHT_PIN GPIO_NUM_9  // 使用GPIO0作为按钮引脚
-#define BUTTON_ENTER_PIN GPIO_NUM_10 // 使用GPIO0作为按钮引脚
-#define BUTTON_LEFT_PIN GPIO_NUM_11  // 使用GPIO0作为按钮引脚
+#define BUTTON_RIGHT_PIN GPIO_NUM_36 // 使用GPIO0作为按钮引脚
+#define BUTTON_ENTER_PIN GPIO_NUM_37 // 使用GPIO0作为按钮引脚
+#define BUTTON_LEFT_PIN GPIO_NUM_38  // 使用GPIO0作为按钮引脚
 
 static uint8_t last_button_state = 0;
 

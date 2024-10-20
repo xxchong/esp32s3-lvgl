@@ -26,7 +26,12 @@
         "wooden_fish.h": "c",
         "notification.h": "c",
         "tools.h": "c",
-        "wifi_connection.h": "c"
+        "wifi_connection.h": "c",
+        "util.h": "c",
+        "tetris.h": "c",
+        "task.h": "c",
+        "bluetooth.h": "c",
+        "esp_err.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

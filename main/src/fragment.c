@@ -159,7 +159,7 @@ static lv_obj_t *fragment_create_obj(lv_fragment_t *self, lv_obj_t *parent)
     }
     else if (strcmp(name, "Tools") == 0)
     {
-         tools_list_create(page);
+        tools_list_create(page);
     }
     else if (strcmp(name, "Calendar") == 0)
     {
@@ -175,19 +175,19 @@ static lv_obj_t *fragment_create_obj(lv_fragment_t *self, lv_obj_t *parent)
     }
     else if (strcmp(name, "Weather") == 0)
     {
-        // create_weather_app(page);
+         create_weather_app(page);
     }
     else if (strcmp(name, "Calculators1") == 0)
     {
-         calculators_create(page);
+        calculators_create(page);
     }
     else if (strcmp(name, "Calculators2") == 0)
     {
-        // calculators_create1(page);
+        calculators_create1(page);
     }
     else if (strcmp(name, "Calculators3") == 0)
     {
-        // calculators_create2(page);
+        calculators_create2(page);
     }
     else if (strcmp(name, "WiFi1") == 0)
     {

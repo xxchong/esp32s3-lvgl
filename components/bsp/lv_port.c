@@ -176,9 +176,9 @@ static void lcd_init(void)
     st7789_cfg_t st7789_config;
     st7789_config.mosi = GPIO_NUM_19;
     st7789_config.clk = GPIO_NUM_18;
-    st7789_config.cs = GPIO_NUM_5;
+    st7789_config.cs = GPIO_NUM_20;
     st7789_config.dc = GPIO_NUM_17;
-    st7789_config.rst = GPIO_NUM_21;
+    st7789_config.rst = GPIO_NUM_16;
     st7789_config.bl = GPIO_NUM_15;
     st7789_config.spi_fre = 40 * 1000 * 1000;    // SPI时钟频率
     st7789_config.width = LCD_WIDTH;             // 屏宽
