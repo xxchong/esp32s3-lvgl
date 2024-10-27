@@ -19,7 +19,6 @@ static const char *TAG = "SD_DRIVER";
 #define pin_MOSI 13
 #define pin_MISO 12
 #define pin_CLK 14
-
 #define MOUNT_POINT "/sdcard" // 定义挂载点
 
 void sdcard_init(void)
@@ -76,4 +75,61 @@ void sdcard_init(void)
     ESP_LOGI(TAG, "SD卡容量: %lluMB", ((uint64_t)card->csd.capacity) * card->csd.sector_size / (1024 * 1024));
     // 打印卡片信息
     sdmmc_card_print_info(stdout, card);
+}
+
+esp_err_t write_file_to_sd(const char *filename, const char *data)
+{
+    ESP_LOGI(TAG, "正在写入文件: %s", filename);
+
+    char filepath[64];
+    snprintf(filepath, sizeof(filepath), "%s/%s", MOUNT_POINT, filename);
+
+    FILE *f = fopen(filepath, "w");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "无法打开文件进行写入");
+        return ESP_FAIL;
+    }
+
+    fprintf(f, "%s", data);
+    fclose(f);
+
+    ESP_LOGI(TAG, "文件写入成功");
+    return ESP_OK;
+}
+esp_err_t read_file_from_sd(const char *filename, char *buffer, size_t buffer_size)
+{
+    ESP_LOGI(TAG, "正在读取文件: %s", filename);
+
+    char filepath[64];
+    snprintf(filepath, sizeof(filepath), "%s/%s", MOUNT_POINT, filename);
+
+    FILE *f = fopen(filepath, "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "无法打开文件进行读取");
+        return ESP_FAIL;
+    }
+
+    size_t bytes_read = fread(buffer, 1, buffer_size - 1, f);
+    fclose(f);
+
+    if (bytes_read == 0)
+    {
+        ESP_LOGE(TAG, "读取文件失败");
+        return ESP_FAIL;
+    }
+
+    buffer[bytes_read] = '\0'; // 确保字符串以null结尾
+    ESP_LOGI(TAG, "文件读取成功");
+    return ESP_OK;
+}
+
+void sd_write_and_read_test(void)
+{
+    char *data = "你好,这是张志鹏的第一个SD卡程序的测试功能";
+    write_file_to_sd("xxchong.txt", data);
+    char buffer[512];
+    read_file_from_sd("xxchong.txt", buffer, sizeof(buffer));
+    ESP_LOGI(TAG, "读取到的数据: %s", buffer);
 }
