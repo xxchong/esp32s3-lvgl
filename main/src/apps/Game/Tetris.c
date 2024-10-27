@@ -5,15 +5,15 @@
 #include "esp_attr.h"
 #include "esp_heap_caps.h"
 
-#define CANVAS_WIDTH 120
-#define CANVAS_HEIGHT 200
+#define CANVAS_WIDTH 220
+#define CANVAS_HEIGHT 260
 /* 创建一个画布的缓冲区 */
-static lv_color_t cbuf[(32 * CANVAS_WIDTH) / 8 * CANVAS_HEIGHT]; // 使用 LV_IMG_CF_TRUE_COLOR需要这样定义
+static lv_color_t *cbuf; // 使用 LV_IMG_CF_TRUE_COLOR需要这样定义
 // static lv_color_t next_block_canvas_cbuf[(32 * 70) / 8 * 50];    // 使用 LV_IMG_CF_TRUE_COLOR需要这样定义
 
 #define BLOCK_SIZE 10
-#define GRID_WIDTH 12 // 游戏网格的宽高
-#define GRID_HEIGHT 20
+#define GRID_WIDTH 24 // 游戏网格的宽高
+#define GRID_HEIGHT 28
 
 static lv_obj_t *create_game_canvas(lv_obj_t *parent);      // 创建用于绘制方块的画布
 static void draw_next_block(void);                          // 绘制下一个方块
@@ -131,6 +131,11 @@ static void draw_next_block(void)
 
 static lv_obj_t *create_game_canvas(lv_obj_t *parent)
 {
+    cbuf = heap_caps_malloc((32 * CANVAS_WIDTH) / 8 * CANVAS_HEIGHT * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
+    if (cbuf == NULL)
+    {
+        // 处理内存分配失败
+    }
     lv_game->game_canvas = lv_canvas_create(parent);
     lv_obj_set_style_border_color(lv_game->game_canvas, lv_color_white(), LV_PART_MAIN);
     lv_obj_set_style_border_width(lv_game->game_canvas, 1, LV_PART_MAIN);

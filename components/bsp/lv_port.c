@@ -8,6 +8,7 @@
 #include "lvgl.h"
 #include "st7789_driver.h"
 #include "button_driver.h"
+#include "lv_conf.h"
 
 static lv_disp_drv_t disp_drv;
 
@@ -62,8 +63,8 @@ static void lv_port_disp_init(void)
     size_t disp_buf_height = 60;
 
     /* 必须从内部RAM分配显存，这样刷新速度快 */
-    lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
-    lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+    lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
+    lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
     ESP_LOGI(TAG, "Try allocate two %u * %u display buffer, size:%u Byte", LCD_WIDTH, disp_buf_height, LCD_WIDTH * disp_buf_height * sizeof(lv_color_t) * 2);
     if (NULL == p_disp_buf1 || NULL == p_disp_buf2)
     {
@@ -183,7 +184,7 @@ static void lcd_init(void)
     st7789_config.spi_fre = 40 * 1000 * 1000;    // SPI时钟频率
     st7789_config.width = LCD_WIDTH;             // 屏宽
     st7789_config.height = LCD_HEIGHT;           // 屏高
-    st7789_config.spin = 0;                      // 顺时针旋转90度
+    st7789_config.spin = 2;                      // 顺时针旋转90度
     st7789_config.done_cb = lv_port_flush_ready; // 数据写入完成回调函数
     st7789_config.cb_param = &disp_drv;          // 回调函数参数
 

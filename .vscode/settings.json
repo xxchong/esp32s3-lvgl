@@ -31,7 +31,13 @@
         "tetris.h": "c",
         "task.h": "c",
         "bluetooth.h": "c",
-        "esp_err.h": "c"
+        "esp_err.h": "c",
+        "nvs_flash.h": "c",
+        "nvs.h": "c",
+        "esp_heap_caps.h": "c",
+        "lv_conf.h": "c",
+        "lv_extra.h": "c",
+        "esp_vfs_fat.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

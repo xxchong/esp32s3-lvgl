@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp32s3_lvgl_st7789",
-    "project_version":    "504761d-dirty",
+    "project_version":    "5ec3522-dirty",
     "project_path":       "/home/xxchong/esp32s3-lvgl",
     "idf_path":           "/home/xxchong/esp/esp-idf",
     "build_dir":          "/home/xxchong/esp32s3-lvgl/build",
@@ -95,12 +95,12 @@
             "dir": "/home/xxchong/esp32s3-lvgl/components/bsp",
             "type": "LIBRARY",
             "lib": "__idf_bsp",
-            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl" ],
+            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/libbsp.a",
-            "sources": [ "/home/xxchong/esp32s3-lvgl/components/bsp/st7789_driver.c", "/home/xxchong/esp32s3-lvgl/components/bsp/button_driver.c", "/home/xxchong/esp32s3-lvgl/components/bsp/lv_port.c" ],
+            "sources": [ "/home/xxchong/esp32s3-lvgl/components/bsp/wifi_sta.c", "/home/xxchong/esp32s3-lvgl/components/bsp/st7789_driver.c", "/home/xxchong/esp32s3-lvgl/components/bsp/button_driver.c", "/home/xxchong/esp32s3-lvgl/components/bsp/lv_port.c", "/home/xxchong/esp32s3-lvgl/components/bsp/sd_driver.c" ],
             "include_dirs": [ "include" ]
         },
         "bt": {
@@ -903,14 +903,14 @@
             "target": "___idf_esp_psram",
             "prefix": "idf",
             "dir": "/home/xxchong/esp/esp-idf/components/esp_psram",
-            "type": "CONFIG_ONLY",
+            "type": "LIBRARY",
             "lib": "__idf_esp_psram",
             "reqs": [],
             "priv_reqs": [ "heap", "spi_flash", "esp_mm" ],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "file": "",
-            "sources": [],
+            "file": "/home/xxchong/esp32s3-lvgl/build/esp-idf/esp_psram/libesp_psram.a",
+            "sources": [ "/home/xxchong/esp/esp-idf/components/esp_psram/esp_psram.c", "/home/xxchong/esp/esp-idf/components/esp_psram/mmu_psram_flash.c", "/home/xxchong/esp/esp-idf/components/esp_psram/esp32s3/esp_psram_impl_octal.c" ],
             "include_dirs": [ "include" ]
         },
         "esp_ringbuf": {
@@ -1255,7 +1255,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/xxchong/esp32s3-lvgl/build/esp-idf/newlib/libnewlib.a",
-            "sources": [ "/home/xxchong/esp/esp-idf/components/newlib/abort.c", "/home/xxchong/esp/esp-idf/components/newlib/assert.c", "/home/xxchong/esp/esp-idf/components/newlib/heap.c", "/home/xxchong/esp/esp-idf/components/newlib/locks.c", "/home/xxchong/esp/esp-idf/components/newlib/poll.c", "/home/xxchong/esp/esp-idf/components/newlib/pthread.c", "/home/xxchong/esp/esp-idf/components/newlib/random.c", "/home/xxchong/esp/esp-idf/components/newlib/getentropy.c", "/home/xxchong/esp/esp-idf/components/newlib/reent_init.c", "/home/xxchong/esp/esp-idf/components/newlib/newlib_init.c", "/home/xxchong/esp/esp-idf/components/newlib/syscalls.c", "/home/xxchong/esp/esp-idf/components/newlib/termios.c", "/home/xxchong/esp/esp-idf/components/newlib/stdatomic.c", "/home/xxchong/esp/esp-idf/components/newlib/time.c", "/home/xxchong/esp/esp-idf/components/newlib/sysconf.c", "/home/xxchong/esp/esp-idf/components/newlib/realpath.c", "/home/xxchong/esp/esp-idf/components/newlib/scandir.c", "/home/xxchong/esp/esp-idf/components/newlib/port/esp_time_impl.c" ],
+            "sources": [ "/home/xxchong/esp/esp-idf/components/newlib/abort.c", "/home/xxchong/esp/esp-idf/components/newlib/assert.c", "/home/xxchong/esp/esp-idf/components/newlib/heap.c", "/home/xxchong/esp/esp-idf/components/newlib/locks.c", "/home/xxchong/esp/esp-idf/components/newlib/poll.c", "/home/xxchong/esp/esp-idf/components/newlib/pthread.c", "/home/xxchong/esp/esp-idf/components/newlib/random.c", "/home/xxchong/esp/esp-idf/components/newlib/getentropy.c", "/home/xxchong/esp/esp-idf/components/newlib/reent_init.c", "/home/xxchong/esp/esp-idf/components/newlib/newlib_init.c", "/home/xxchong/esp/esp-idf/components/newlib/syscalls.c", "/home/xxchong/esp/esp-idf/components/newlib/termios.c", "/home/xxchong/esp/esp-idf/components/newlib/stdatomic.c", "/home/xxchong/esp/esp-idf/components/newlib/time.c", "/home/xxchong/esp/esp-idf/components/newlib/sysconf.c", "/home/xxchong/esp/esp-idf/components/newlib/realpath.c", "/home/xxchong/esp/esp-idf/components/newlib/scandir.c", "/home/xxchong/esp/esp-idf/components/newlib/port/xtensa/stdatomic_s32c1i.c", "/home/xxchong/esp/esp-idf/components/newlib/port/esp_time_impl.c" ],
             "include_dirs": [ "platform_include" ]
         },
         "nvs_flash": {
@@ -2844,7 +2844,7 @@
             "prefix": "idf",
             "dir": "/home/xxchong/esp32s3-lvgl/components/bsp",
             "lib": "__idf_bsp",
-            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl" ],
+            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],

@@ -66,6 +66,7 @@
 /home/xxchong/esp32s3-lvgl/build/esp-idf/esp_http_server/libesp_http_server.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/esp_https_ota/libesp_https_ota.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/esp_https_server/libesp_https_server.a
+/home/xxchong/esp32s3-lvgl/build/esp-idf/esp_psram/libesp_psram.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/esp_lcd/libesp_lcd.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/protobuf-c/libprotobuf-c.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/protocomm/libprotocomm.a
