@@ -19,7 +19,8 @@ static const char *TAG = "SD_DRIVER";
 #define pin_MOSI 13
 #define pin_MISO 12
 #define pin_CLK 14
-#define MOUNT_POINT "/sdcard" // 定义挂载点
+#define pin_CD 21 // 卡查插拔检
+
 
 void sdcard_init(void)
 {
@@ -44,6 +45,7 @@ void sdcard_init(void)
     host.slot = SPI3_HOST;
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = pin_CS;
+    slot_config.gpio_cd = pin_CD;
     slot_config.host_id = SPI3_HOST;
     // 挂载文件系统
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
@@ -75,6 +77,8 @@ void sdcard_init(void)
     ESP_LOGI(TAG, "SD卡容量: %lluMB", ((uint64_t)card->csd.capacity) * card->csd.sector_size / (1024 * 1024));
     // 打印卡片信息
     sdmmc_card_print_info(stdout, card);
+
+    
 }
 
 esp_err_t write_file_to_sd(const char *filename, const char *data)

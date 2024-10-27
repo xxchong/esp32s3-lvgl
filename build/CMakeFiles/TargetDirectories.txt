@@ -836,6 +836,13 @@
 /home/xxchong/esp32s3-lvgl/build/esp-idf/main/CMakeFiles/install.dir
 /home/xxchong/esp32s3-lvgl/build/esp-idf/main/CMakeFiles/install/local.dir
 /home/xxchong/esp32s3-lvgl/build/esp-idf/main/CMakeFiles/install/strip.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/__idf_lv_fs_if.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/edit_cache.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/rebuild_cache.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/list_install_components.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/install.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/install/local.dir
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/CMakeFiles/install/strip.dir
 /home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/CMakeFiles/__idf_bsp.dir
 /home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/CMakeFiles/edit_cache.dir
 /home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/CMakeFiles/rebuild_cache.dir

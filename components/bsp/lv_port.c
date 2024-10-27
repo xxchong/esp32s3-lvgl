@@ -9,6 +9,7 @@
 #include "st7789_driver.h"
 #include "button_driver.h"
 #include "lv_conf.h"
+#include "lv_fs_if.h"
 
 static lv_disp_drv_t disp_drv;
 
@@ -210,6 +211,10 @@ esp_err_t lv_port_init(void)
 
     /* 初始化LVGL定时器 */
     lv_port_tick_init();
+
+    /* 初始化LVGL文件系统 */
+
+    lv_fs_if_init();
 
     return ESP_OK;
 }

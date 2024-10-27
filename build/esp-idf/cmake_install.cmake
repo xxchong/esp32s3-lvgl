@@ -554,6 +554,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/cmake_install.cmake")
 endif()
 

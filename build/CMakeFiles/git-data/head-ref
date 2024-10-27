@@ -1,1 +1,3 @@
-6b413864ebfe840d3665dd20164af033b81580d7
+0000000000000000000000000000000000000000 5ec3522ce8e1808136f835b79a424c8fb10a88ff zzp <zhipengzhang897@gmail.com> 1729433370 +0800	branch: Created from HEAD
+5ec3522ce8e1808136f835b79a424c8fb10a88ff 6b413864ebfe840d3665dd20164af033b81580d7 zzp <zhipengzhang897@gmail.com> 1730012364 +0800	commit: 开启外部psram，将lvgl的menuconfig配置关闭，使用lv_conf.h配置，修改缓冲申请内存为使用SPRAN;增加SD卡驱动
+6b413864ebfe840d3665dd20164af033b81580d7 85ff337cbd4f9fdf94570f9eac9b1b286898b4f6 zzp <zhipengzhang897@gmail.com> 1730029997 +0800	commit: 增加SD卡读写文件的基本功能

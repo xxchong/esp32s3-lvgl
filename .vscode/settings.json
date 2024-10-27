@@ -37,7 +37,9 @@
         "esp_heap_caps.h": "c",
         "lv_conf.h": "c",
         "lv_extra.h": "c",
-        "esp_vfs_fat.h": "c"
+        "esp_vfs_fat.h": "c",
+        "ff.h": "c",
+        "lv_port_fs.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

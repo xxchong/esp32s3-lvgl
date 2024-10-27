@@ -4,6 +4,9 @@
 #include "esp_log.h"
 #include "esp_err.h"
 
+
+#define MOUNT_POINT "/sdcard" // 定义挂载点
+
 void sdcard_init(void);
 
 esp_err_t write_file_to_sd(const char *filename, const char *data);

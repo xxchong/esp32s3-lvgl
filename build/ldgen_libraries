@@ -84,4 +84,5 @@
 /home/xxchong/esp32s3-lvgl/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/lvgl/liblvgl.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/main/libmain.a
+/home/xxchong/esp32s3-lvgl/build/esp-idf/lv_fs_if/liblv_fs_if.a
 /home/xxchong/esp32s3-lvgl/build/esp-idf/bsp/libbsp.a
