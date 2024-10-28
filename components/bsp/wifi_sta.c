@@ -17,11 +17,10 @@
 #include "esp_log.h"
 
 // 需要把这两个修改成你家WIFI，测试是否连接成功
-#define DEFAULT_WIFI_SSID "Pixel"
-#define DEFAULT_WIFI_PASSWORD "12345678"
+#define DEFAULT_WIFI_SSID "Mi 10S"
+#define DEFAULT_WIFI_PASSWORD "87654321"
 
 static bool wifi_connected = false;
-
 
 static const char *TAG = "wifi";
 
@@ -34,17 +33,20 @@ static const char *TAG = "wifi";
  */
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-    
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
+    {
         esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+    }
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+    {
         wifi_connected = false;
         esp_wifi_connect();
-    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+    }
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    {
         wifi_connected = true;
     }
-    
-
 
     if (event_base == IP_EVENT) // IP相关事件
     {
@@ -97,6 +99,7 @@ esp_err_t wifi_sta_init(void)
     return ESP_OK;
 }
 
-bool is_wifi_connected(void) {
+bool is_wifi_connected(void)
+{
     return wifi_connected;
 }

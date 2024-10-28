@@ -18,8 +18,8 @@ static void btn_cb(lv_event_t *e)
 
 static void time_refresh(lv_timer_t *timer)
 {
-    // getLocalTime(&timeinfo);
-    // lv_label_set_text_fmt(Notification->label_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+    struct tm timeinfo = get_timeinfo();
+    lv_label_set_text_fmt(Notification->label_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
 }
 
 static void my_slider_cb(lv_event_t *e)

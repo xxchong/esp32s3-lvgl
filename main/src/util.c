@@ -8,6 +8,7 @@
 #include "esp_err.h"
 
 static const char *TAG = "util";
+#define SNTP_SERVER "ntp.aliyun.com" // 阿里云NTP服务器
 
 void remove_styles(lv_obj_t *parent, bool remove_border, bool remove_opa, bool remove_scrollbar, bool remove_shadow)
 {
@@ -37,33 +38,40 @@ void remove_styles(lv_obj_t *parent, bool remove_border, bool remove_opa, bool r
     }
 }
 
-
-//列表返回菜单设置焦点
-void set_focus(lv_obj_t **btns, int count, int last_index) {
-    if (last_index >= 0 && last_index < count) {
-        if (btns[last_index] != NULL) { // 检查指针是否有效
+// 列表返回菜单设置焦点
+void set_focus(lv_obj_t **btns, int count, int last_index)
+{
+    if (last_index >= 0 && last_index < count)
+    {
+        if (btns[last_index] != NULL)
+        { // 检查指针是否有效
             lv_group_focus_obj(btns[last_index]);
-        } else {
+        }
+        else
+        {
             // printf("btns[%d] is NULL\n", last_index);
         }
-    } else {
-        lv_group_focus_obj(btns[0]);  // 默认到第一个
+    }
+    else
+    {
+        lv_group_focus_obj(btns[0]); // 默认到第一个
     }
 }
 
 void initialize_sntp(void)
- {
+{
     ESP_LOGI(TAG, "初始化 SNTP");
-    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG(SNTP_SERVER);
     esp_netif_sntp_init(&config);
 
     // 等待获取时间
     time_t now = 0;
-    struct tm timeinfo = { 0 };
+    struct tm timeinfo = {0};
     int retry = 0;
     const int retry_count = 15;
-    
-    while (timeinfo.tm_year < (2023 - 1900) && ++retry < retry_count) {
+
+    while (timeinfo.tm_year < (2023 - 1900) && ++retry < retry_count)
+    {
         ESP_LOGI(TAG, "等待系统时间同步... (%d/%d)", retry, retry_count);
         vTaskDelay(pdMS_TO_TICKS(1000));
         time(&now);
@@ -78,7 +86,7 @@ void initialize_sntp(void)
 }
 
 // 获取格式化的时间字符串
-void get_time_string(char* buffer, size_t buffer_size) 
+void get_time_string(char *buffer, size_t buffer_size)
 {
     time_t now;
     struct tm timeinfo;
@@ -87,3 +95,11 @@ void get_time_string(char* buffer, size_t buffer_size)
     strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S", &timeinfo);
 }
 
+struct tm get_timeinfo(void)
+{
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    return timeinfo;
+}
