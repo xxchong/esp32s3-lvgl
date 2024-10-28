@@ -17,8 +17,10 @@
 #include "esp_log.h"
 
 // 需要把这两个修改成你家WIFI，测试是否连接成功
-#define DEFAULT_WIFI_SSID "Mi 10S"
-#define DEFAULT_WIFI_PASSWORD "87654321"
+#define DEFAULT_WIFI_SSID "Pixel"
+#define DEFAULT_WIFI_PASSWORD "12345678"
+
+static bool wifi_connected = false;
 
 
 static const char *TAG = "wifi";
@@ -32,24 +34,18 @@ static const char *TAG = "wifi";
  */
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-    if (event_base == WIFI_EVENT)
-    {
-        switch (event_id)
-        {
-        case WIFI_EVENT_STA_START: // WIFI以STA模式启动后触发此事件
-            esp_wifi_connect();    // 启动WIFI连接
-            break;
-        case WIFI_EVENT_STA_CONNECTED: // WIFI连上路由器后，触发此事件
-            ESP_LOGI(TAG, "connected to AP");
-            break;
-        case WIFI_EVENT_STA_DISCONNECTED: // WIFI从路由器断开连接后触发此事件
-            esp_wifi_connect();           // 继续重连
-            ESP_LOGI(TAG, "connect to the AP fail,retry now");
-            break;
-        default:
-            break;
-        }
+    
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        esp_wifi_connect();
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        wifi_connected = false;
+        esp_wifi_connect();
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        wifi_connected = true;
     }
+    
+
+
     if (event_base == IP_EVENT) // IP相关事件
     {
         switch (event_id)
@@ -99,4 +95,8 @@ esp_err_t wifi_sta_init(void)
 
     ESP_LOGI(TAG, "wifi_init_sta finished.");
     return ESP_OK;
+}
+
+bool is_wifi_connected(void) {
+    return wifi_connected;
 }

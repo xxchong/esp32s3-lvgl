@@ -39,7 +39,8 @@
         "lv_extra.h": "c",
         "esp_vfs_fat.h": "c",
         "ff.h": "c",
-        "lv_port_fs.h": "c"
+        "lv_port_fs.h": "c",
+        "pwm_ledc.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

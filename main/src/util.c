@@ -1,4 +1,14 @@
 #include <lvgl.h>
+#include "esp_sntp.h"
+#include "esp_netif_sntp.h"
+#include <time.h>
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_err.h"
+
+static const char *TAG = "util";
+
 void remove_styles(lv_obj_t *parent, bool remove_border, bool remove_opa, bool remove_scrollbar, bool remove_shadow)
 {
     if (parent == NULL)
@@ -40,3 +50,40 @@ void set_focus(lv_obj_t **btns, int count, int last_index) {
         lv_group_focus_obj(btns[0]);  // 默认到第一个
     }
 }
+
+void initialize_sntp(void)
+ {
+    ESP_LOGI(TAG, "初始化 SNTP");
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+    esp_netif_sntp_init(&config);
+
+    // 等待获取时间
+    time_t now = 0;
+    struct tm timeinfo = { 0 };
+    int retry = 0;
+    const int retry_count = 15;
+    
+    while (timeinfo.tm_year < (2023 - 1900) && ++retry < retry_count) {
+        ESP_LOGI(TAG, "等待系统时间同步... (%d/%d)", retry, retry_count);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        time(&now);
+        localtime_r(&now, &timeinfo);
+    }
+
+    // 设置时区为中国时区
+    setenv("TZ", "CST-8", 1);
+    tzset();
+
+    ESP_LOGI(TAG, "SNTP 初始化完成");
+}
+
+// 获取格式化的时间字符串
+void get_time_string(char* buffer, size_t buffer_size) 
+{
+    time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S", &timeinfo);
+}
+

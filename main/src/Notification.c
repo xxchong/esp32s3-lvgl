@@ -1,5 +1,5 @@
 #include "sys.h"
-
+#include "pwm_ledc.h"
 LV_FONT_DECLARE(weather_font_cn_40_t);
 extern struct tm timeinfo;
 
@@ -28,11 +28,13 @@ static void my_slider_cb(lv_event_t *e)
     char buf[8];
     int val = (int)lv_slider_get_value(slider);
 
-    // 计算PWM值，范围从0到256
-    int pwm_value = (int)(val * 256 / 5);                                // 将滑块值从0-5映射到PWM范围0-256
-    pwm_value = pwm_value < 0 ? 0 : (pwm_value > 256 ? 256 : pwm_value); // 确保PWM值在0到256之间
+    // 将滑块值从0-5映射到0-100范围
+    int brightness = (val * 100) / 5;                            // 将滑块值映射到0-100
+    brightness = brightness < 0 ? 0 : (brightness > 100 ? 100 : brightness); // 确保亮度值在0到100之间
 
-    printf("val:%d, pwm_value:%d\n", val, pwm_value);
+    printf("滑块值:%d, 亮度值:%d%%\n", val, brightness);
+
+    set_backlight(brightness);
 
     // // 更新显示的百分比
     // sprintf(buf, "%d%%", (int)((val * 100) / 5)); // 显示当前滑块值的百分比
