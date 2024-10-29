@@ -11,7 +11,6 @@
 #include "cJSON.h"
 #include "weather_http.h"
 #include "uzlib/include/uzlib.h"
-
 static const char *TAG = "WEATHER_HTTP";
 
 // 响应数据缓冲区
@@ -23,30 +22,25 @@ static uint8_t decompressed_buffer[DECOMPRESSED_BUFFER_SIZE]; // 解压缩缓冲
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
     static int output_len = 0;  // 用于跟踪已接收的数据长度
-
     switch (evt->event_id) {
         case HTTP_EVENT_ERROR:
             ESP_LOGE(TAG, "HTTP_EVENT_ERROR");
             break;
-            
         case HTTP_EVENT_ON_CONNECTED:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_CONNECTED");
             output_len = 0;  // 重置输出长度
             memset(compressed_buffer, 0, COMPRESSED_BUFFER_SIZE);  // 清空缓冲区
             break;
-            
         case HTTP_EVENT_HEADER_SENT:
             ESP_LOGI(TAG, "HTTP_EVENT_HEADER_SENT");
             break;
-
         case HTTP_EVENT_ON_HEADER:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", 
                      evt->header_key, evt->header_value);
             break;
-            
         case HTTP_EVENT_ON_DATA:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-            if (!esp_http_client_is_chunked_response(evt->client)) {
+            if (!esp_http_client_is_chunked_response(evt->client)) {  // 检查是否是分块传输
                 if (output_len + evt->data_len <= COMPRESSED_BUFFER_SIZE - 1) {
                     memcpy(compressed_buffer + output_len, evt->data, evt->data_len);
                     output_len += evt->data_len;
@@ -58,15 +52,12 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
                 }
             }
             break;
-            
         case HTTP_EVENT_ON_FINISH:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
             break;
-            
         case HTTP_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
             break;
-
         default:
             ESP_LOGI(TAG, "Unhandled event: %d", evt->event_id);
             break;
@@ -113,8 +104,8 @@ static int decompress_data(const uint8_t *compressed_data, size_t compressed_siz
     return d.dest - output_buffer;
 }
 
-// 解析JSON数据
-static void parse_weather_json(const char *json_data, weather_info_t *info) 
+// 解析实时的JSON数据
+static void parse_now_weather_json(const char *json_data, now_weather_info_t *info) 
 {
     if (!info || !json_data) return;
 
@@ -123,7 +114,6 @@ static void parse_weather_json(const char *json_data, weather_info_t *info)
         ESP_LOGE(TAG, "JSON parsing error");
         return;
     }
-
     // 获取updateTime
     cJSON *updateTime = cJSON_GetObjectItem(root, "updateTime");
     if (updateTime && updateTime->valuestring) {
@@ -137,6 +127,7 @@ static void parse_weather_json(const char *json_data, weather_info_t *info)
         cJSON *temp = cJSON_GetObjectItem(now, "temp");
         cJSON *text = cJSON_GetObjectItem(now, "text");
         cJSON *icon = cJSON_GetObjectItem(now, "icon");
+        cJSON *feels_like = cJSON_GetObjectItem(now, "feelsLike");
 
         if (temp && temp->valuestring) {
             strncpy(info->temp, temp->valuestring, sizeof(info->temp) - 1);
@@ -150,40 +141,97 @@ static void parse_weather_json(const char *json_data, weather_info_t *info)
             strncpy(info->icon, icon->valuestring, sizeof(info->icon) - 1);
             info->icon[sizeof(info->icon) - 1] = '\0';
         }
+        if (feels_like && feels_like->valuestring) {
+            strncpy(info->feels_like, feels_like->valuestring, sizeof(info->feels_like) - 1);
+            info->feels_like[sizeof(info->feels_like) - 1] = '\0';
+        }
+    }
+    // 释放JSON解析使用的内存
+    cJSON_Delete(root);
+}
+
+
+
+// 解析3天的JSON数据
+static void parse_3D_weather_json(const char *json_data, three_day_weather_info_t *info) 
+{
+    if (!info || !json_data) return;
+
+    cJSON *root = cJSON_Parse(json_data);
+    if (root == NULL) {
+        ESP_LOGE(TAG, "JSON parsing error");
+        return;
     }
 
+    // 获取daily数组
+    cJSON *daily = cJSON_GetObjectItem(root, "daily");
+    if (daily && cJSON_IsArray(daily)) {
+        // 遍历最多3天的数据
+        int days = cJSON_GetArraySize(daily);
+        days = (days > 3) ? 3 : days;  // 确保不超过3天
+        
+        for (int i = 0; i < days; i++) {
+            cJSON *day = cJSON_GetArrayItem(daily, i);
+            if (day) {
+           
+                // 获取最高温度
+                cJSON *tempMax = cJSON_GetObjectItem(day, "tempMax");
+                if (tempMax && tempMax->valuestring) {
+                    strncpy(info[i].tempMax, tempMax->valuestring, sizeof(info[i].tempMax) - 1);
+                }
+                // 获取最低温度
+                cJSON *tempMin = cJSON_GetObjectItem(day, "tempMin");
+                if (tempMin && tempMin->valuestring) {
+                    strncpy(info[i].tempMin, tempMin->valuestring, sizeof(info[i].tempMin) - 1);
+                }
+                // 获取白天天气文本
+                cJSON *textDay = cJSON_GetObjectItem(day, "textDay");
+                if (textDay && textDay->valuestring) {
+                    strncpy(info[i].text, textDay->valuestring, sizeof(info[i].text) - 1);
+                }
+                // 获取白天天气图标
+                cJSON *iconDay = cJSON_GetObjectItem(day, "iconDay");
+                if (iconDay && iconDay->valuestring) {
+                    strncpy(info[i].icon, iconDay->valuestring, sizeof(info[i].icon) - 1);
+                }
+            }
+        }
+    }
     // 释放JSON解析使用的内存
     cJSON_Delete(root);
 }
 
 // 初始化天气HTTP客户端
-esp_err_t weather_http_init(void)
+esp_err_t weather_http_init(weather_type_t type)
 {
-    // 构建完整的URL
-    snprintf(weather_url, sizeof(weather_url),
-             "https://%s/v7/weather/now?location=%s&key=%s",
-             WEATHER_API_HOST, WEATHER_LOCATION, WEATHER_API_KEY);
-    
+    memset(weather_url, 0, sizeof(weather_url));
+    if (type == WEATHER_TYPE_NOW) 
+    {
+        snprintf(weather_url, sizeof(weather_url),
+                 "https://%s/v7/weather/%s?location=%s&key=%s",
+                 WEATHER_API_HOST, WEATHER_PATH_NOW, WEATHER_LOCATION, WEATHER_API_KEY);
+    } else if (type == WEATHER_TYPE_3D) {
+        snprintf(weather_url, sizeof(weather_url),
+                 "https://%s/v7/weather/%s?location=%s&key=%s",
+                 WEATHER_API_HOST, WEATHER_PATH_3D, WEATHER_LOCATION, WEATHER_API_KEY);
+    }
     ESP_LOGI(TAG, "Weather HTTP client initialized");
     return ESP_OK;
 }
 
-// 获取天气数据
-esp_err_t weather_http_get_data(weather_info_t *info)
+esp_err_t get_http_data(void)
 {
-    if (!info) return ESP_ERR_INVALID_ARG;
-
     esp_http_client_config_t config = {
-        .url = weather_url,
-        .transport_type = HTTP_TRANSPORT_OVER_SSL,
-        .event_handler = _http_event_handler,
-        .user_data = compressed_buffer,
-        .buffer_size = COMPRESSED_BUFFER_SIZE,
-        .timeout_ms = 5000,
-        .skip_cert_common_name_check = true,
-    };
+            .url = weather_url,
+            .transport_type = HTTP_TRANSPORT_OVER_SSL,
+            .event_handler = _http_event_handler,
+            .user_data = compressed_buffer,
+            .buffer_size = COMPRESSED_BUFFER_SIZE,
+            .timeout_ms = 5000,
+            .skip_cert_common_name_check = true,
+        };
 
-    esp_http_client_handle_t client = esp_http_client_init(&config);
+     esp_http_client_handle_t client = esp_http_client_init(&config);
     if (client == NULL) {
         return ESP_FAIL;
     }
@@ -204,23 +252,58 @@ esp_err_t weather_http_get_data(weather_info_t *info)
                 decompressed_buffer,
                 sizeof(decompressed_buffer)
             );
-            
             if (decompressed_length > 0) {
                 // 确保字符串结束
                 decompressed_buffer[decompressed_length] = '\0';
-                
-                // 解析JSON数据
-                parse_weather_json((char *)decompressed_buffer, info);
-                
-                // 打印提取的数据
-                ESP_LOGI(TAG, "Time: %s", info->time);
-                ESP_LOGI(TAG, "Temperature: %s°C", info->temp);
-                ESP_LOGI(TAG, "Weather: %s", info->text);
-                ESP_LOGI(TAG, "Icon: %s", info->icon);
             }
         }
     }
-
     esp_http_client_cleanup(client);
     return err;
+}
+
+
+
+// 获取实时的天气数据
+esp_err_t get_now_weather_data(now_weather_info_t *info)
+{
+    if (!info) return ESP_ERR_INVALID_ARG;
+    weather_http_init(WEATHER_TYPE_NOW);
+    if (get_http_data() == ESP_OK) {
+        // 解析JSON数据
+        parse_now_weather_json((char *)decompressed_buffer, info);
+        printf("now_weather_data: %s\n", info->temp);
+        printf("now_weather_data: %s\n", info->text);
+        printf("now_weather_data: %s\n", info->icon);
+        printf("now_weather_data: %s\n", info->feels_like);
+        printf("now_weather_data: %s\n", info->time);
+
+         return ESP_OK;
+    }
+    return ESP_FAIL;
+}
+
+// 获取3天的天气数据
+esp_err_t get_3D_weather_data(three_day_weather_info_t *info)
+{
+    if (!info) return ESP_ERR_INVALID_ARG;
+    weather_http_init(WEATHER_TYPE_3D);
+    if (get_http_data() == ESP_OK) {
+        // 解析JSON数据
+        parse_3D_weather_json((char *)decompressed_buffer, info);
+        printf("3D_weather_data: %s\n", info[0].tempMax);
+        printf("3D_weather_data: %s\n", info[0].tempMin);
+        printf("3D_weather_data: %s\n", info[0].text);
+        printf("3D_weather_data: %s\n", info[0].icon);
+        printf("3D_weather_data: %s\n", info[1].tempMax);
+        printf("3D_weather_data: %s\n", info[1].tempMin);
+        printf("3D_weather_data: %s\n", info[1].text);
+        printf("3D_weather_data: %s\n", info[1].icon);
+        printf("3D_weather_data: %s\n", info[2].tempMax);
+        printf("3D_weather_data: %s\n", info[2].tempMin);
+        printf("3D_weather_data: %s\n", info[2].text);
+        printf("3D_weather_data: %s\n", info[2].icon);
+         return ESP_OK;
+    }
+    return ESP_FAIL;
 }
