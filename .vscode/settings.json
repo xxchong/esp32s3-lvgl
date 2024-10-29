@@ -40,7 +40,12 @@
         "esp_vfs_fat.h": "c",
         "ff.h": "c",
         "lv_port_fs.h": "c",
-        "pwm_ledc.h": "c"
+        "pwm_ledc.h": "c",
+        "esp_http_client.h": "c",
+        "wifi_sta.h": "c",
+        "weather_http.h": "c",
+        "uzlib.h": "c",
+        "inttypes.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

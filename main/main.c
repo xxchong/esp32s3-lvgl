@@ -15,6 +15,9 @@
 #include "lv_conf.h"
 #include "util.h"
 #include "pwm_ledc.h"
+#include "weather_http.h"
+#include "esp_heap_caps.h"
+#include "esp_system.h"
 lv_group_t *group;
 
 TaskHandle_t lvgl_task_handle;
@@ -77,6 +80,46 @@ void lv_task(void *pvParameters)
               vTaskDelay(pdMS_TO_TICKS(10));
        }
 }
+// 添加内存监控函数
+void print_memory_info(const char *message) {
+    ESP_LOGI(TAG, "Memory Info - %s:", message);
+    
+    // 1. DRAM (内部RAM)
+    ESP_LOGI(TAG, "Free Internal RAM (DRAM): %u bytes (%.2f KB)",
+        heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
+        heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT) / 1024.0);
+
+    // 2. 最大连续内部RAM块
+    ESP_LOGI(TAG, "Largest Free Internal Block: %u bytes (%.2f KB)",
+        heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
+        heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT) / 1024.0);
+
+    // 3. 总空闲堆内存
+    ESP_LOGI(TAG, "Total Free Heap: %" PRIu32 " bytes (%.2f KB)",
+        esp_get_free_heap_size(),
+        esp_get_free_heap_size() / 1024.0);
+
+    // 4. 最小空闲堆大小
+    ESP_LOGI(TAG, "Minimum Free Heap Ever: %" PRIu32 " bytes (%.2f KB)",
+        esp_get_minimum_free_heap_size(),
+        esp_get_minimum_free_heap_size() / 1024.0);
+
+    // 5. PSRAM (如果有)
+    #ifdef CONFIG_ESP32_SPIRAM_SUPPORT
+    ESP_LOGI(TAG, "Free PSRAM: %u bytes (%.2f KB)",
+        heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
+        heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024.0);
+    #endif
+}
+
+
+void memory_monitor_task(void *pvParameters) {
+    while (1) {
+        print_memory_info("Periodic Check");
+        vTaskDelay(pdMS_TO_TICKS(10000));  // 每10秒检查一次
+    }
+}
+
 
 // 主函数
 void app_main(void)
@@ -103,11 +146,26 @@ void app_main(void)
        char timestr[64];
        get_time_string(timestr, sizeof(timestr));
        ESP_LOGI(TAG, "当前时间: %s", timestr);
+
        ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
        st7789_lcd_backlight(true);      // 打开背光huioyhuyh
        ledc_init();                     // 初始化背光的pwm控制
 
        lv_demo();
+
+
+       
+       weather_http_init();
+        // 创建天气信息结构体
+        weather_info_t weather_info = {0};
+
+        // 获取天气数据
+        esp_err_t err = weather_http_get_data(&weather_info);
+        if (err == ESP_OK) {
+            printf("Temperature: %s°C\n", weather_info.temp);
+            printf("Weather: %s\n", weather_info.text);
+            printf("Icon: %s\n", weather_info.icon);
+        }
        // 创建并启动定时器
        //     TimerHandle_t timer = xTimerCreate("time_update", pdMS_TO_TICKS(1000), pdTRUE, NULL, time_update_callback);
        //     if (timer != NULL) {
@@ -124,12 +182,22 @@ void app_main(void)
        xTaskCreatePinnedToCore(
            lv_task,           // 任务函数
            "lv_task_handler", // 任务名称
-           8192,              // 栈大小（字节）
+           4096,              // 栈大小（字节）
            NULL,              // 参数
            1,                 // 优先级
            &lvgl_task_handle, // 任务句柄
            1                  // 在 Core 1 上运行
        );
+
+            // 创建内存监控任务
+        xTaskCreate(
+            memory_monitor_task,    // 任务函数
+            "memory_monitor",       // 任务名称
+            4096,                   // 栈大小
+            NULL,                   // 参数
+            1,                      // 优先级
+            NULL                    // 任务句柄
+        );
 
        // 打印各种类型的剩余RAM
        // 打印各种类型的剩余RAM

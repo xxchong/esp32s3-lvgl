@@ -17,8 +17,8 @@
 #include "esp_log.h"
 
 // 需要把这两个修改成你家WIFI，测试是否连接成功
-#define DEFAULT_WIFI_SSID "Mi 10S"
-#define DEFAULT_WIFI_PASSWORD "87654321"
+#define DEFAULT_WIFI_SSID "Pixel"
+#define DEFAULT_WIFI_PASSWORD "12345678"
 
 static bool wifi_connected = false;
 

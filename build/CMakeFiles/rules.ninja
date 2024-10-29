@@ -1866,10 +1866,29 @@ rule C_STATIC_LIBRARY_LINKER____idf_bsp_
 
 
 #############################################
+# Rule for compiling C files.
+
+rule C_COMPILER____idf_uzlib_unscanned_
+  depfile = $DEP_FILE
+  deps = gcc
+  command = ${LAUNCHER}${CODE_CHECK}/home/xxchong/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-gcc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
+  description = Building C object $out
+
+
+#############################################
+# Rule for linking C static library.
+
+rule C_STATIC_LIBRARY_LINKER____idf_uzlib_
+  command = $PRE_LINK && /usr/bin/cmake -E rm -f $TARGET_FILE && /home/xxchong/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-ar qc $TARGET_FILE $LINK_FLAGS $in && /home/xxchong/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/bin/xtensa-esp32s3-elf-ranlib $TARGET_FILE && $POST_BUILD
+  description = Linking C static library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /usr/bin/cmake --regenerate-during-build -S/home/xxchong/esp32s3-lvgl -B/home/xxchong/esp32s3-lvgl/build
+  command = /usr/bin/cmake --regenerate-during-build -S/home/xxchong/esp32s3_lvgl_st7789 -B/home/xxchong/esp32s3_lvgl_st7789/build
   description = Re-running CMake...
   generator = 1
 
