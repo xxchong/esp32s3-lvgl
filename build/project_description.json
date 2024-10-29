@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp32s3_lvgl_st7789",
-    "project_version":    "3590561-dirty",
+    "project_version":    "d74927b-dirty",
     "project_path":       "/home/xxchong/esp32s3_lvgl_st7789",
     "idf_path":           "/home/xxchong/esp/esp-idf",
     "build_dir":          "/home/xxchong/esp32s3_lvgl_st7789/build",

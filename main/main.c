@@ -121,8 +121,6 @@ void app_main(void)
     get_now_weather_data(&now_weather_info);
     get_3D_weather_data(three_day_weather_info);
       
-
-     
     //创建 LVGL 任务
     xTaskCreatePinnedToCore(
         lv_task,           // 任务函数

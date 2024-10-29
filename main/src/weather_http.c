@@ -116,11 +116,17 @@ static void parse_now_weather_json(const char *json_data, now_weather_info_t *in
     }
     // 获取updateTime
     cJSON *updateTime = cJSON_GetObjectItem(root, "updateTime");
-    if (updateTime && updateTime->valuestring) {
-        strncpy(info->time, updateTime->valuestring, sizeof(info->time) - 1);
-        info->time[sizeof(info->time) - 1] = '\0';
+        if (updateTime && updateTime->valuestring) {
+        char *time_ptr = strstr(updateTime->valuestring, "T");
+        if (time_ptr) {
+            // 跳过'T'字符，复制后面的5个字符（HH:mm）
+            strncpy(info->time, time_ptr + 1, 5);
+            info->time[5] = '\0';  // 确保字符串结束
+        } else {
+            strncpy(info->time, updateTime->valuestring, sizeof(info->time) - 1);
+            info->time[sizeof(info->time) - 1] = '\0';
+        }
     }
-
     // 获取now对象中的数据
     cJSON *now = cJSON_GetObjectItem(root, "now");
     if (now) {
