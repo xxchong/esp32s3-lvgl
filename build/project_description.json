@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp32s3_lvgl_st7789",
-    "project_version":    "d726dc9-dirty",
+    "project_version":    "1a128e7-dirty",
     "project_path":       "/home/xxchong/esp32s3_lvgl_st7789",
     "idf_path":           "/home/xxchong/esp/esp-idf",
     "build_dir":          "/home/xxchong/esp32s3_lvgl_st7789/build",
@@ -95,12 +95,12 @@
             "dir": "/home/xxchong/esp32s3_lvgl_st7789/components/bsp",
             "type": "LIBRARY",
             "lib": "__idf_bsp",
-            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs", "lv_fs_if" ],
+            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs", "lv_fs_if", "mqtt" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/bsp/libbsp.a",
-            "sources": [ "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/wifi_sta.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/st7789_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/button_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/lv_port.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/sd_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/cst816_driver.c" ],
+            "sources": [ "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/wifi_sta.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/st7789_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/button_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/lv_port.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/sd_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/cst816_driver.c", "/home/xxchong/esp32s3_lvgl_st7789/components/bsp/mqtt_driver.c" ],
             "include_dirs": [ "include" ]
         },
         "bt": {
@@ -2874,7 +2874,7 @@
             "prefix": "idf",
             "dir": "/home/xxchong/esp32s3_lvgl_st7789/components/bsp",
             "lib": "__idf_bsp",
-            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs", "lv_fs_if" ],
+            "reqs": [ "driver", "esp_lcd", "freertos", "lvgl", "esp_wifi", "nvs_flash", "fatfs", "vfs", "lv_fs_if", "mqtt" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
