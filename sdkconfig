@@ -2057,6 +2057,13 @@ CONFIG_WIFI_PROV_STA_ALL_CHANNEL_SCAN=y
 # end of Wi-Fi Provisioning Manager
 
 #
+# BSP Configuration
+#
+# CONFIG_BSP_INPUT_BUTTON is not set
+CONFIG_BSP_INPUT_TOUCH=y
+# end of BSP Configuration
+
+#
 # LVGL configuration
 #
 # CONFIG_LV_CONF_SKIP is not set

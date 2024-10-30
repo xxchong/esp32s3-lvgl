@@ -1,0 +1,20 @@
+menu "BSP Configuration"
+    
+    choice BSP_INPUT_TYPE
+        prompt "Input device type selection"
+        default BSP_INPUT_BUTTON
+        help
+            Select the input device type for the BSP.
+
+        config BSP_INPUT_BUTTON
+            bool "Rotary Encoder Button"
+            help
+                Use rotary encoder with button as input device.
+
+        config BSP_INPUT_TOUCH
+            bool "Touch Screen (CST816T)"
+            help
+                Use CST816T touch screen as input device.
+    endchoice
+
+endmenu

@@ -8,7 +8,7 @@
 #include "esp_err.h"
 
 static const char *TAG = "util";
-#define SNTP_SERVER "ntp.aliyun.com" // 阿里云NTP服务器
+#define SNTP_SERVER "ntp1.aliyun.com" // 阿里云NTP服务器
 
 void remove_styles(lv_obj_t *parent, bool remove_border, bool remove_opa, bool remove_scrollbar, bool remove_shadow)
 {

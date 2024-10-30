@@ -10,11 +10,16 @@
 #include "button_driver.h"
 #include "lv_conf.h"
 #include "lv_fs_if.h"
+#include "cst816_driver.h"
+
+#if CONFIG_BSP_INPUT_BUTTON
+    #define USE_BUTTON_DRIVER
+#elif CONFIG_BSP_INPUT_TOUCH
+    #define USE_TOUCH_CST816T
+#endif
 
 static lv_disp_drv_t disp_drv;
-
 static const char *TAG = "lv_port";
-
 lv_indev_t *indev;
 
 #define LCD_WIDTH 240
@@ -102,6 +107,7 @@ static void lv_port_disp_init(void)
  */
 void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
+#ifdef USE_BUTTON_DRIVER
     static bool but_flag = true;
     lv_indev_state_t encoder_act;
     int32_t encoder_diff = 0;
@@ -129,6 +135,18 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
     data->enc_diff = encoder_diff;
     data->state = encoder_act;
     encoder_diff = 0;
+#endif
+
+#ifdef USE_TOUCH_CST816T
+    int16_t x,y;
+    int state;
+    cst816t_read(&x,&y,&state);
+    data->point.x = y;
+    if(x == 0)
+        x = 1;
+    data->point.y = LCD_HEIGHT - x;
+    data->state = state;
+#endif
 }
 /**
  * @brief 注册LVGL输入驱动
@@ -137,12 +155,24 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
  */
 static esp_err_t lv_port_indev_init(void)
 {
+
+#ifdef USE_BUTTON_DRIVER
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_ENCODER;
     indev_drv.read_cb = indev_read;
     indev = lv_indev_drv_register(&indev_drv);
     return ESP_OK;
+#endif
+
+#ifdef USE_TOUCH_CST816T
+    static lv_indev_drv_t indev_drv;
+    lv_indev_drv_init(&indev_drv);
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = indev_read;
+    lv_indev_drv_register(&indev_drv);
+    return ESP_OK;
+#endif
 }
 
 /**
@@ -203,8 +233,15 @@ esp_err_t lv_port_init(void)
     /* 注册显示驱动 */
     lv_port_disp_init();
 
+#ifdef USE_BUTTON_DRIVER
     /*按键初始化*/
     button_driver_init();
+#endif
+
+#ifdef USE_TOUCH_CST816T
+    /*触摸初始化*/
+    touch_driver_init(LCD_WIDTH,LCD_HEIGHT);
+#endif
 
     /* 注册输入驱动*/
     lv_port_indev_init();

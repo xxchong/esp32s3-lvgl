@@ -29584,6 +29584,44 @@
             {
                 "children": [
                     {
+                        "children": [
+                            {
+                                "children": [],
+                                "depends_on": "<choice BSP_INPUT_TYPE>",
+                                "help": "Use rotary encoder with button as input device.",
+                                "id": "BSP_INPUT_BUTTON",
+                                "name": "BSP_INPUT_BUTTON",
+                                "range": null,
+                                "title": "Rotary Encoder Button",
+                                "type": "bool"
+                            },
+                            {
+                                "children": [],
+                                "depends_on": "<choice BSP_INPUT_TYPE>",
+                                "help": "Use CST816T touch screen as input device.",
+                                "id": "BSP_INPUT_TOUCH",
+                                "name": "BSP_INPUT_TOUCH",
+                                "range": null,
+                                "title": "Touch Screen (CST816T)",
+                                "type": "bool"
+                            }
+                        ],
+                        "depends_on": null,
+                        "help": "Select the input device type for the BSP.",
+                        "id": "component-config-bsp-configuration-input-device-type-selection",
+                        "name": "BSP_INPUT_TYPE",
+                        "title": "Input device type selection",
+                        "type": "choice"
+                    }
+                ],
+                "depends_on": null,
+                "id": "component-config-bsp-configuration",
+                "title": "BSP Configuration",
+                "type": "menu"
+            },
+            {
+                "children": [
+                    {
                         "children": [],
                         "depends_on": null,
                         "help": null,

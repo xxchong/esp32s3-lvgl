@@ -45,7 +45,8 @@
         "wifi_sta.h": "c",
         "weather_http.h": "c",
         "uzlib.h": "c",
-        "inttypes.h": "c"
+        "inttypes.h": "c",
+        "i2c.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"
