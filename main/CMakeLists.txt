@@ -5,6 +5,7 @@ file(GLOB_RECURSE SOURCES
 set(INCLUDE_DIRS
     "inc"
     "inc/apps"
+    "inc/Aliot"
 )
 idf_component_register(SRCS "main.c" ${SOURCES}
                     INCLUDE_DIRS ${INCLUDE_DIRS}    

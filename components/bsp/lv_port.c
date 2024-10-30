@@ -168,9 +168,9 @@ static esp_err_t lv_port_indev_init(void)
 #ifdef USE_TOUCH_CST816T
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.type = LV_INDEV_TYPE_POINTER; // 触摸
     indev_drv.read_cb = indev_read;
-    lv_indev_drv_register(&indev_drv);
+    indev = lv_indev_drv_register(&indev_drv);  
     return ESP_OK;
 #endif
 }

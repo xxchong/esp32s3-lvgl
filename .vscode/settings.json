@@ -50,7 +50,8 @@
         "stdlib.h": "c",
         "mqtt_client.h": "c",
         "stdbool.h": "c",
-        "mqtt.h": "c"
+        "mqtt.h": "c",
+        "aliot.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

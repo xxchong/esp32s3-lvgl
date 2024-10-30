@@ -18,6 +18,7 @@
 #include "weather_http.h"
 #include "esp_heap_caps.h"
 #include "esp_system.h"
+#include "aliot.h"
 lv_group_t *group;
 
 TaskHandle_t lvgl_task_handle;
@@ -120,26 +121,29 @@ void app_main(void)
     ledc_init();                     // 初始化背光的pwm控制
     get_now_weather_data(&now_weather_info);
     get_3D_weather_data(three_day_weather_info);
-      
+
+    mqtt_init();
+
+
     //创建 LVGL 任务
     xTaskCreatePinnedToCore(
         lv_task,           // 任务函数
         "lv_task_handler", // 任务名称
         4096,              // 栈大小（字节）
         NULL,              // 参数
-        1,                 // 优先级
+        configMAX_PRIORITIES - 2,                 // 优先级
         &lvgl_task_handle, // 任务句柄
         1                  // 在 Core 1 上运行
     );
 
-    //创建内存监控任务
-    xTaskCreate(
-        memory_monitor_task,    // 任务函数
-        "memory_monitor",       // 任务名称
-        4096,                   // 栈大小
-        NULL,                   // 参数
-        1,                      // 优先级
-        NULL                    // 任务句柄
-    );
+    // //创建内存监控任务
+    // xTaskCreate(
+    //     memory_monitor_task,    // 任务函数
+    //     "memory_monitor",       // 任务名称
+    //     4096,                   // 栈大小
+    //     NULL,                   // 参数
+    //     1,                      // 优先级
+    //     NULL                    // 任务句柄
+    // );
 
 }
