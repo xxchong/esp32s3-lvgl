@@ -28,6 +28,13 @@ three_day_weather_info_t three_day_weather_info[3];
 
 static const char *TAG = "app—main";
 
+
+#define WIFI_SSID "Pixel"
+#define WIFI_PASSWORD "12345678"
+
+
+
+
 // 添加内存监控函数
 void print_memory_info(const char *message) {
     ESP_LOGI(TAG, "Memory Info - %s:", message);
@@ -105,26 +112,26 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
     // wifi STA工作模式初始化
-    wifi_sta_init();
+    wifi_sta_init((const char *)WIFI_SSID,(const char *) WIFI_PASSWORD);
     // 等待WiFi连接
-    // ESP_LOGI(TAG, "等待 WiFi 连接...");
-    // while (!is_wifi_connected())
-    // {
-    //         vTaskDelay(pdMS_TO_TICKS(100));
-    // }
-    // ESP_LOGI(TAG, "WiFi 已连接");
-    // initialize_sntp(); // 获取时间
-    // // 测试打印当前时间
-    // char timestr[64];
-    // get_time_string(timestr, sizeof(timestr));
-    // ESP_LOGI(TAG, "当前时间: %s", timestr);
-    // ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
-    // st7789_lcd_backlight(true);      // 打开背光huioyhuyh
-    // ledc_init();                     // 初始化背光的pwm控制
-    // get_now_weather_data(&now_weather_info);
-    // get_3D_weather_data(three_day_weather_info);
+    ESP_LOGI(TAG, "等待 WiFi 连接...");
+    while (!is_wifi_connected())
+    {
+            vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    ESP_LOGI(TAG, "WiFi 已连接");
+    initialize_sntp(); // 获取时间
+    // 测试打印当前时间
+    char timestr[64];
+    get_time_string(timestr, sizeof(timestr));
+    ESP_LOGI(TAG, "当前时间: %s", timestr);
+    ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
+    st7789_lcd_backlight(true);      // 打开背光huioyhuyh
+    ledc_init();                     // 初始化背光的pwm控制
+    get_now_weather_data(&now_weather_info);
+    get_3D_weather_data(three_day_weather_info);
 
-    // mqtt_init();
+    mqtt_init();
 
     // system_monitor_init();
     // 初始化系统监控，使用端口3333
@@ -135,15 +142,15 @@ void app_main(void)
 
 
     //创建 LVGL 任务
-    // xTaskCreatePinnedToCore(
-    //     lv_task,           // 任务函数
-    //     "lv_task_handler", // 任务名称
-    //     4096,              // 栈大小（字节）
-    //     NULL,              // 参数
-    //     configMAX_PRIORITIES - 2,                 // 优先级
-    //     &lvgl_task_handle, // 任务句柄
-    //     1                  // 在 Core 1 上运行
-    // );
+    xTaskCreatePinnedToCore(
+        lv_task,           // 任务函数
+        "lv_task_handler", // 任务名称
+        4096,              // 栈大小（字节）
+        NULL,              // 参数
+        configMAX_PRIORITIES - 2,                 // 优先级
+        &lvgl_task_handle, // 任务句柄
+        1                  // 在 Core 1 上运行
+    );
 
     // //创建内存监控任务
     // xTaskCreate(

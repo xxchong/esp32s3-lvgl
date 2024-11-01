@@ -12,11 +12,6 @@
 #include "esp_log.h"
 
 static const char *TAG = "Aliot";
-// #define   Aliyun_hostname       "xxxxxFwJvIO.iot-as-mqtt.cn-shanghai.aliyuncs.com" //或称mqttHostUrl、Broker Address
-// #define   Aliyun_port       1883
-// #define   Aliyun_client_id  "xxxxxFwJvIO.light_02|securemode=2,signmethod=hmacsha256,timestamp=1718174871589|"
-// #define   Aliyun_username   "light_02&xxxxxFwJvIO"
-// #define   Aliyun_password   "xxxxxac7f1796e87ad43fd4dd0ead023d9b8c7e3050a9bae91ab58505dc8a514"
 
 
 /***********************************MQTT配置*******************************/

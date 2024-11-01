@@ -17,8 +17,8 @@
 #include "esp_log.h"
 
 // 需要把这两个修改成你家WIFI，测试是否连接成功
-#define DEFAULT_WIFI_SSID "Pixel"
-#define DEFAULT_WIFI_PASSWORD "12345678"
+// #define DEFAULT_WIFI_SSID "Pixel"
+// #define DEFAULT_WIFI_PASSWORD "12345678"
 
 static bool wifi_connected = false;
 
@@ -60,7 +60,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 }
 
 // WIFI STA初始化
-esp_err_t wifi_sta_init(void)
+esp_err_t wifi_sta_init(const char *wifi_ssid,const char *pwd)
 {
     ESP_ERROR_CHECK(esp_netif_init());                // 用于初始化tcpip协议栈
     ESP_ERROR_CHECK(esp_event_loop_create_default()); // 创建一个默认系统事件调度循环，之后可以注册回调函数来处理系统的一些事件
@@ -75,20 +75,22 @@ esp_err_t wifi_sta_init(void)
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
 
     // WIFI配置
-    wifi_config_t wifi_config =
-        {
-            .sta =
-                {
-                    .ssid = DEFAULT_WIFI_SSID,                // WIFI的SSID
-                    .password = DEFAULT_WIFI_PASSWORD,        // WIFI密码
-                    .threshold.authmode = WIFI_AUTH_WPA2_PSK, // 加密方式
+      // WIFI配置
+    wifi_config_t wifi_config = {
+        .sta = {  // 使用大括号初始化嵌套结构体
+            .ssid = "",  // 确保字符串被正确初始化
+            .password = "",  // 确保字符串被正确初始化
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK, // 加密方式
+            .pmf_cfg = {
+                .capable = true,
+                .required = false
+            }
+        }
+    };
 
-                    .pmf_cfg =
-                        {
-                            .capable = true,
-                            .required = false},
-                },
-        };
+    // 使用 strncpy 确保字符串安全复制
+    strncpy((char *)wifi_config.sta.ssid, wifi_ssid, sizeof(wifi_config.sta.ssid) - 1);
+    strncpy((char *)wifi_config.sta.password, pwd, sizeof(wifi_config.sta.password) - 1);
 
     // 启动WIFI
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));               // 设置工作模式为STA

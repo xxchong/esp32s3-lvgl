@@ -4,6 +4,6 @@
 #include "stdbool.h"
 
 // WIFI STA初始化
-esp_err_t wifi_sta_init(void);
+esp_err_t wifi_sta_init(const char *wifi_ssid,const char *pwd);
 bool is_wifi_connected(void);
 #endif
