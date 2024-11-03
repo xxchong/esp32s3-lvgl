@@ -5,15 +5,15 @@
 #include "esp_attr.h"
 #include "esp_heap_caps.h"
 
-#define CANVAS_WIDTH 220
-#define CANVAS_HEIGHT 260
+#define CANVAS_WIDTH 120
+#define CANVAS_HEIGHT 200
 /* 创建一个画布的缓冲区 */
 static lv_color_t *cbuf; // 使用 LV_IMG_CF_TRUE_COLOR需要这样定义
 // static lv_color_t next_block_canvas_cbuf[(32 * 70) / 8 * 50];    // 使用 LV_IMG_CF_TRUE_COLOR需要这样定义
 
 #define BLOCK_SIZE 10
-#define GRID_WIDTH 24 // 游戏网格的宽高
-#define GRID_HEIGHT 28
+#define GRID_WIDTH 12 // 游戏网格的宽高
+#define GRID_HEIGHT 20
 
 static lv_obj_t *create_game_canvas(lv_obj_t *parent);      // 创建用于绘制方块的画布
 static void draw_next_block(void);                          // 绘制下一个方块
@@ -32,6 +32,11 @@ static void msgbox_event_cb(lv_event_t *e);                 // 处理消息框�
 static void reset_game_state(void);                         // 重置游戏状态到初始状态
 static void Stop_Game(void);                                // 停止游戏，清理资源
 static bool generate_new_piece(void);
+
+static lv_obj_t *btn_up;
+static lv_obj_t *btn_down;
+static lv_obj_t *btn_left;
+static lv_obj_t *btn_right;
 
 // 游戏状态
 typedef struct
@@ -492,6 +497,7 @@ static void rotate_piece(void)
     }
 }
 
+
 // 在游戏主循环
 static void game_loop(lv_timer_t *timer)
 {
@@ -511,55 +517,44 @@ static void game_loop(lv_timer_t *timer)
 }
 
 // 键盘事件处理
+
 static void keyboard_event_cb(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_timer_t *timer = lv_event_get_user_data(e);
+    lv_obj_t *target = lv_event_get_target(e);
 
-    if (code == LV_EVENT_KEY)
+    if (code == LV_EVENT_CLICKED && target == btn_up)
     {
-        uint32_t key = lv_event_get_key(e);
-
-        if (!game_state.is_game_over)
+        rotate_piece();
+    }
+    else if (code == LV_EVENT_CLICKED && target == btn_down)
+    {
+        // 快速下落
+        for (int i = 0; i < 3 && !game_state.is_game_over; i++)
         {
-            switch (key)
+            if (!move_down_and_fix())
             {
-            case LV_KEY_LEFT:
-                game_state.current_x--;
-                if (check_collision())
-                    game_state.current_x++;
-                break;
-            case LV_KEY_RIGHT:
-                game_state.current_x++;
-                if (check_collision())
-                    game_state.current_x--;
-                break;
-            case LV_KEY_DOWN:
-                // 快速下落
-                for (int i = 0; i < 3 && !game_state.is_game_over; i++)
-                {
-                    if (!move_down_and_fix())
-                    {
-                        game_state.is_game_over = true;
-                        break;
-                    }
-                }
-                break;
-            case LV_KEY_ENTER:
-                rotate_piece();
-                break;
-            case LV_KEY_ESC: // ESC 暂停以及退出操作
-                printf("暂停中\n");
-
+                game_state.is_game_over = true;
                 break;
             }
-            if (!game_state.is_game_over)
-                draw_game();
-        }
-        else
-        {
         }
     }
+    else if (code == LV_EVENT_CLICKED && target == btn_left)
+    {
+        game_state.current_x--;
+        if (check_collision())
+            game_state.current_x++;
+    }
+    else if (code == LV_EVENT_CLICKED && target == btn_right)
+    {
+        game_state.current_x++;
+        if (check_collision())
+            game_state.current_x--;
+    }
+
+    if (!game_state.is_game_over)
+        draw_game();
 }
 
 // 重置游戏状态
@@ -610,7 +605,51 @@ static lv_obj_t *create_next_block_canvas(lv_obj_t *parent)
     // return lv_game->game_next_block_canvas;
     return NULL;
 }
+lv_obj_t *create_button(lv_obj_t *parent)
+{
 
+    lv_obj_t *btn_con = lv_obj_create(parent);
+    lv_obj_set_size(btn_con, 100, 150);
+
+    lv_obj_t *label;
+
+    btn_up = lv_btn_create(btn_con);
+    lv_obj_set_size(btn_up, 28, 28);
+    lv_obj_align(btn_up, LV_ALIGN_TOP_MID, 0, 5);
+    label = lv_label_create(btn_up);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_UP);
+
+    btn_down = lv_btn_create(btn_con);
+    lv_obj_set_size(btn_down, 28, 28);
+    lv_obj_align(btn_down, LV_ALIGN_BOTTOM_MID, 0, -5);
+    label = lv_label_create(btn_down);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_DOWN);
+
+    btn_left = lv_btn_create(btn_con);
+    lv_obj_set_size(btn_left, 28, 28);
+    lv_obj_align(btn_left, LV_ALIGN_LEFT_MID, -5, 0);
+    label = lv_label_create(btn_left);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_LEFT);
+
+    btn_right = lv_btn_create(btn_con);
+    lv_obj_set_size(btn_right, 28, 28);
+    lv_obj_align(btn_right, LV_ALIGN_RIGHT_MID, 5, 0);
+    label = lv_label_create(btn_right);
+    lv_obj_center(label);
+    lv_label_set_text(label, LV_SYMBOL_RIGHT);
+
+    lv_obj_clear_flag(btn_con, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_add_event_cb(btn_up, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(btn_down, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(btn_left, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(btn_right, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
+
+    return btn_con;
+}
 void tetris_start_game(lv_obj_t *parent, lv_group_t *group)
 {
     if (lv_game == NULL)
@@ -628,7 +667,11 @@ void tetris_start_game(lv_obj_t *parent, lv_group_t *group)
         lv_game->game_next_block_canvas = NULL;
     }
 
-    lv_obj_align(create_game_canvas(parent), LV_ALIGN_BOTTOM_MID, 0, -8);
+    lv_obj_t *game_canvas = create_game_canvas(parent);
+    lv_obj_align(game_canvas, LV_ALIGN_BOTTOM_LEFT, 0, -5);
+
+    lv_obj_t *btn_con = create_button(parent);
+    lv_obj_align(btn_con, LV_ALIGN_RIGHT_MID, -5, 10);
 
     // lv_obj_align_to(create_next_block_canvas(parent), lv_game->game_canvas, LV_ALIGN_OUT_TOP_MID, 0, -5);
 
@@ -639,6 +682,6 @@ void tetris_start_game(lv_obj_t *parent, lv_group_t *group)
     }
     lv_game->game_timer = lv_timer_create(game_loop, game_state.speed, NULL);
     lv_obj_add_event_cb(parent, keyboard_event_cb, LV_EVENT_KEY, NULL);
-    lv_group_add_obj(group, parent);
+    // lv_group_add_obj(group, parent);
     lv_timer_reset(lv_game->game_timer);
 }

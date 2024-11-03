@@ -1,4 +1,4 @@
-# Install script for directory: /home/xxchong/esp32s3-lvgl/components/lv_fs_if
+# Install script for directory: /home/xxchong/桌面/esp32s3-lvgl/components/lv_fs_if
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

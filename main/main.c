@@ -64,6 +64,13 @@ void print_memory_info(const char *message)
 #endif
 }
 
+void Tetris_Game()
+{
+    lv_obj_t *scr = lv_scr_act();
+    lv_obj_set_size(scr, 240, 280);
+    tetris_start_game(scr, NULL);
+}
+
 void lv_demo(void)
 {
 
@@ -84,7 +91,7 @@ void lv_demo(void)
 
 void lv_task(void *pvParameters)
 {
-    lv_demo();
+    Tetris_Game();
     while (1)
     {
         lv_task_handler();
@@ -111,24 +118,25 @@ void app_main(void)
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
-    ESP_ERROR_CHECK(ret);
-    // wifi STA工作模式初始化
-    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
-    // 等待WiFi连接
-    ESP_LOGI(TAG, "等待 WiFi 连接...");
-    while (!is_wifi_connected())
-    {
-        vTaskDelay(pdMS_TO_TICKS(100));
-    }
-    ESP_LOGI(TAG, "WiFi 已连接");
-    initialize_sntp(); // 获取时间
-    // 测试打印当前时间
-    char timestr[64];
-    get_time_string(timestr, sizeof(timestr));
-    ESP_LOGI(TAG, "当前时间: %s", timestr);
+    // ESP_ERROR_CHECK(ret);
+    // // wifi STA工作模式初始化
+    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    // // 等待WiFi连接
+    // ESP_LOGI(TAG, "等待 WiFi 连接...");
+    // while (!is_wifi_connected())
+    // {
+    //     vTaskDelay(pdMS_TO_TICKS(100));
+    // }
+    // ESP_LOGI(TAG, "WiFi 已连接");
+    // initialize_sntp(); // 获取时间
+    // // 测试打印当前时间
+    // char timestr[64];
+    // get_time_string(timestr, sizeof(timestr));
+    // ESP_LOGI(TAG, "当前时间: %s", timestr);
     ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
     st7789_lcd_backlight(true);      // 打开背光huioyhuyh
     ledc_init();                     // 初始化背光的pwm控制
+    set_backlight(30);
     // get_now_weather_data(&now_weather_info);
     // get_3D_weather_data(three_day_weather_info);
 
