@@ -175,8 +175,8 @@ lv_obj_t *create_root(lv_obj_t *parent)
     lv_obj_set_style_border_width(btn_right, 0, 0);
     lv_obj_set_style_shadow_opa(btn_right, 0, 0);
 
-    lv_obj_add_event_cb(btn_left, btn_left_or_right_cb, LV_EVENT_CLICKED, NULL);
-    lv_obj_add_event_cb(btn_right, btn_left_or_right_cb, LV_EVENT_CLICKED, NULL);
+    // lv_obj_add_event_cb(btn_left, btn_left_or_right_cb, LV_EVENT_CLICKED, NULL);
+    // lv_obj_add_event_cb(btn_right, btn_left_or_right_cb, LV_EVENT_CLICKED, NULL);
 
     // 创建网格
     flex = lv_obj_create(user_area);
@@ -245,15 +245,15 @@ lv_obj_t *create_root(lv_obj_t *parent)
 
         lv_obj_add_event_cb(btns[i], btn_cb, LV_EVENT_CLICKED, NULL);
     }
-    lv_indev_set_group(indev, group);
-    for (int i = 0; i < APP_COUNTS; i++)
-    {
-        lv_group_add_obj(group, btns[i]);
-    }
-    lv_group_add_obj(group, btn_left);
-    lv_group_add_obj(group, btn_right);
+    // lv_indev_set_group(indev, group);
+    // for (int i = 0; i < APP_COUNTS; i++)
+    // {
+    //     lv_group_add_obj(group, btns[i]);
+    // }
+    // lv_group_add_obj(group, btn_left);
+    // lv_group_add_obj(group, btn_right);
 
-    lv_group_focus_obj(btns[0]);
+    // lv_group_focus_obj(btns[0]);
     create_fragments(user_area);
 
     return root;

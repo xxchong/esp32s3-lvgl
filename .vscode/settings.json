@@ -51,7 +51,10 @@
         "mqtt_client.h": "c",
         "stdbool.h": "c",
         "mqtt.h": "c",
-        "aliot.h": "c"
+        "aliot.h": "c",
+        "system_monitor.h": "c",
+        "lv_demo_widgets.h": "c",
+        "demo.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

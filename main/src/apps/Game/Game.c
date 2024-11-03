@@ -45,7 +45,7 @@ void create_game_app(lv_obj_t *parent)
         game_app->label_btn = NULL;
     }
     game_app->group = lv_group_create();
-    lv_indev_set_group(indev, game_app->group);
+    // lv_indev_set_group(indev, game_app->group);
 
 
     // 创建描述标签
@@ -76,5 +76,5 @@ void create_game_app(lv_obj_t *parent)
     // 配置按钮事件（如果需要）
     lv_obj_add_event_cb(game_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
 
-    lv_group_add_obj( game_app->group, game_app->btn_return);
+    // lv_group_add_obj( game_app->group, game_app->btn_return);
 }

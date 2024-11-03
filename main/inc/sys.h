@@ -24,9 +24,9 @@
 #include "apps/Tools/Calculators/Calculators2.h"
 
 #include "apps/Weather/lv_weather.h"
-#include "apps/widgets/clock_widget/clock_widget.h"
-#include "apps/widgets/weather_widget/weather_widget.h"
-#include "apps/widgets/wooden_fish_widget/wooden_fish.h"
+#include "apps/my_widgets/clock_widget/clock_widget.h"
+#include "apps/my_widgets/weather_widget/weather_widget.h"
+#include "apps/my_widgets/wooden_fish_widget/wooden_fish.h"
 #include "lv_port.h"
 #include "root_page.h"
 

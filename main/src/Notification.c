@@ -28,13 +28,13 @@ static void my_slider_cb(lv_event_t *e)
     char buf[8];
     int val = (int)lv_slider_get_value(slider);
 
-    // 将滑块值从0-5映射到0-100范围
-    int brightness = (val * 100) / 5;                            // 将滑块值映射到0-100
-    brightness = brightness < 0 ? 0 : (brightness > 100 ? 100 : brightness); // 确保亮度值在0到100之间
+    // // 将滑块值从0-5映射到0-100范围
+    // int brightness = (val * 100) / 5;                            // 将滑块值映射到0-100
+    // brightness = brightness < 0 ? 0 : (brightness > 100 ? 100 : brightness); // 确保亮度值在0到100之间
 
-    printf("滑块值:%d, 亮度值:%d%%\n", val, brightness);
+    printf("滑块值:%d, 亮度值:%d%%\n", val, val);
 
-    set_backlight(brightness);
+    set_backlight(val);
 
     // // 更新显示的百分比
     // sprintf(buf, "%d%%", (int)((val * 100) / 5)); // 显示当前滑块值的百分比
@@ -45,7 +45,7 @@ static void my_slider_cb(lv_event_t *e)
     // lv_slider_set_value(slider, val, LV_ANIM_OFF); // 确保滑块的值被更新
 }
 
-void create_Notification(void)
+lv_obj_t *create_Notification(lv_group_t *group)
 {
 
     // 确保 gpio_app 已经被分配内存
@@ -56,7 +56,7 @@ void create_Notification(void)
         {
             // 处理内存分配失败的情况
             printf("Failed to allocate memory for gpio_app\n");
-            return;
+            return NULL;
         }
         // 初始化成员变量
         Notification->bluetooth_btn = NULL;
@@ -151,7 +151,7 @@ void create_Notification(void)
 
     Notification->slider_brightness = lv_slider_create(Notification->root);
     lv_obj_set_size(Notification->slider_brightness, 65, 132);              /* 高度>宽度时，滑块为纵向 */
-    lv_slider_set_range(Notification->slider_brightness, 0, 5);             /* 设置范围值 */
+    lv_slider_set_range(Notification->slider_brightness, 0, 100);           /* 设置范围值 */
     lv_slider_set_value(Notification->slider_brightness, 100, LV_ANIM_OFF); /* 设置当前值 */
     lv_obj_align_to(Notification->slider_brightness, Notification->slider_volume, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
     Notification->label = lv_label_create(Notification->slider_brightness);
@@ -178,12 +178,13 @@ void create_Notification(void)
     lv_obj_set_style_outline_color(Notification->slider_brightness, lv_color_black(), LV_STATE_EDITED);
     lv_obj_set_style_outline_color(Notification->slider_volume, lv_color_black(), LV_STATE_EDITED);
 
-    lv_group_add_obj(Notification->group, Notification->wifi_btn);
-    lv_group_add_obj(Notification->group, Notification->bluetooth_btn);
-    lv_group_add_obj(Notification->group, Notification->slider_volume);
-    lv_group_add_obj(Notification->group, Notification->slider_brightness);
-    lv_group_add_obj(Notification->group, Notification->return_btm);
-    lv_group_focus_obj(Notification->wifi_btn);
+    // lv_group_add_obj(Notification->group, Notification->wifi_btn);
+    // lv_group_add_obj(Notification->group, Notification->bluetooth_btn);
+    // lv_group_add_obj(Notification->group, Notification->slider_volume);
+    // lv_group_add_obj(Notification->group, Notification->slider_brightness);
+    // lv_group_add_obj(Notification->group, Notification->return_btm);
+    // lv_group_focus_obj(Notification->wifi_btn);
 
     lv_timer_create(time_refresh, 5000, NULL);
+    return Notification->root;
 }

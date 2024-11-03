@@ -36,7 +36,7 @@ lv_fragment_manager_t *manager = NULL; // 全局片段管理器
 void Return_root_page(void)
 {
     // 恢复主页面的group
-    lv_indev_set_group(indev, group);
+    // lv_indev_set_group(indev, group);
 }
 
 // ESC按键事件处理函数

@@ -138,14 +138,27 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
 #endif
 
 #ifdef USE_TOUCH_CST816T
-    int16_t x,y;
+    int16_t x, y;
     int state;
-    cst816t_read(&x,&y,&state);
-    data->point.x = y;
-    if(x == 0)
-        x = 1;
-    data->point.y = LCD_HEIGHT - x;
-    data->state = state;
+    static int16_t last_x = 0;
+    static int16_t last_y = 0;
+    cst816t_read(&x, &y, &state);
+    if (state)
+    {
+        //交换 x 和 y 坐标
+        last_x = LCD_WIDTH - x;
+        last_y = LCD_HEIGHT - y;
+
+        ESP_LOGI(TAG, "Touch: x=%d, y=%d", last_x, last_y);
+        data->state = LV_INDEV_STATE_PR;
+    }
+    else
+    {
+        data->state = LV_INDEV_STATE_REL;
+    }
+
+    data->point.x = last_x;
+    data->point.y = last_y;
 #endif
 }
 /**

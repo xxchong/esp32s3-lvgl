@@ -58,13 +58,15 @@ static void btn_return_cb(lv_event_t *e)
         else if (size == 1) // 二级界面
         {
             lv_fragment_manager_pop(manager); // 弹出当前片段
-            Return_root_page();
+            size = lv_fragment_manager_get_stack_size(manager);
+            printf("当前栈内有%d个内容\n", size); // 添加调试信息
+            // Return_root_page();
         }
     }
-    else if (obj == weather_app->root)
-    {
-        lv_group_focus_obj(weather_app->btn_return);
-    }
+    // else if (obj == weather_app->root)
+    // {
+    //     lv_group_focus_obj(weather_app->btn_return);
+    // }
 }
 
 // static void lv_weather_update_icon(uint8_t threedays, int weatherid)
@@ -99,11 +101,10 @@ void update_weather_data(void)
     // 添加调试信息
     printf("当前温度: %s, 更新时间: %s\n", now_weather_info.temp, now_weather_info.time);
 
-    char update_str[64];  // 增加到64字节
-    char temp_str[32];    // 增加到32字节
+    char update_str[64]; // 增加到64字节
+    char temp_str[32];   // 增加到32字节
     snprintf(update_str, sizeof(update_str), "%s 更新", now_weather_info.time);
     lv_label_set_text(weather_app->label_update_time, update_str);
-
 
     // 当前温度
     snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
@@ -113,16 +114,16 @@ void update_weather_data(void)
     // 三天温度
     if (sizeof(three_day_weather_info) / sizeof(three_day_weather_info[0]) >= 3)
     {
-        snprintf(temp_str, sizeof(temp_str), "%s° / %s°", 
-                three_day_weather_info[0].tempMin, 
-                three_day_weather_info[0].tempMax);
+        snprintf(temp_str, sizeof(temp_str), "%s° / %s°",
+                 three_day_weather_info[0].tempMin,
+                 three_day_weather_info[0].tempMax);
         lv_label_set_text(weather_app->label_cerrent_max_min_temp, temp_str);
 
         for (int i = 0; i < 3; i++)
         {
             snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMax);
             lv_label_set_text(weather_app->label_max_temp[i], temp_str);
-            
+
             snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMin);
             lv_label_set_text(weather_app->label_min_temp[i], temp_str);
         }
@@ -177,8 +178,8 @@ void create_weather_app(lv_obj_t *parent)
         }
     }
 
-    weather_app->group = lv_group_create();
-    lv_indev_set_group(indev, weather_app->group);
+    // weather_app->group = lv_group_create();
+    // lv_indev_set_group(indev, weather_app->group);
 
     weather_app->root = lv_obj_create(parent);
     lv_obj_set_size(weather_app->root, 240, 255);
@@ -318,10 +319,10 @@ void create_weather_app(lv_obj_t *parent)
         lv_bar_set_value(weather_app->bar_weather[i], 35, LV_ANIM_ON);
     }
 
-    lv_group_add_obj(weather_app->group, weather_app->btn_return);
-    lv_group_add_obj(weather_app->group, weather_app->root);
+    // lv_group_add_obj(weather_app->group, weather_app->btn_return);
+    // lv_group_add_obj(weather_app->group, weather_app->root);
     // 添加事件回调以处理编码器返回
-    // lv_obj_add_event_cb(weather_app->root, btn_return_cb, LV_EVENT_CLICKED, NULL); // 处理返回事件
+    lv_obj_add_event_cb(weather_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL); // 处理返回事件
 
     // if (xSemaphoreGive(xBinarySemaphore) == pdTRUE)
     // {

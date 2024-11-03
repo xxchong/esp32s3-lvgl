@@ -84,7 +84,7 @@ void cst816t_read(int16_t *x,int16_t *y,int *state)
     {
         last_x = current_x;
         last_y = current_y;
-        ESP_LOGI(TAG,"touch x:%d,y:%d",last_x,last_y);
+        // ESP_LOGI(TAG,"touch x:%d,y:%d",last_x,last_y);
     }
 
 
