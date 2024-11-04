@@ -19,6 +19,7 @@
 #include "esp_system.h"
 #include "aliot.h"
 #include "system_monitor.h"
+#include "boot.h"
 
 lv_group_t *group;
 
@@ -91,7 +92,12 @@ void lv_demo(void)
 
 void lv_task(void *pvParameters)
 {
-    Tetris_Game();
+    // Tetris_Game();
+
+
+    lv_obj_t *scr = lv_scr_act();
+    lv_obj_set_size(scr, 240, 280);
+    create_boot(scr);
     while (1)
     {
         lv_task_handler();
@@ -136,7 +142,7 @@ void app_main(void)
     ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
     st7789_lcd_backlight(true);      // 打开背光huioyhuyh
     ledc_init();                     // 初始化背光的pwm控制
-    set_backlight(30);
+    set_backlight(20);
     // get_now_weather_data(&now_weather_info);
     // get_3D_weather_data(three_day_weather_info);
 
