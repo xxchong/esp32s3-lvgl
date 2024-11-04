@@ -17,5 +17,5 @@ typedef struct
 
 } Notification_t;
 extern Notification_t *Notification;
-lv_obj_t *create_Notification(lv_group_t *group);
+lv_obj_t *create_notification(lv_obj_t *parent);
 #endif

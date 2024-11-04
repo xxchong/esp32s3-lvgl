@@ -45,7 +45,7 @@ static void my_slider_cb(lv_event_t *e)
     // lv_slider_set_value(slider, val, LV_ANIM_OFF); // 确保滑块的值被更新
 }
 
-lv_obj_t *create_Notification(lv_group_t *group)
+lv_obj_t *create_notification(lv_obj_t *parent)
 {
 
     // 确保 gpio_app 已经被分配内存
@@ -69,8 +69,6 @@ lv_obj_t *create_Notification(lv_group_t *group)
         Notification->label_time = NULL;
         Notification->return_btm = NULL;
     }
-
-    Notification->group = lv_group_create();
 
     static lv_style_t style_btn_default;
     lv_style_init(&style_btn_default);
@@ -99,9 +97,9 @@ lv_obj_t *create_Notification(lv_group_t *group)
     lv_style_set_border_width(&style_slider_part_knob, 0);
     lv_style_set_radius(&style_slider_part_knob, 0);
 
-    Notification->root = lv_obj_create(NULL);
+    Notification->root = lv_obj_create(parent);
     lv_obj_center(Notification->root);
-    lv_obj_set_size(Notification->root, 240, 280);
+    lv_obj_set_size(Notification->root, 240, 250);
     lv_obj_set_style_pad_all(Notification->root, 0, 0);
     lv_obj_set_style_bg_color(Notification->root, lv_color_hex(0x97a1b6), 0);
     lv_obj_set_style_border_width(Notification->root, 0, 0);
@@ -178,13 +176,6 @@ lv_obj_t *create_Notification(lv_group_t *group)
     lv_obj_set_style_outline_color(Notification->slider_brightness, lv_color_black(), LV_STATE_EDITED);
     lv_obj_set_style_outline_color(Notification->slider_volume, lv_color_black(), LV_STATE_EDITED);
 
-    // lv_group_add_obj(Notification->group, Notification->wifi_btn);
-    // lv_group_add_obj(Notification->group, Notification->bluetooth_btn);
-    // lv_group_add_obj(Notification->group, Notification->slider_volume);
-    // lv_group_add_obj(Notification->group, Notification->slider_brightness);
-    // lv_group_add_obj(Notification->group, Notification->return_btm);
-    // lv_group_focus_obj(Notification->wifi_btn);
-
-    lv_timer_create(time_refresh, 5000, NULL);
+    // lv_timer_create(time_refresh, 5000, NULL);
     return Notification->root;
 }

@@ -37,39 +37,28 @@ static void btn_cb(lv_event_t *e)
     lv_indev_set_group(indev, Notification->group);
 }
 
-void lv_status_bar_create(lv_obj_t *status_bar)
+void create_status_bar(lv_obj_t *parent)
 {
-    wifi_status = lv_label_create(status_bar);
-    current_time = lv_label_create(status_bar);
-    battery_status = lv_label_create(status_bar);
-    notification = lv_btn_create(status_bar);
-    lv_obj_set_style_text_font(wifi_status, &my_symbol_font_24_t, 0);
-    lv_obj_set_style_text_color(wifi_status, lv_color_white(), 0);
-    lv_obj_set_style_text_font(current_time, &lv_font_montserrat_20, 0);
-    lv_obj_set_style_text_color(current_time, lv_color_white(), 0);
-    lv_obj_set_style_text_font(battery_status, &lv_font_montserrat_20, 0);
-    lv_obj_set_style_text_color(battery_status, lv_color_white(), 0);
 
-    lv_obj_align(wifi_status, LV_ALIGN_LEFT_MID, 12, 0);
-    lv_obj_align(current_time, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_align(battery_status, LV_ALIGN_RIGHT_MID, -12, 0);
+    wifi_status = lv_label_create(parent);
+    current_time = lv_label_create(parent);
+    battery_status = lv_label_create(parent);
+    lv_obj_set_style_text_font(wifi_status, &my_symbol_font_16_t, 0);
+    lv_obj_set_style_text_color(wifi_status, lv_color_black(), 0);
+    lv_obj_set_style_text_font(current_time, &lv_font_montserrat_12, 0);
+    lv_obj_set_style_text_color(current_time, lv_color_black(), 0);
+    lv_obj_set_style_text_font(battery_status, &lv_font_montserrat_12, 0);
+    lv_obj_set_style_text_color(battery_status, lv_color_black(), 0);
 
-    lv_obj_set_size(notification, 7, 7);
-    lv_obj_set_style_radius(notification, LV_RADIUS_CIRCLE, 0);
-    lv_obj_align_to(notification, current_time, LV_ALIGN_OUT_LEFT_MID, -13, 0);
-    // lv_obj_set_style_bg_color(notification, lv_color_hex(0xff0000), LV_PART_MAIN);
-    lv_obj_set_style_bg_color(notification, lv_color_white(), LV_PART_MAIN);
-    lv_obj_set_style_shadow_opa(notification, 0, 0);
-
-    lv_obj_add_event_cb(notification, btn_cb, LV_EVENT_CLICKED, NULL);
-    lv_obj_set_style_bg_color(notification, lv_color_hex(0xFF6600), LV_STATE_FOCUS_KEY);
+    lv_obj_align(wifi_status, LV_ALIGN_TOP_LEFT, 12, 0);
+    lv_obj_align(current_time, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(battery_status, LV_ALIGN_TOP_RIGHT, -12, 0);
 
     lv_label_set_text(wifi_status, USER_SYMBOL_CONNECTEED_WIFI);
+    // timeinfo = get_timeinfo();
+    lv_label_set_text_fmt(current_time, "%02d:%02d", 12, 22);
 
-    timeinfo = get_timeinfo();
-    lv_label_set_text_fmt(current_time, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+    lv_label_set_text(battery_status, LV_SYMBOL_BATTERY_3 " 100%");
 
-    lv_label_set_text(battery_status, "100%");
-
-    lv_timer_create(time_refresh, 5000, NULL);
+    // lv_timer_create(time_refresh, 5000, NULL);
 }

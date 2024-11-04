@@ -9,14 +9,14 @@ extern "C"
 
 #include "lvgl.h"
 #define USE_MY_SYMBOL_FONT_10_T
-// #define USE_MY_SYMBOL_FONT_12_T
+#define USE_MY_SYMBOL_FONT_12_T
 #define USE_MY_SYMBOL_FONT_14_T
-    // #define USE_MY_SYMBOL_FONT_16_T
+    #define USE_MY_SYMBOL_FONT_16_T
 #define USE_MY_SYMBOL_FONT_20_T
 #define USE_MY_SYMBOL_FONT_24_T
-    // #define USE_MY_SYMBOL_FONT_28_T
-    // #define USE_MY_SYMBOL_FONT_32_T
-    // #define USE_MY_SYMBOL_FONT_36_T
+    #define USE_MY_SYMBOL_FONT_28_T
+    #define USE_MY_SYMBOL_FONT_32_T
+    #define USE_MY_SYMBOL_FONT_36_T
 #define USE_MY_SYMBOL_FONT_40_T
 #define USE_ADD_SYMBOL_40_T
 

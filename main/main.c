@@ -20,7 +20,9 @@
 #include "aliot.h"
 #include "system_monitor.h"
 #include "boot.h"
-
+#include "status_bar.h"
+#include "root_page.h"
+#include "Notification.h"
 lv_group_t *group;
 
 TaskHandle_t lvgl_task_handle;
@@ -75,29 +77,34 @@ void Tetris_Game()
 void lv_demo(void)
 {
 
-    lv_obj_t *scr = lv_scr_act();
-    lv_obj_set_size(scr, 240, 280);
-    // group = lv_group_create();
-    // lv_group_remove_all_objs(group);
-    // lv_group_set_default(group);
-    // lv_indev_set_group(indev, group);
+    // lv_obj_t *scr = lv_scr_act();
+    // lv_obj_set_size(scr, 240, 280);
+    // // group = lv_group_create();
+    // // lv_group_remove_all_objs(group);
+    // // lv_group_set_default(group);
+    // // lv_indev_set_group(indev, group);
 
-    // lv_obj_t *root = create_root(scr);
-    lv_obj_t *Notification = create_Notification(group);
-    // // lv_group_add_obj(group, Notification);
-    // // lv_group_focus_obj(Notification);
-    // // create_second_page();
-    lv_scr_load(Notification);
+    // // lv_obj_t *root = create_root(scr);
+    // lv_obj_t *Notification = create_Notification(group);
+    // // // lv_group_add_obj(group, Notification);
+    // // // lv_group_focus_obj(Notification);
+    // // // create_second_page();
+    // lv_scr_load(Notification);
 }
 
 void lv_task(void *pvParameters)
 {
     // Tetris_Game();
 
-
     lv_obj_t *scr = lv_scr_act();
-    lv_obj_set_size(scr, 240, 280);
-    create_boot(scr);
+
+    create_status_bar(scr);
+
+    root_page_t *root_page = create_root(scr);
+
+    lv_obj_t *Notification = lv_tileview_add_tile(root_page->tileview, 0, 0, LV_DIR_VER);
+    create_notification(Notification);
+
     while (1)
     {
         lv_task_handler();
