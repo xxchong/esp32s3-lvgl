@@ -1,7 +1,6 @@
-#include <lvgl.h>
+#include "sys.h"
 #include "esp_sntp.h"
 #include "esp_netif_sntp.h"
-#include <time.h>
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -9,6 +8,7 @@
 
 static const char *TAG = "util";
 #define SNTP_SERVER "pool.ntp.org" // 阿里云NTP服务器
+struct tm *timeinfo;
 
 void remove_styles(lv_obj_t *parent, bool remove_border, bool remove_opa, bool remove_scrollbar, bool remove_shadow)
 {
@@ -103,3 +103,164 @@ struct tm get_timeinfo(void)
     localtime_r(&now, &timeinfo);
     return timeinfo;
 }
+
+// 获取当前时间
+void get_now_time(void)
+{
+    time_t now;
+    time(&now);
+    timeinfo = localtime(&now);
+}
+
+/*创建app的返回按钮*/
+lv_obj_t *create_app_btn_return(lv_obj_t *parent)
+{
+    lv_obj_t *app_btn_return = lv_btn_create(parent);
+    lv_obj_set_size(app_btn_return, 25, 25);
+
+    remove_styles(app_btn_return, false, true, true, true);
+    lv_obj_set_style_bg_color(app_btn_return, lv_color_white(), 0);
+    lv_obj_set_style_border_width(app_btn_return, 0, 0);
+
+    lv_obj_align_to(app_btn_return, parent, LV_ALIGN_TOP_LEFT, 2, 20);
+
+    // 创建按钮上的标签
+    lv_obj_t *label_btn = lv_label_create(app_btn_return);
+    lv_obj_set_style_text_font(label_btn, &lv_font_montserrat_16, 0);
+    lv_label_set_text(label_btn, LV_SYMBOL_LEFT);
+    lv_obj_center(label_btn);
+    lv_obj_set_style_text_color(label_btn, lv_color_black(), 0);
+
+    return app_btn_return;
+}
+
+void gestureCallback(lv_event_t *event)
+{
+    lv_obj_t *screen = lv_event_get_current_target(event);
+    lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
+    const char *name = lv_event_get_user_data(event);
+    switch (dir)
+    {
+    case LV_DIR_LEFT:
+        // printf(" %s LV_DIR_LEFT",name);
+        break;
+    case LV_DIR_RIGHT:
+
+        if (lv_scr_act() != lv_page->root_page)
+        {
+            if (strcmp(name, "Game") == 0)
+            {
+                back_to_home(lv_page->game_page);
+            }
+            else if (strcmp(name, "Setting") == 0)
+            {
+                back_to_home(lv_page->setting_page);
+            }
+            else if (strcmp(name, "Serial") == 0)
+            {
+                back_to_home(lv_page->serial_page);
+            }
+            else if (strcmp(name, "Music") == 0)
+            {
+                back_to_home(lv_page->music_page);
+            }
+            else if (strcmp(name, "Tools") == 0)
+            {
+                back_to_home(lv_page->tools_page);
+            }
+            else if (strcmp(name, "Calendar") == 0)
+            {
+                back_to_home(lv_page->calender_page);
+            }
+            else if (strcmp(name, "MQTT") == 0)
+            {
+                back_to_home(lv_page->mqtt_page);
+            }
+            else if (strcmp(name, "BlueTooth") == 0)
+            {
+                back_to_home(lv_page->bluetooth_page);
+            }
+            else if (strcmp(name, "Weather") == 0)
+            {
+                back_to_home(lv_page->weather_page);
+            }
+            else if (strcmp(name, "Calculators1") == 0)
+            {
+            }
+            else if (strcmp(name, "Calculators2") == 0)
+            {
+            }
+            else if (strcmp(name, "Calculators3") == 0)
+            {
+            }
+            else if (strcmp(name, "WiFi1") == 0)
+            {
+            }
+        }
+        else
+        {
+        }
+
+        // printf(" %s LV_DIR_RIGHT",name);
+        break;
+    case LV_DIR_TOP:
+        if (lv_scr_act() == lv_page->notification_page)
+        {
+            cleanup_page(lv_page->notification_page);
+            lv_page->root_page = create_root();
+            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, false);
+        }
+
+        break;
+    case LV_DIR_BOTTOM:
+        if (lv_scr_act() == lv_page->root_page)
+        {
+            cleanup_page(lv_page->root_page);
+            lv_page->notification_page = create_notification();
+            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, false);
+        }
+        break;
+    }
+}
+
+void back_to_home(lv_obj_t *page)
+{
+    cleanup_page(page);
+    lv_page->root_page = create_root();
+    lv_scr_load(lv_page->root_page);
+    lv_obj_set_tile(root_page->tileview, root_page->page2, 0);
+}
+
+lv_obj_t *create_page(const char *name)
+{
+    lv_obj_t *page = lv_obj_create(NULL);
+    lv_obj_set_size(page, 240, 280);
+    lv_obj_set_style_pad_all(page, 0, 0);
+    lv_obj_set_style_border_width(page, 0, 0);
+
+    // 注册手势回调
+    lv_obj_add_event_cb(page, gestureCallback, LV_EVENT_GESTURE, name);
+
+    return page;
+}
+
+void cleanup_page(lv_obj_t *page)
+{
+    if (time_timer)
+    {
+        lv_timer_del(time_timer);
+        time_timer = NULL;
+    }
+    if (page == lv_page->root_page)
+    {
+        if (clock_widget_time_timer)
+        {
+            lv_timer_pause(clock_widget_time_timer);
+            lv_timer_del(clock_widget_time_timer);
+            clock_widget_time_timer = NULL;
+        }
+    }
+
+    lv_obj_clean(page);
+}
+

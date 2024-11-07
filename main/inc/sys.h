@@ -12,7 +12,7 @@
 #include "apps/BlueTooth/BlueTooth.h"
 #include "apps/Music/Music.h"
 #include "apps/Game/Game.h"
-#include "apps/GPIO/GPIO.h"
+#include "apps/Calender/Calender.h"
 #include "apps/MQTT/MQTT.h"
 #include "apps/Setting/Setting.h"
 #include "apps/Setting/WiFi_Connection.h"
@@ -35,4 +35,32 @@
 #include <time.h>
 #define USE_ENCODER_BY_BUTTON 1
 
+typedef struct
+{
+    lv_obj_t *scr;
+    lv_obj_t *boot_container;
+    lv_obj_t *notification;
+} gesture_t;
+
+typedef struct
+{
+    lv_obj_t *boot_page;
+    lv_obj_t *root_page;
+    lv_obj_t *bluetooth_page;
+    lv_obj_t *mqtt_page;
+    lv_obj_t *music_page;
+    lv_obj_t *game_page;
+    lv_obj_t *weather_page;
+    lv_obj_t *tools_page;
+    lv_obj_t *calender_page;
+    lv_obj_t *serial_page;
+    lv_obj_t *setting_page;
+    lv_obj_t *notification_page;
+} page_t;
+
+extern gesture_t *lv_gesture;
+extern page_t *lv_page;
+
+extern root_page_t *root_page;
+extern bool in_weather_app;
 #endif

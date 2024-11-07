@@ -5,7 +5,7 @@
 #define RESOLUTION 8 // 分辨率
 typedef struct
 {
-    lv_obj_t *root;
+    lv_obj_t *notification_page;
     lv_obj_t *wifi_btn;
     lv_obj_t *bluetooth_btn;
     lv_obj_t *slider_volume;
@@ -13,9 +13,8 @@ typedef struct
     lv_obj_t *label;
     lv_group_t *group;
     lv_obj_t *label_time;
-    lv_obj_t *return_btm;
 
 } Notification_t;
 extern Notification_t *Notification;
-lv_obj_t *create_notification(lv_obj_t *parent);
+lv_obj_t *create_notification(void);
 #endif

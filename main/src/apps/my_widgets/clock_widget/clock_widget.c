@@ -27,37 +27,37 @@ static lv_clock_widget1_t *clock_widget_app;
 
 const char *weekdays[7] = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"};
 
-static struct tm timeinfo;
+lv_timer_t *clock_widget_time_timer = NULL;
 
 void clock_widget_time_refresh(lv_timer_t *timer)
 {
     char temp[20];
-    timeinfo = get_timeinfo();
+    get_now_time();
 
     // 计算小时值（12小时制）
-    int hour_12 = timeinfo.tm_hour % 12;
+    int hour_12 = timeinfo->tm_hour % 12;
     if (hour_12 == 0)
         hour_12 = 12; // 将0点转换为12点
 
     // 计算小时指针的位置（考虑分钟的影响）
-    float hour_value = hour_12 + timeinfo.tm_min / 60.0f;
+    float hour_value = hour_12 + timeinfo->tm_min / 60.0f;
 
     // 设置小时指针
     lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_hour, hour_value);
 
     // 设置分钟指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_minute, timeinfo.tm_min);
+    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_minute, timeinfo->tm_min);
 
     // 设置秒指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_second, timeinfo.tm_sec);
+    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_second, timeinfo->tm_sec);
 
-    sprintf(temp, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+    sprintf(temp, "%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     lv_label_set_text(digital_clock_widget_app->label_time, temp);
 
-    sprintf(temp, "%02d.%02d", timeinfo.tm_mon + 1, timeinfo.tm_mday);
+    sprintf(temp, "%02d.%02d", timeinfo->tm_mon + 1, timeinfo->tm_mday);
     lv_label_set_text(digital_clock_widget_app->label_date, temp);
 
-    lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo.tm_wday]);
+    lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo->tm_wday]);
 }
 
 lv_obj_t *create_clock_widget1(lv_obj_t *parent)
@@ -181,7 +181,7 @@ lv_obj_t *create_clock_widget2(lv_obj_t *parent)
     lv_obj_align(digital_clock_widget_app->label_week, LV_ALIGN_BOTTOM_MID, 48, -13);
     lv_label_set_text(digital_clock_widget_app->label_week, "周一");
 
-    lv_timer_create(clock_widget_time_refresh, 1000, NULL);
+    clock_widget_time_timer = lv_timer_create(clock_widget_time_refresh, 1000, NULL);
 
     return digital_clock_widget_app->root;
 }

@@ -1,4 +1,5 @@
 #include "sys.h"
+
 #include "weather_http.h"
 
 extern now_weather_info_t now_weather_info;
@@ -19,13 +20,15 @@ extern lv_obj_t *user_area;
 extern lv_group_t *group;
 const char *Date[3] = {"今天", "明天", "后天"};
 
+bool in_weather_app = false;
+
 typedef struct
 {
+    lv_obj_t *weather_page;
     lv_group_t *group;
     lv_obj_t *btn_return;
     lv_obj_t *label_btn;
     lv_obj_t *label_Gps;
-    lv_obj_t *root;
     lv_obj_t *label_update_time;
     lv_obj_t *label_cerrent_max_min_temp;
     lv_obj_t *label_location;
@@ -45,28 +48,7 @@ static lv_obj_t *day_cont[4];
 
 static void btn_return_cb(lv_event_t *e)
 {
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t *obj = lv_event_get_target(e);
-
-    if (obj == weather_app->btn_return)
-    {
-        size_t size = lv_fragment_manager_get_stack_size(manager);
-        printf("当前栈内有%d个内容\n", size); // 添加调试信息
-        if (size > 1)                         // 大于二级界面
-        {
-        }
-        else if (size == 1) // 二级界面
-        {
-            lv_fragment_manager_pop(manager); // 弹出当前片段
-            size = lv_fragment_manager_get_stack_size(manager);
-            printf("当前栈内有%d个内容\n", size); // 添加调试信息
-            // Return_root_page();
-        }
-    }
-    // else if (obj == weather_app->root)
-    // {
-    //     lv_group_focus_obj(weather_app->btn_return);
-    // }
+    back_to_home(lv_page->weather_page);
 }
 
 // static void lv_weather_update_icon(uint8_t threedays, int weatherid)
@@ -95,54 +77,54 @@ static void btn_return_cb(lv_event_t *e)
 //     printf("天气ID: %d, 图标已更新\n", weatherid);
 // }
 
-void update_weather_data(void)
-{
+// void update_weather_data(void)
+// {
 
-    // 添加调试信息
-    printf("当前温度: %s, 更新时间: %s\n", now_weather_info.temp, now_weather_info.time);
+//     // 添加调试信息
+//     printf("当前温度: %s, 更新时间: %s\n", now_weather_info.temp, now_weather_info.time);
 
-    char update_str[64]; // 增加到64字节
-    char temp_str[32];   // 增加到32字节
-    snprintf(update_str, sizeof(update_str), "%s 更新", now_weather_info.time);
-    lv_label_set_text(weather_app->label_update_time, update_str);
+//     char update_str[64]; // 增加到64字节
+//     char temp_str[32];   // 增加到32字节
+//     snprintf(update_str, sizeof(update_str), "%s 更新", now_weather_info.time);
+//     lv_label_set_text(weather_app->label_update_time, update_str);
 
-    // 当前温度
-    snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
-    lv_label_set_text(weather_app->label_current_temp, temp_str);
+//     // 当前温度
+//     snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
+//     lv_label_set_text(weather_app->label_current_temp, temp_str);
 
-    // 检查 WeatherData_threedays 数组的大小
-    // 三天温度
-    if (sizeof(three_day_weather_info) / sizeof(three_day_weather_info[0]) >= 3)
-    {
-        snprintf(temp_str, sizeof(temp_str), "%s° / %s°",
-                 three_day_weather_info[0].tempMin,
-                 three_day_weather_info[0].tempMax);
-        lv_label_set_text(weather_app->label_cerrent_max_min_temp, temp_str);
+//     // 检查 WeatherData_threedays 数组的大小
+//     // 三天温度
+//     if (sizeof(three_day_weather_info) / sizeof(three_day_weather_info[0]) >= 3)
+//     {
+//         snprintf(temp_str, sizeof(temp_str), "%s° / %s°",
+//                  three_day_weather_info[0].tempMin,
+//                  three_day_weather_info[0].tempMax);
+//         lv_label_set_text(weather_app->label_cerrent_max_min_temp, temp_str);
 
-        for (int i = 0; i < 3; i++)
-        {
-            snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMax);
-            lv_label_set_text(weather_app->label_max_temp[i], temp_str);
+//         for (int i = 0; i < 3; i++)
+//         {
+//             snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMax);
+//             lv_label_set_text(weather_app->label_max_temp[i], temp_str);
 
-            snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMin);
-            lv_label_set_text(weather_app->label_min_temp[i], temp_str);
-        }
-    }
-    else
-    {
-        printf("WeatherData_threedays 数组大小不足");
-    }
+//             snprintf(temp_str, sizeof(temp_str), "%s°", three_day_weather_info[i].tempMin);
+//             lv_label_set_text(weather_app->label_min_temp[i], temp_str);
+//         }
+//     }
+//     else
+//     {
+//         printf("WeatherData_threedays 数组大小不足");
+//     }
 
-    // lv_weather_update_icon(0, now_weather_info.icon);
+//     // lv_weather_update_icon(0, now_weather_info.icon);
 
-    for (int i = 0; i < 3; i++)
-    {
-        lv_bar_set_start_value(weather_app->bar_weather[i], atoi(three_day_weather_info[i].tempMin), LV_ANIM_ON);
-        lv_bar_set_value(weather_app->bar_weather[i], atoi(three_day_weather_info[i].tempMax), LV_ANIM_ON);
-    }
-}
+//     for (int i = 0; i < 3; i++)
+//     {
+//         lv_bar_set_start_value(weather_app->bar_weather[i], atoi(three_day_weather_info[i].tempMin), LV_ANIM_ON);
+//         lv_bar_set_value(weather_app->bar_weather[i], atoi(three_day_weather_info[i].tempMax), LV_ANIM_ON);
+//     }
+// }
 
-void create_weather_app(lv_obj_t *parent)
+lv_obj_t *create_weather_app(void)
 {
     if (weather_app == NULL)
     {
@@ -151,13 +133,13 @@ void create_weather_app(lv_obj_t *parent)
         {
             // 处理内存分配失败的情况
             printf("Failed to allocate memory for weather_app\n");
-            return;
+            return NULL;
         }
         // 初始化成员变量
+        weather_app->weather_page = NULL;
         weather_app->group = NULL;
         weather_app->btn_return = NULL;
         weather_app->label_btn = NULL;
-        weather_app->root = NULL;
         weather_app->label_location = NULL;
         weather_app->label_weather_text = NULL;
         weather_app->label_Gps = NULL;
@@ -178,73 +160,52 @@ void create_weather_app(lv_obj_t *parent)
         }
     }
 
-    // weather_app->group = lv_group_create();
-    // lv_indev_set_group(indev, weather_app->group);
-
-    weather_app->root = lv_obj_create(parent);
-    lv_obj_set_size(weather_app->root, 240, 255);
-    lv_obj_set_style_bg_color(weather_app->root, lv_color_hex(0x1ac0fb), 0);
-    lv_obj_center(weather_app->root);
-    lv_obj_set_style_bg_opa(weather_app->root, 130, 0);
-    lv_obj_set_style_pad_all(weather_app->root, 0, 0);
-    lv_obj_set_scrollbar_mode(weather_app->root, LV_SCROLLBAR_MODE_OFF); // 关闭滚动条
+    weather_app->weather_page = create_page("Weather"); // 创建主页面
+    create_status_bar(weather_app->weather_page);       // 创建状态栏
 
     // 创建返回按钮
-    weather_app->btn_return = lv_btn_create(parent);
-    lv_obj_set_size(weather_app->btn_return, 15, 15);
-
-    remove_styles(weather_app->btn_return, false, true, true, true);
-    lv_obj_set_style_bg_color(weather_app->btn_return, lv_color_white(), 0);
-    lv_obj_set_style_border_width(weather_app->btn_return, 1, 0);
-    lv_obj_set_style_border_color(weather_app->btn_return, lv_color_black(), 0);
-
-    lv_obj_align_to(weather_app->btn_return, weather_app->root, LV_ALIGN_TOP_LEFT, 2, 2);
-
-    // 创建按钮上的标签
-    weather_app->label_btn = lv_label_create(weather_app->btn_return);
-    lv_obj_set_style_text_font(weather_app->label_btn, &my_symbol_font_10_t, 0);
-    lv_label_set_text(weather_app->label_btn, USER_SYMBOL_RETURN2);
-    lv_obj_center(weather_app->label_btn);
-    lv_obj_set_style_text_color(weather_app->label_btn, lv_color_black(), 0);
+    weather_app->btn_return = create_app_btn_return(weather_app->weather_page);
     lv_obj_add_event_cb(weather_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
 
-    weather_app->label_Gps = lv_label_create(weather_app->root);
+    lv_obj_set_style_bg_color(weather_app->weather_page, lv_color_hex(0x1b7ff1), 0);
+
+    weather_app->label_Gps = lv_label_create(weather_app->weather_page);
     lv_label_set_text(weather_app->label_Gps, LV_SYMBOL_GPS);
     lv_obj_set_style_text_font(weather_app->label_Gps, &lv_font_montserrat_14, 0);
-    lv_obj_align(weather_app->label_Gps, LV_ALIGN_TOP_MID, 0, 5);
+    lv_obj_align(weather_app->label_Gps, LV_ALIGN_TOP_MID, 0, 25);
 
-    weather_app->label_location = lv_label_create(weather_app->root);
+    weather_app->label_location = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_location, &weather_font_cn_18_t, 0);
     lv_label_set_text(weather_app->label_location, "广州市");
     lv_obj_align_to(weather_app->label_location, weather_app->label_Gps, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
 
-    weather_app->label_update_time = lv_label_create(weather_app->root);
+    weather_app->label_update_time = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_update_time, &weather_font_cn_15_t, 0);
     lv_label_set_text(weather_app->label_update_time, "00:20 更新");
     lv_obj_align_to(weather_app->label_update_time, weather_app->label_location, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
 
-    weather_app->label_current_icon = lv_label_create(weather_app->root);
+    weather_app->label_current_icon = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_current_icon, &weather_font_60_t, 0);
     lv_label_set_text(weather_app->label_current_icon, USER_WEATHER_SYMBOL_100);
     lv_obj_set_style_text_color(weather_app->label_current_icon, lv_color_hex(0xee8665), 0);
     lv_obj_align_to(weather_app->label_current_icon, weather_app->label_update_time, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
 
-    weather_app->label_current_temp = lv_label_create(weather_app->root);
+    weather_app->label_current_temp = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_current_temp, &weather_font_cn_40_t, 0);
     lv_label_set_text(weather_app->label_current_temp, "30°");
     lv_obj_align_to(weather_app->label_current_temp, weather_app->label_current_icon, LV_ALIGN_OUT_BOTTOM_MID, 5, 10);
 
-    weather_app->label_cerrent_max_min_temp = lv_label_create(weather_app->root);
+    weather_app->label_cerrent_max_min_temp = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_cerrent_max_min_temp, &lv_font_montserrat_20, 0);
     lv_label_set_text(weather_app->label_cerrent_max_min_temp, "10° / 30°");
     lv_obj_align_to(weather_app->label_cerrent_max_min_temp, weather_app->label_current_temp, LV_ALIGN_OUT_BOTTOM_MID, -4, 5);
 
-    weather_app->label_weather_text = lv_label_create(weather_app->root);
+    weather_app->label_weather_text = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_weather_text, &weather_font_cn_20_t, 0);
     lv_label_set_text(weather_app->label_weather_text, "未知");
     lv_obj_align_to(weather_app->label_weather_text, weather_app->label_cerrent_max_min_temp, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
-    weather_app->label_threedays_cont = lv_obj_create(weather_app->root);
+    weather_app->label_threedays_cont = lv_obj_create(weather_app->weather_page);
     lv_obj_set_style_pad_all(weather_app->label_threedays_cont, 0, 0);
     lv_obj_set_size(weather_app->label_threedays_cont, 225, 130);
     lv_obj_set_style_bg_color(weather_app->label_threedays_cont, lv_color_hex(0x586293), 0);
@@ -322,11 +283,11 @@ void create_weather_app(lv_obj_t *parent)
     // lv_group_add_obj(weather_app->group, weather_app->btn_return);
     // lv_group_add_obj(weather_app->group, weather_app->root);
     // 添加事件回调以处理编码器返回
-    lv_obj_add_event_cb(weather_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL); // 处理返回事件
 
     // if (xSemaphoreGive(xBinarySemaphore) == pdTRUE)
     // {
     //     printf("btn clicked\n");
     // }
-    update_weather_data();
+    // update_weather_data();
+    return weather_app->weather_page;
 }

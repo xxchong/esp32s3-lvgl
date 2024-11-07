@@ -1,6 +1,6 @@
 #ifndef __BLUETOOTH_H
 #define __BLUETOOTH_H
 
-void create_bluetooth_app(lv_obj_t *parent);
+lv_obj_t *create_bluetooth_app(void);
 
 #endif

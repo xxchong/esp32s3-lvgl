@@ -9,6 +9,6 @@
 
 extern lv_obj_t *setting_list_btns[SETTING_LIST_COUNT]; // 定义列表按钮数组
 
-void create_setting_app(lv_obj_t *parent);
+lv_obj_t *create_setting_app(void);
 
 #endif

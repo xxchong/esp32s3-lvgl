@@ -1,9 +1,10 @@
 #include "sys.h"
 
-extern lv_indev_t *indev;
+// extern lv_indev_t *indev;
 extern lv_obj_t *user_area;
 typedef struct
 {
+    lv_obj_t *setting_page;
     lv_group_t *group;
     lv_obj_t *btn_return;
     lv_obj_t *label_desc;
@@ -21,16 +22,7 @@ lv_obj_t *setting_list_btns[SETTING_LIST_COUNT];             // 定义列表按�
 
 static void btn_return_cb(lv_event_t *e)
 {
-    size_t size = lv_fragment_manager_get_stack_size(manager);
-    printf("当前栈内有%d个内容\n", size); // 添加调试信息
-    if (size > 1)                         // 大于二级界面
-    {
-    }
-    else if (size == 1) // 二级界面
-    {
-        lv_fragment_manager_pop(manager); // 弹出当前片段
-        Return_root_page();
-    }
+    back_to_home(lv_page->setting_page);
 }
 // 按钮的回调事件
 static void btn_click_event(lv_event_t *e)
@@ -52,7 +44,7 @@ static void btn_click_event(lv_event_t *e)
     launch_app_fragment(name, false);
 }
 
-void create_setting_app(lv_obj_t *parent)
+lv_obj_t *create_setting_app(void)
 {
     // 确保 setting_app 已经被分配内存
     if (setting_app == NULL)
@@ -62,9 +54,10 @@ void create_setting_app(lv_obj_t *parent)
         {
             // 处理内存分配失败的情况
             printf("Failed to allocate memory for setting_app\n");
-            return;
+            return NULL;
         }
         // 初始化成员变量
+        setting_app->setting_page = NULL;
         setting_app->group = NULL;
         setting_app->btn_return = NULL;
         setting_app->label_desc = NULL;
@@ -73,8 +66,8 @@ void create_setting_app(lv_obj_t *parent)
         setting_app->icon = NULL;
         setting_app->label_name = NULL;
     }
-    setting_app->group = lv_group_create();
-    lv_indev_set_group(indev, setting_app->group);
+    setting_app->setting_page = create_page("Setting"); // 创建主页面
+    create_status_bar(setting_app->setting_page);       // 创建状态栏        // lv_indev_set_group(indev, setting_app->group);
 
     // // 创建描述标签
     // setting_app->label_desc = lv_label_create(parent);
@@ -84,26 +77,12 @@ void create_setting_app(lv_obj_t *parent)
     // printf("This is Setting app\n");
 
     // 创建返回按钮
-    setting_app->btn_return = lv_btn_create(parent);
-    lv_obj_set_size(setting_app->btn_return, 15, 15);
+    setting_app->btn_return = create_app_btn_return(setting_app->setting_page);
 
-    remove_styles(setting_app->btn_return, false, true, true, true);
-    lv_obj_set_style_bg_color(setting_app->btn_return, lv_color_white(), 0);
-    lv_obj_set_style_border_width(setting_app->btn_return, 1, 0);
-    lv_obj_set_style_border_color(setting_app->btn_return, lv_color_black(), 0);
-
-    lv_obj_align_to(setting_app->btn_return, parent, LV_ALIGN_TOP_LEFT, 2, 2);
-
-    // 创建按钮上的标签
-    setting_app->label_btn = lv_label_create(setting_app->btn_return);
-    lv_obj_set_style_text_font(setting_app->label_btn, &my_symbol_font_10_t, 0);
-    lv_label_set_text(setting_app->label_btn, USER_SYMBOL_RETURN2);
-    lv_obj_center(setting_app->label_btn);
-    lv_obj_set_style_text_color(setting_app->label_btn, lv_color_black(), 0);
     lv_obj_add_event_cb(setting_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
-    lv_group_add_obj(setting_app->group, setting_app->btn_return);
+    // lv_group_add_obj(setting_app->group, setting_app->btn_return);
 
-    setting_app->settiong_list = lv_list_create(parent);
+    setting_app->settiong_list = lv_list_create(setting_app->setting_page);
     lv_obj_set_style_text_font(setting_app->settiong_list, &lv_font_montserrat_20, 0);
     lv_obj_set_size(setting_app->settiong_list, 240, 236);
     lv_obj_align(setting_app->settiong_list, LV_ALIGN_BOTTOM_MID, 0, 0);
@@ -122,4 +101,6 @@ void create_setting_app(lv_obj_t *parent)
         lv_group_add_obj(setting_app->group, setting_list_btns[i]);
         lv_obj_add_event_cb(setting_list_btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
     }
+
+    return setting_app->setting_page;
 }

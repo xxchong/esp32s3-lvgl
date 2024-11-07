@@ -73,6 +73,23 @@ void Tetris_Game()
     lv_obj_set_size(scr, 240, 280);
     tetris_start_game(scr, NULL);
 }
+gesture_t *lv_gesture = NULL;
+page_t *lv_page = NULL;
+
+void init_page(void)
+{
+    if (lv_gesture == NULL)
+    {
+        lv_gesture = (gesture_t *)malloc(sizeof(gesture_t));
+    }
+    if (lv_page == NULL)
+    {
+        lv_page = (page_t *)malloc(sizeof(page_t));
+    }
+
+    lv_page->boot_page = create_boot();
+    lv_page->root_page = create_root();
+}
 
 void lv_demo(void)
 {
@@ -94,16 +111,9 @@ void lv_demo(void)
 
 void lv_task(void *pvParameters)
 {
-    // Tetris_Game();
 
-    lv_obj_t *scr = lv_scr_act();
-
-    create_status_bar(scr);
-
-    root_page_t *root_page = create_root(scr);
-
-    lv_obj_t *Notification = lv_tileview_add_tile(root_page->tileview, 0, 0, LV_DIR_VER);
-    create_notification(Notification);
+    init_page();
+    lv_scr_load(lv_page->boot_page);
 
     while (1)
     {
