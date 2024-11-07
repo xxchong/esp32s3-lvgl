@@ -88,7 +88,7 @@ void load_page(const char *app)
         printf("Weather\n");
         lv_page->weather_page = create_weather_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->weather_page, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, false);
+        lv_scr_load_anim(lv_page->weather_page, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, false);
     }
     else if (strcmp(app, "Calculators1") == 0)
     {

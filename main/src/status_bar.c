@@ -72,14 +72,14 @@ void create_status_bar(lv_obj_t *parent)
     wifi_status = lv_label_create(parent);
     current_time = lv_label_create(parent);
     battery_status = lv_label_create(parent);
-    lv_obj_set_style_text_font(wifi_status, &my_symbol_font_16_t, 0);
+    lv_obj_set_style_text_font(wifi_status, &my_symbol_font_20_t, 0);
     lv_obj_set_style_text_color(wifi_status, lv_color_black(), 0);
-    lv_obj_set_style_text_font(current_time, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(current_time, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(current_time, lv_color_black(), 0);
-    lv_obj_set_style_text_font(battery_status, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(battery_status, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(battery_status, lv_color_black(), 0);
 
-    lv_obj_align(wifi_status, LV_ALIGN_TOP_LEFT, 30, 2);
+    lv_obj_align(wifi_status, LV_ALIGN_TOP_LEFT, 40, 0);
     lv_obj_align(current_time, LV_ALIGN_TOP_MID, 0, 2);
     lv_obj_align(battery_status, LV_ALIGN_TOP_RIGHT, -20, 2);
 

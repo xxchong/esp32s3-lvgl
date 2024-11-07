@@ -13,9 +13,9 @@
 #include "cst816_driver.h"
 
 #if CONFIG_BSP_INPUT_BUTTON
-    #define USE_BUTTON_DRIVER
+#define USE_BUTTON_DRIVER
 #elif CONFIG_BSP_INPUT_TOUCH
-    #define USE_TOUCH_CST816T
+#define USE_TOUCH_CST816T
 #endif
 
 static lv_disp_drv_t disp_drv;
@@ -66,9 +66,9 @@ static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_
 static void lv_port_disp_init(void)
 {
     static lv_disp_draw_buf_t draw_buf_dsc;
-    size_t disp_buf_height = 60;
+    size_t disp_buf_height = 120; // 增加缓冲区高度
 
-    /* 必须从内部RAM分配显存，这样刷新速度快 */
+    /* 使用PSRAM分配显存 */
     lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
     lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
     ESP_LOGI(TAG, "Try allocate two %u * %u display buffer, size:%u Byte", LCD_WIDTH, disp_buf_height, LCD_WIDTH * disp_buf_height * sizeof(lv_color_t) * 2);
@@ -80,7 +80,6 @@ static void lv_port_disp_init(void)
 
     /* 初始化显示缓存 */
     lv_disp_draw_buf_init(&draw_buf_dsc, p_disp_buf1, p_disp_buf2, LCD_WIDTH * disp_buf_height);
-
     /* 初始化显示驱动 */
     lv_disp_drv_init(&disp_drv);
 
@@ -145,7 +144,7 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
     cst816t_read(&x, &y, &state);
     if (state)
     {
-        //交换 x 和 y 坐标
+        // 交换 x 和 y 坐标
         last_x = LCD_WIDTH - x;
         last_y = LCD_HEIGHT - y;
 
@@ -183,7 +182,7 @@ static esp_err_t lv_port_indev_init(void)
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER; // 触摸
     indev_drv.read_cb = indev_read;
-    indev = lv_indev_drv_register(&indev_drv);  
+    indev = lv_indev_drv_register(&indev_drv);
     return ESP_OK;
 #endif
 }
@@ -253,7 +252,7 @@ esp_err_t lv_port_init(void)
 
 #ifdef USE_TOUCH_CST816T
     /*触摸初始化*/
-    touch_driver_init(LCD_WIDTH,LCD_HEIGHT);
+    touch_driver_init(LCD_WIDTH, LCD_HEIGHT);
 #endif
 
     /* 注册输入驱动*/
