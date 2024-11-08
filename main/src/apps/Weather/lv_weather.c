@@ -161,7 +161,7 @@ lv_obj_t *create_weather_app(void)
     }
 
     weather_app->weather_page = create_page("Weather"); // 创建主页面
-    create_status_bar(weather_app->weather_page);       // 创建状态栏
+    // create_status_bar(weather_app->weather_page);       // 创建状态栏
     lv_obj_set_style_bg_color(weather_app->weather_page, lv_color_hex(0x1b7ff1), 0);
 
     // 创建返回按钮
@@ -171,7 +171,7 @@ lv_obj_t *create_weather_app(void)
     weather_app->label_Gps = lv_label_create(weather_app->weather_page);
     lv_label_set_text(weather_app->label_Gps, LV_SYMBOL_GPS);
     lv_obj_set_style_text_font(weather_app->label_Gps, &lv_font_montserrat_14, 0);
-    lv_obj_align(weather_app->label_Gps, LV_ALIGN_TOP_MID, 0, 25);
+    lv_obj_align(weather_app->label_Gps, LV_ALIGN_TOP_MID, 0, 5);
 
     weather_app->label_location = lv_label_create(weather_app->weather_page);
     lv_obj_set_style_text_font(weather_app->label_location, &weather_font_cn_18_t, 0);

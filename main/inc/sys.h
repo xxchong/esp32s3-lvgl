@@ -29,6 +29,7 @@
 #include "apps/my_widgets/wooden_fish_widget/wooden_fish.h"
 #include "lv_port.h"
 #include "root_page.h"
+#include "pwm_ledc.h"
 
 #include "apps/Game/Tetris.h"
 #include <stdbool.h>

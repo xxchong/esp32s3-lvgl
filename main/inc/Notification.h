@@ -7,6 +7,7 @@ typedef struct
 {
     lv_obj_t *notification_page;
     lv_obj_t *wifi_btn;
+    lv_obj_t *led_btn;
     lv_obj_t *bluetooth_btn;
     lv_obj_t *slider_volume;
     lv_obj_t *slider_brightness;

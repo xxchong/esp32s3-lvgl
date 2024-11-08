@@ -206,18 +206,22 @@ void gestureCallback(lv_event_t *event)
     case LV_DIR_TOP:
         if (lv_scr_act() == lv_page->notification_page)
         {
-            cleanup_page(lv_page->notification_page);
             lv_page->root_page = create_root();
-            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, false);
+
+            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, true);
+
+            cleanup_page(lv_page->notification_page);
         }
 
         break;
     case LV_DIR_BOTTOM:
         if (lv_scr_act() == lv_page->root_page)
         {
-            cleanup_page(lv_page->root_page);
             lv_page->notification_page = create_notification();
-            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, false);
+
+            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
+
+            cleanup_page(lv_page->root_page);
         }
         break;
     }
@@ -225,12 +229,11 @@ void gestureCallback(lv_event_t *event)
 
 void back_to_home(lv_obj_t *page)
 {
-    cleanup_page(page);
     lv_page->root_page = create_root();
-    lv_scr_load(lv_page->root_page);
+    lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
     lv_obj_set_tile(root_page->tileview, root_page->page2, 0);
+    cleanup_page(page);
 }
-
 lv_obj_t *create_page(const char *name)
 {
     lv_obj_t *page = lv_obj_create(NULL);
@@ -263,4 +266,3 @@ void cleanup_page(lv_obj_t *page)
 
     lv_obj_clean(page);
 }
-

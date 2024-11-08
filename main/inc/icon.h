@@ -11,14 +11,16 @@ extern "C"
 #define USE_MY_SYMBOL_FONT_10_T
 #define USE_MY_SYMBOL_FONT_12_T
 #define USE_MY_SYMBOL_FONT_14_T
-    #define USE_MY_SYMBOL_FONT_16_T
+#define USE_MY_SYMBOL_FONT_16_T
 #define USE_MY_SYMBOL_FONT_20_T
 #define USE_MY_SYMBOL_FONT_24_T
-    #define USE_MY_SYMBOL_FONT_28_T
-    #define USE_MY_SYMBOL_FONT_32_T
-    #define USE_MY_SYMBOL_FONT_36_T
+#define USE_MY_SYMBOL_FONT_28_T
+#define USE_MY_SYMBOL_FONT_32_T
+#define USE_MY_SYMBOL_FONT_36_T
 #define USE_MY_SYMBOL_FONT_40_T
 #define USE_ADD_SYMBOL_40_T
+
+#define USE_MUSIC_FONT_22_T
 
 #define USE_WEATHER_SYMBOL_FONT_14_T
 
@@ -27,6 +29,16 @@ extern "C"
 
 #define USE_WEATHER_SYMBOL_FONT_40_T
 #define USE_WEATHER_SYMBOL_FONT_60_T
+
+    /**
+     * 音乐图标UTF-8定义
+     */
+#define USER_SYMBOL_VOLUME "\xEE\x98\x89"   // Unicode: 0xe609  播放器音量
+#define USER_SYMBOL_SHUFFLE "\xEE\x98\xA2"  // Unicode: 0xe622  随机播放
+#define USER_SYMBOL_REPEAT "\xEE\x98\x82"   // Unicode: 0xe602  单曲循环
+#define USER_SYMBOL_PLAYLIST "\xEE\x98\x91" // Unicode: 0xe611  顺序播放
+#define USER_SYMBOL_PREV "\xEE\x98\x8A"     // Unicode: 0xe60a  播放器上一首
+#define USER_SYMBOL_NEXT "\xEE\x98\x95"     // Unicode: 0xe615  播放器下一首
     /**
      * 天气图标UTF-8定义
      */
@@ -129,6 +141,10 @@ extern "C"
 #define USER_SYMBOL_BATTERY "\xEE\x98\xB5"
 #define USER_SYMBOL_GPIO2 "\xEE\x98\xB1"
 #define USER_SYMBOL_CONNECTEED_WIFI "\xEE\xA3\x81"
+
+#ifdef USE_MUSIC_FONT_22_T
+    extern const lv_font_t music_font_22_t; //
+#endif
 
 #ifdef USE_WEATHER_SYMBOL_FONT_14_T
     extern const lv_font_t weather_font_14_t; //
