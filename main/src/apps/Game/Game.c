@@ -15,6 +15,7 @@ static Game *game_app;
 
 static void btn_return_cb(lv_event_t *e)
 {
+    Stop_Game();
     back_to_home(lv_page->game_page);
 }
 
@@ -39,20 +40,23 @@ lv_obj_t *create_game_app(void)
     }
 
     game_app->game_page = create_page("Game"); // 创建主页面
-    create_status_bar(game_app->game_page);    // 创建状态栏
+    lv_obj_set_size(game_app->game_page, 240, 280);
+    // create_status_bar(game_app->game_page);    // 创建状态栏
 
-    // 创建描述标签
-    game_app->label_desc = lv_label_create(game_app->game_page);
-    lv_obj_center(game_app->label_desc);
-    lv_obj_set_style_text_color(game_app->label_desc, lv_color_black(), 0);
-    lv_label_set_text_fmt(game_app->label_desc, "This is Game app");
-    printf("This is Game app\n");
+    // // 创建描述标签
+    // game_app->label_desc = lv_label_create(game_app->game_page);
+    // lv_obj_center(game_app->label_desc);
+    // lv_obj_set_style_text_color(game_app->label_desc, lv_color_black(), 0);
+    // lv_label_set_text_fmt(game_app->label_desc, "This is Game app");
+    // printf("This is Game app\n");
 
     // 创建返回按钮
     game_app->btn_return = create_app_btn_return(game_app->game_page);
 
     // 配置按钮事件（如果需要）
     lv_obj_add_event_cb(game_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
+
+    tetris_start_game(game_app->game_page, NULL);
 
     return game_app->game_page;
 }

@@ -23,7 +23,8 @@ static void set_size(void *var, int32_t v)
 static void btn_start_cb(lv_event_t *e)
 {
     // lv_obj_del(lv_page->boot_page);
-    lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, true);
+    lv_obj_set_tile(root_page->tileview, root_page->page1, LV_ANIM_ON);
+    lv_scr_load_anim(root_page->root_page, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, true);
 }
 
 lv_obj_t *create_boot(void)

@@ -124,12 +124,13 @@ lv_obj_t *create_notification(void)
     lv_obj_set_style_border_width(btn_container, 0, 0);
 
     // WiFi按钮
+    // WiFi按钮
     Notification->wifi_btn = lv_btn_create(btn_container);
     lv_obj_set_size(Notification->wifi_btn, 60, 60);
     lv_obj_add_style(Notification->wifi_btn, &style_btn_default, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_style(Notification->wifi_btn, &style_btn_checked, LV_STATE_CHECKED);
     Notification->label = lv_label_create(Notification->wifi_btn);
-    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_22, 0);
     lv_label_set_text(Notification->label, LV_SYMBOL_WIFI);
     lv_obj_center(Notification->label);
     lv_obj_add_flag(Notification->wifi_btn, LV_OBJ_FLAG_CHECKABLE);
@@ -138,7 +139,7 @@ lv_obj_t *create_notification(void)
     Notification->bluetooth_btn = lv_btn_create(btn_container);
     lv_obj_set_size(Notification->bluetooth_btn, 60, 60);
     Notification->label = lv_label_create(Notification->bluetooth_btn);
-    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_22, 0);
     lv_label_set_text(Notification->label, LV_SYMBOL_BLUETOOTH);
     lv_obj_center(Notification->label);
     lv_obj_add_style(Notification->bluetooth_btn, &style_btn_default, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -151,7 +152,7 @@ lv_obj_t *create_notification(void)
     lv_obj_add_style(Notification->led_btn, &style_btn_default, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_add_style(Notification->led_btn, &style_btn_checked, LV_STATE_CHECKED);
     Notification->label = lv_label_create(Notification->led_btn);
-    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_22, 0);
     lv_label_set_text(Notification->label, LV_SYMBOL_POWER);
     lv_obj_center(Notification->label);
     lv_obj_add_flag(Notification->led_btn, LV_OBJ_FLAG_CHECKABLE);
@@ -166,10 +167,10 @@ lv_obj_t *create_notification(void)
     lv_slider_set_value(Notification->slider_volume, 50, LV_ANIM_OFF); /* 设置当前值 */
     lv_obj_align_to(Notification->slider_volume, btn_container, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
     Notification->label = lv_label_create(Notification->slider_volume);
-    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_22, 0);
     lv_obj_set_style_text_color(Notification->label, lv_color_white(), 0);
     lv_label_set_text(Notification->label, LV_SYMBOL_VOLUME_MAX);
-    lv_obj_align(Notification->label, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_center(Notification->label);
     lv_obj_add_style(Notification->slider_volume, &style_slider_part_indicator, LV_PART_INDICATOR);
     lv_obj_add_style(Notification->slider_volume, &style_slider_part_main, LV_PART_MAIN);
     lv_obj_add_style(Notification->slider_volume, &style_slider_part_knob, LV_PART_KNOB);
@@ -180,10 +181,10 @@ lv_obj_t *create_notification(void)
     lv_slider_set_value(Notification->slider_brightness, 50, LV_ANIM_OFF); /* 设置当前值 */
     lv_obj_align_to(Notification->slider_brightness, Notification->slider_volume, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
     Notification->label = lv_label_create(Notification->slider_brightness);
-    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(Notification->label, &lv_font_montserrat_22, 0);
     lv_obj_set_style_text_color(Notification->label, lv_color_white(), 0);
     lv_label_set_text(Notification->label, LV_SYMBOL_EYE_OPEN);
-    lv_obj_align(Notification->label, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_center(Notification->label);
     lv_obj_add_style(Notification->slider_brightness, &style_slider_part_main, LV_PART_MAIN);
     lv_obj_add_style(Notification->slider_brightness, &style_slider_part_indicator, LV_PART_INDICATOR);
     lv_obj_add_style(Notification->slider_brightness, &style_slider_part_knob, LV_PART_KNOB);

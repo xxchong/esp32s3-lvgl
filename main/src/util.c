@@ -230,8 +230,15 @@ void gestureCallback(lv_event_t *event)
 void back_to_home(lv_obj_t *page)
 {
     lv_page->root_page = create_root();
+    if (lv_page->game_page == lv_scr_act())
+    {
+        Stop_Game();
+        printf("返回释放内存\n");
+    }
     lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
     lv_obj_set_tile(root_page->tileview, root_page->page2, 0);
+    lv_obj_scroll_to_view(btns[btn_index], LV_ANIM_ON);
+
     cleanup_page(page);
 }
 lv_obj_t *create_page(const char *name)

@@ -66,12 +66,21 @@ static void disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_
 static void lv_port_disp_init(void)
 {
     static lv_disp_draw_buf_t draw_buf_dsc;
-    size_t disp_buf_height = 120; // 增加缓冲区高度
 
+#if BSP_USE_INTERNAL_RAM
+    /* 必须从内部RAM分配显存，这样刷新速度快 */
+    size_t disp_buf_height = 60;
+    lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+    lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+#else
+
+    size_t disp_buf_height = 120; // 增加缓冲区高度
     /* 使用PSRAM分配显存 */
     lv_color_t *p_disp_buf1 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
     lv_color_t *p_disp_buf2 = heap_caps_malloc(LCD_WIDTH * disp_buf_height * sizeof(lv_color_t), MALLOC_CAP_SPIRAM);
     ESP_LOGI(TAG, "Try allocate two %u * %u display buffer, size:%u Byte", LCD_WIDTH, disp_buf_height, LCD_WIDTH * disp_buf_height * sizeof(lv_color_t) * 2);
+#endif
+
     if (NULL == p_disp_buf1 || NULL == p_disp_buf2)
     {
         ESP_LOGE(TAG, "No memory for LVGL display buffer");
@@ -148,7 +157,7 @@ void IRAM_ATTR indev_read(struct _lv_indev_drv_t *indev_drv, lv_indev_data_t *da
         last_x = LCD_WIDTH - x;
         last_y = LCD_HEIGHT - y;
 
-        ESP_LOGI(TAG, "Touch: x=%d, y=%d", last_x, last_y);
+        // ESP_LOGI(TAG, "Touch: x=%d, y=%d", last_x, last_y);
         data->state = LV_INDEV_STATE_PR;
     }
     else

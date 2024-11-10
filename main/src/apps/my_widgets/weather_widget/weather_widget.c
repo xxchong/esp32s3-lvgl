@@ -37,19 +37,19 @@ static lv_weather_widget_t *weather_widget_app;
 //     printf("天气ID: %d, 图标已更新\n", weatherid);
 // }
 
-// void update_weather_widgetdata(void)
-// {
-//     char temp_str[20];
-//     lv_label_set_text(weather_widget_app->label_weather_text, WeatherData_current.text.c_str());
+void update_weather_widgetdata(void)
+{
+    char temp_str[64];
+    lv_label_set_text(weather_widget_app->label_weather_text, now_weather_info.text);
 
-//     snprintf(temp_str, sizeof(temp_str), "%d°", WeatherData_current.temp);
-//     lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
+    snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
+    lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
 
-//     snprintf(temp_str, sizeof(temp_str), " %d° / %d°", WeatherData_threedays[0].tempMin, WeatherData_threedays[0].tempMax);
-//     lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
+    snprintf(temp_str, sizeof(temp_str), "%s° / %s°", three_day_weather_info[0].tempMin, three_day_weather_info[0].tempMax);
+    lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
 
-//     lv_weather_update_icon(WeatherData_current.icon);
-// }
+    // lv_weather_update_icon(WeatherData_current.icon);
+}
 
 static void btn_event_cb(lv_event_t *e)
 {
@@ -57,11 +57,7 @@ static void btn_event_cb(lv_event_t *e)
     lv_obj_t *obj = lv_event_get_target(e);
     if (code == LV_EVENT_CLICKED)
     {
-
-        // if (xSemaphoreGive(xBinarySemaphore) == pdTRUE)
-        // {
-        //     printf("btn clicked\n");
-        // }
+        update_weather_widgetdata();
     }
 }
 
@@ -135,6 +131,6 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent, lv_group_t *group)
     lv_obj_align_to(weather_widget_app->label_Gps, weather_widget_app->label_location, LV_ALIGN_OUT_RIGHT_MID, 2, 1);
     lv_label_set_text(weather_widget_app->label_Gps, LV_SYMBOL_GPS);
     lv_obj_set_style_text_color(weather_widget_app->label_Gps, lv_color_white(), 0);
-
+    update_weather_widgetdata();
     return weather_widget_app->btn;
 }

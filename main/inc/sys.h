@@ -30,6 +30,7 @@
 #include "lv_port.h"
 #include "root_page.h"
 #include "pwm_ledc.h"
+#include "weather_http.h"
 
 #include "apps/Game/Tetris.h"
 #include <stdbool.h>
@@ -61,7 +62,8 @@ typedef struct
 
 extern gesture_t *lv_gesture;
 extern page_t *lv_page;
-
+extern now_weather_info_t now_weather_info;
+extern three_day_weather_info_t three_day_weather_info[3];
 extern root_page_t *root_page;
 extern bool in_weather_app;
 #endif

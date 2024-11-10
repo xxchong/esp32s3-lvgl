@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp32s3_lvgl_st7789",
-    "project_version":    "a9d473b-dirty",
+    "project_version":    "42b89b9-dirty",
     "project_path":       "/home/xxchong/桌面/esp32s3-lvgl",
     "idf_path":           "/home/xxchong/esp/esp-idf",
     "build_dir":          "/home/xxchong/桌面/esp32s3-lvgl/build",

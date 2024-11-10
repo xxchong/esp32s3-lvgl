@@ -9,7 +9,7 @@ typedef struct
     lv_obj_t *page1;
     lv_obj_t *page2;
     lv_obj_t *label;
-    lv_obj_t *page1_1;
+    lv_obj_t *page0;
 
 } root_page_t;
 
@@ -17,6 +17,8 @@ typedef struct
 #define APP_SYMBOL USER_SYMBOL_GAME2, USER_SYMBOL_SETTING, USER_SYMBOL_COM1, USER_SYMBOL_MUSIC2, USER_SYMBOL_TOOLS, USER_SYMBOL_CALENDAR, USER_SYMBOL_MQTT, USER_SYMBOL_BLUETOOTH1, USER_SYMBOL_WEATHER
 #define APP_COUNTS 9
 
+extern uint8_t btn_index;
+extern lv_obj_t *btns[APP_COUNTS];
 lv_obj_t *create_root(void);
 void create_second_page(void);
 
