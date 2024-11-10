@@ -40,6 +40,7 @@ lv_obj_t *create_game_app(void)
     }
 
     game_app->game_page = create_page("Game"); // 创建主页面
+
     lv_obj_set_size(game_app->game_page, 240, 280);
     // create_status_bar(game_app->game_page);    // 创建状态栏
 
@@ -52,6 +53,7 @@ lv_obj_t *create_game_app(void)
 
     // 创建返回按钮
     game_app->btn_return = create_app_btn_return(game_app->game_page);
+    lv_obj_set_style_text_color(lv_obj_get_child(game_app->btn_return, 0), lv_color_white(), 0);
 
     // 配置按钮事件（如果需要）
     lv_obj_add_event_cb(game_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);

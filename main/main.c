@@ -88,93 +88,6 @@ void init_page(void)
     lv_page->boot_page = create_boot();
     lv_page->root_page = create_root();
 }
-static void scroll_event_cb(lv_event_t *e)
-{
-    lv_obj_t *cont = lv_event_get_target(e);
-    lv_area_t cont_a;
-    lv_obj_get_coords(cont, &cont_a);
-    int32_t cont_y_center = cont_a.y1 + lv_area_get_height(&cont_a) / 2;
-
-    int32_t r = lv_obj_get_height(cont) * 7 / 10;
-    uint32_t child_cnt = lv_obj_get_child_cnt(cont);
-
-    for (uint32_t i = 0; i < child_cnt; i++)
-    {
-        lv_obj_t *child = lv_obj_get_child(cont, i);
-        lv_area_t child_a;
-        lv_obj_get_coords(child, &child_a);
-
-        int32_t child_y_center = child_a.y1 + lv_area_get_height(&child_a) / 2;
-        int32_t diff_y = child_y_center - cont_y_center;
-        diff_y = LV_ABS(diff_y);
-
-        int32_t x;
-        if (diff_y >= r)
-        {
-            x = r;
-        }
-        else
-        {
-            uint32_t x_sqr = r * r - diff_y * diff_y;
-            lv_sqrt_res_t res;
-            lv_sqrt(x_sqr, &res, 0x8000);
-            x = r - res.i;
-        }
-
-        lv_obj_set_style_translate_x(child, x, 0);
-
-        lv_opa_t opa = lv_map(x, 0, r, LV_OPA_TRANSP, LV_OPA_COVER);
-        lv_obj_set_style_opa(child, LV_OPA_COVER - opa, 0);
-
-        // 添加高度缩放效果
-        float scale = 1.0f - (float)x / (float)r * 0.3f;
-        int32_t height = 50 * scale;
-        lv_obj_set_height(child, height);
-    }
-}
-
-/**
- * Translate the object as they scroll
- */
-void example_scroll(void)
-{
-    lv_obj_t *cont = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(cont, 240, 280);
-    lv_obj_center(cont);
-
-    // 设置容器样式
-    lv_obj_set_style_bg_color(cont, lv_color_hex(0xffffff), 0);
-    lv_obj_set_style_pad_all(cont, 0, 0);
-    lv_obj_set_style_radius(cont, 20, 0);
-    lv_obj_set_style_clip_corner(cont, true, 0);
-
-    // 设置滚动属性
-    lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
-    lv_obj_add_event_cb(cont, scroll_event_cb, LV_EVENT_SCROLL, NULL);
-    lv_obj_set_scroll_dir(cont, LV_DIR_VER);
-    lv_obj_set_scroll_snap_y(cont, LV_SCROLL_SNAP_CENTER);
-    lv_obj_set_scrollbar_mode(cont, LV_SCROLLBAR_MODE_OFF);
-
-    // 创建按钮
-    for (uint32_t i = 0; i < 20; i++)
-    {
-        lv_obj_t *btn = lv_btn_create(cont);
-        lv_obj_set_width(btn, lv_pct(90));
-        lv_obj_set_height(btn, 50);
-
-        // 设置按钮样式
-        lv_obj_set_style_radius(btn, 10, 0);
-        lv_obj_set_style_bg_color(btn, lv_color_hex(0x2196f3), 0);
-        lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, 0);
-
-        lv_obj_t *label = lv_label_create(btn);
-        lv_label_set_text_fmt(label, "Button %" LV_PRIu32, i);
-        lv_obj_center(label);
-    }
-    lv_event_send(cont, LV_EVENT_SCROLL, NULL);
-
-    lv_obj_scroll_to_view(lv_obj_get_child(cont, 0), LV_ANIM_OFF);
-}
 
 void lv_demo(void)
 {
@@ -248,25 +161,25 @@ void app_main(void)
     get_now_weather_data(&now_weather_info);
     get_3D_weather_data(three_day_weather_info);
 
-    // mqtt_init();
+        // mqtt_init();
 
-    // system_monitor_init();
-    // 初始化系统监控，使用端口3333
+        // system_monitor_init();
+        // 初始化系统监控，使用端口3333
 
-    // 在需要时获取系统信息
-    // system_info_t *info = get_latest_system_info();
-    // printf("CPU: %.1f%%\n", info->cpu.usage);
+        // 在需要时获取系统信息
+        // system_info_t *info = get_latest_system_info();
+        // printf("CPU: %.1f%%\n", info->cpu.usage);
 
-    // 创建 LVGL 任务
-    xTaskCreatePinnedToCore(
-        lv_task,                  // 任务函数
-        "lv_task_handler",        // 任务名称
-        4096,                     // 栈大小（字节）
-        NULL,                     // 参数
-        configMAX_PRIORITIES - 2, // 优先级
-        &lvgl_task_handle,        // 任务句柄
-        1                         // 在 Core 1 上运行
-    );
+        // 创建 LVGL 任务
+        xTaskCreatePinnedToCore(
+            lv_task,                  // 任务函数
+            "lv_task_handler",        // 任务名称
+            4096,                     // 栈大小（字节）
+            NULL,                     // 参数
+            configMAX_PRIORITIES - 2, // 优先级
+            &lvgl_task_handle,        // 任务句柄
+            1                         // 在 Core 1 上运行
+        );
 
     //创建内存监控任务
     xTaskCreate(

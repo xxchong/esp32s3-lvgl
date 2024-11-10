@@ -198,8 +198,8 @@ lv_obj_t *create_root(void)
     lv_obj_set_style_pad_all(root_page->page2, 0, 0);
 
     lv_obj_t *label_page0 = lv_label_create(root_page->page0);
-    lv_label_set_text(label_page0, "Home");
-    lv_obj_center(label_page0);
+    lv_obj_set_style_bg_color(label_page0, lv_color_hex(0x202020), 0);
+    lv_clock_demo(root_page->page0);
 
     lv_obj_set_size(root_page->page1, 240, 280);
     lv_obj_set_style_bg_color(root_page->page1, lv_color_black(), 0);
@@ -210,8 +210,6 @@ lv_obj_t *create_root(void)
     // lv_obj_set_scrollbar_mode(root_page->page2, LV_SCROLLBAR_MODE_OFF);
     // lv_obj_remove_style(root_page->tileview, NULL, LV_PART_SCROLLBAR);
     page2_scroll(root_page->page2);
-
-
 
     return root_page->root_page;
 }

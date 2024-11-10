@@ -58,6 +58,7 @@ void clock_widget_time_refresh(lv_timer_t *timer)
     lv_label_set_text(digital_clock_widget_app->label_date, temp);
 
     lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo->tm_wday]);
+
 }
 
 lv_obj_t *create_clock_widget1(lv_obj_t *parent)

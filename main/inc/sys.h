@@ -31,7 +31,7 @@
 #include "root_page.h"
 #include "pwm_ledc.h"
 #include "weather_http.h"
-
+#include "desktop_clock.h"
 #include "apps/Game/Tetris.h"
 #include <stdbool.h>
 #include <time.h>

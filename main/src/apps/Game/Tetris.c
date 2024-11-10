@@ -731,7 +731,27 @@ static lv_obj_t *create_next_block_canvas(lv_obj_t *parent)
 
 void create_button(lv_obj_t *parent)
 {
+    // 设置按钮的基础样式 - 更简约的设计
+    static lv_style_t style_btn;
+    lv_style_reset(&style_btn);
+    lv_style_init(&style_btn);
+    lv_style_set_bg_color(&style_btn, lv_color_hex(0x757575)); // 清新的薄荷绿
+    lv_style_set_bg_opa(&style_btn, LV_OPA_COVER);
+    lv_style_set_border_width(&style_btn, 0); // 无边框
+    lv_style_set_radius(&style_btn, 4);       // 微小的圆角
+    lv_style_set_shadow_width(&style_btn, 0); // 无阴影
 
+    // 按钮按下时的样式 - 简单的颜色变化
+    static lv_style_t style_btn_pressed;
+    lv_style_reset(&style_btn_pressed);
+    lv_style_init(&style_btn_pressed);
+    lv_style_set_bg_color(&style_btn_pressed, lv_color_hex(0x616161)); // 按下时轻微加深
+    lv_style_set_bg_opa(&style_btn_pressed, LV_OPA_COVER);
+
+    // 设置按钮图标样式 - 保持简洁的白色
+    static lv_style_t style_label;
+    lv_style_init(&style_label);
+    lv_style_set_text_color(&style_label, lv_color_white());
     lv_obj_t *label;
 
     btn_up = lv_btn_create(parent);
@@ -740,20 +760,27 @@ void create_button(lv_obj_t *parent)
     label = lv_label_create(btn_up);
     lv_obj_center(label);
     lv_label_set_text(label, LV_SYMBOL_UP);
-
+    lv_obj_add_style(btn_up, &style_btn, 0);
+    lv_obj_add_style(btn_up, &style_btn_pressed, LV_STATE_PRESSED);
+    lv_obj_add_style(label, &style_label, 0);
     btn_down = lv_btn_create(parent);
     lv_obj_set_size(btn_down, 50, 50);
     lv_obj_align(btn_down, LV_ALIGN_LEFT_MID, 4, -30);
     label = lv_label_create(btn_down);
     lv_obj_center(label);
     lv_label_set_text(label, LV_SYMBOL_DOWN);
-
+    lv_obj_add_style(btn_down, &style_btn, 0);
+    lv_obj_add_style(btn_down, &style_btn_pressed, LV_STATE_PRESSED);
+    lv_obj_add_style(label, &style_label, 0);
     btn_left = lv_btn_create(parent);
     lv_obj_set_size(btn_left, 50, 50);
     lv_obj_align(btn_left, LV_ALIGN_LEFT_MID, 4, 30);
     label = lv_label_create(btn_left);
     lv_obj_center(label);
     lv_label_set_text(label, LV_SYMBOL_LEFT);
+    lv_obj_add_style(btn_left, &style_btn, 0);
+    lv_obj_add_style(btn_left, &style_btn_pressed, LV_STATE_PRESSED);
+    lv_obj_add_style(label, &style_label, 0);
 
     btn_right = lv_btn_create(parent);
     lv_obj_set_size(btn_right, 50, 50);
@@ -761,6 +788,9 @@ void create_button(lv_obj_t *parent)
     label = lv_label_create(btn_right);
     lv_obj_center(label);
     lv_label_set_text(label, LV_SYMBOL_RIGHT);
+    lv_obj_add_style(btn_right, &style_btn, 0);
+    lv_obj_add_style(btn_right, &style_btn_pressed, LV_STATE_PRESSED);
+    lv_obj_add_style(label, &style_label, 0);
 
     lv_obj_add_event_cb(btn_up, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(btn_down, keyboard_event_cb, LV_EVENT_CLICKED, NULL);
@@ -809,6 +839,14 @@ void tetris_start_game(lv_obj_t *parent, lv_group_t *group)
         lv_game->game_timer = NULL;
         lv_game->game_next_block_canvas = NULL;
     }
+
+    static lv_style_t style_bg;
+    lv_style_reset(&style_bg);
+    lv_style_init(&style_bg);
+    lv_style_set_bg_color(&style_bg, lv_color_hex(0x202020)); // 深灰色背景
+    lv_style_set_bg_opa(&style_bg, LV_OPA_COVER);
+
+    lv_obj_add_style(parent, &style_bg, 0);
 
     lv_obj_t *game_canvas = create_game_canvas(parent);
     lv_obj_align(game_canvas, LV_ALIGN_BOTTOM_MID, 0, -10);
