@@ -184,8 +184,11 @@ void gestureCallback(lv_event_t *event)
             {
                 back_to_home(lv_page->weather_page);
             }
-            else if (strcmp(name, "Calculators1") == 0)
+            else if (strcmp(name, "Calculators") == 0)
             {
+                lv_page->tools_page = tools_list_create();
+                lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+                cleanup_page(lv_page->calculator_page);
             }
             else if (strcmp(name, "Calculators2") == 0)
             {
@@ -193,8 +196,11 @@ void gestureCallback(lv_event_t *event)
             else if (strcmp(name, "Calculators3") == 0)
             {
             }
-            else if (strcmp(name, "WiFi1") == 0)
+            else if (strcmp(name, "WiFi") == 0)
             {
+                lv_page->setting_page = create_setting_app();
+                lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+                cleanup_page(lv_page->wifi_page);
             }
         }
         else

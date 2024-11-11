@@ -38,79 +38,65 @@ void load_page(const char *app)
         // printf("Game\n");
         lv_page->game_page = create_game_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->game_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->game_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Setting") == 0)
     {
         // printf("Setting\n");
         lv_page->setting_page = create_setting_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Serial") == 0)
     {
         // printf("Serial\n");
         lv_page->serial_page = create_serial_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->serial_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->serial_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Music") == 0)
     {
         // printf("Music\n");
         lv_page->music_page = create_music_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->music_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->music_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Tools") == 0)
     {
         // printf("Tools\n");
         lv_page->tools_page = tools_list_create();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Calendar") == 0)
     {
         // printf("Calendar\n");
         lv_page->calender_page = create_calendar_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->calender_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->calender_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "MQTT") == 0)
     {
         // printf("MQTT\n");
         lv_page->mqtt_page = create_mqtt_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->mqtt_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->mqtt_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "BlueTooth") == 0)
     {
         // printf("BlueTooth\n");
         lv_page->bluetooth_page = create_bluetooth_app();
         cleanup_page(lv_page->root_page);
-        lv_scr_load_anim(lv_page->bluetooth_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->bluetooth_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
     }
     else if (strcmp(app, "Weather") == 0)
     {
-        // printf("Weather\n");
-        // 先检查并释放旧页面
-
         lv_page->weather_page = create_weather_app();
-        lv_scr_load_anim(lv_page->weather_page, LV_SCR_LOAD_ANIM_FADE_ON, 30, 0, true);
+        lv_scr_load_anim(lv_page->weather_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
 
         cleanup_page(lv_page->root_page);
     }
-    else if (strcmp(app, "Calculators1") == 0)
-    {
-    }
-    else if (strcmp(app, "Calculators2") == 0)
-    {
-    }
-    else if (strcmp(app, "Calculators3") == 0)
-    {
-    }
-    else if (strcmp(app, "WiFi1") == 0)
-    {
-    }
+  
 }
 
 uint8_t btn_index = 0;

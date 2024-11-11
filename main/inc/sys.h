@@ -46,19 +46,21 @@ typedef struct
 
 typedef struct
 {
-    lv_obj_t *boot_page;
-    lv_obj_t *root_page;
-    lv_obj_t *bluetooth_page;
-    lv_obj_t *mqtt_page;
-    lv_obj_t *music_page;
-    lv_obj_t *game_page;
-    lv_obj_t *weather_page;
-    lv_obj_t *tools_page;
-    lv_obj_t *calender_page;
-    lv_obj_t *serial_page;
-    lv_obj_t *setting_page;
-    lv_obj_t *notification_page;
-} page_t;
+  lv_obj_t *boot_page;
+  lv_obj_t *root_page;
+  lv_obj_t *bluetooth_page;
+  lv_obj_t *mqtt_page;
+  lv_obj_t *music_page;
+  lv_obj_t *game_page;
+  lv_obj_t *weather_page;
+  lv_obj_t *tools_page;
+  lv_obj_t *calender_page;
+  lv_obj_t *serial_page;
+  lv_obj_t *setting_page;
+  lv_obj_t *notification_page;
+  lv_obj_t *calculator_page;
+  lv_obj_t *wifi_page;
+}page_t;
 
 extern gesture_t *lv_gesture;
 extern page_t *lv_page;
