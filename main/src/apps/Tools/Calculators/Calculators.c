@@ -63,7 +63,7 @@ lv_obj_t *calculators_create(void)
  
     // 创建输入输出框
     calculators_app->textarea = lv_textarea_create(calculators_app->calculator_page);
-    lv_obj_set_size(calculators_app->textarea, 230, 80);
+    lv_obj_set_size(calculators_app->textarea, 230, 60);
     lv_obj_align(calculators_app->textarea, LV_ALIGN_TOP_MID, 0, 2);
     lv_textarea_set_text(calculators_app->textarea, "");
     lv_obj_add_state(calculators_app->textarea, LV_STATE_DISABLED);
@@ -78,7 +78,6 @@ lv_obj_t *calculators_create(void)
     lv_obj_set_style_radius(calculators_app->btnmatrix, LV_RADIUS_CIRCLE, LV_PART_ITEMS);
     lv_obj_align(calculators_app->btnmatrix, LV_ALIGN_BOTTOM_MID, 0, -5);
     lv_obj_set_style_text_font(calculators_app->btnmatrix, &lv_font_montserrat_20, 0);
-    // lv_group_add_obj(calculators_app->group, calculators_app->btnmatrix);
 
     return calculators_app->calculator_page;
 

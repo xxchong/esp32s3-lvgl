@@ -5,7 +5,7 @@
 
 #define SETTING_LIST_ICON LV_SYMBOL_WIFI, LV_SYMBOL_WIFI, LV_SYMBOL_WIFI
 
-#define SETTING_LIST_NAME "WiFi1", "WiFi2", "WiFi3"
+#define SETTING_LIST_NAME "WiFi", "Bluetooth", "Version"
 
 extern lv_obj_t *setting_list_btns[SETTING_LIST_COUNT]; // 定义列表按钮数组
 

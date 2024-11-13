@@ -86,4 +86,8 @@ $<TARGET_FILE:__idf_lvgl>
 $<TARGET_FILE:__idf_main>
 $<TARGET_FILE:__idf_lv_fs_if>
 $<TARGET_FILE:__idf_bsp>
+$<TARGET_FILE:__idf_chmorgan__esp-libhelix-mp3>
+$<TARGET_FILE:__idf_chmorgan__esp-audio-player>
+$<TARGET_FILE:__idf_chmorgan__esp-file-iterator>
+$<TARGET_FILE:__idf_espressif__esp_codec_dev>
 $<TARGET_FILE:__idf_uzlib>

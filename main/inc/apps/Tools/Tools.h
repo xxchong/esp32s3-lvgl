@@ -7,7 +7,7 @@
 
 #define LIST_ICON USER_SYMBOL_TOOLS, USER_SYMBOL_TOOLS, USER_SYMBOL_TOOLS
 
-#define LIST_NAME "Calculators1", "Calculators2", "Calculators3"
+#define LIST_NAME "Calculators", "Calculators2", "Calculators3"
 
 extern lv_obj_t *tools_list_btns[TOOLS_LIST_COUNT]; // 定义列表按钮数组
 

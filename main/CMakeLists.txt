@@ -7,6 +7,7 @@ set(INCLUDE_DIRS
     "inc/apps"
     "inc/Aliot"
     "inc/Udp"
+    "inc/Audio"
 )
 idf_component_register(SRCS "main.c" ${SOURCES}
                     INCLUDE_DIRS ${INCLUDE_DIRS}    

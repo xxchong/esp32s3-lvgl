@@ -20,37 +20,17 @@ const char *LIST_LABEL_NAME[] = {LIST_NAME}; // app名称数组
 lv_obj_t *tools_list_btns[TOOLS_LIST_COUNT]; // 定义列表按钮数组
 static Tools *tools_app;
 
-// 按钮的回调事件
-// static void btn_click_event(lv_event_t *e)
-// {
-//     lv_obj_t *btn = lv_event_get_target(e);
-//     lv_obj_t *app_name  = (lv_obj_t *)lv_event_get_user_data(e);
-//     const char *name = lv_label_get_text(app_name);
-//     // my_fragment_t *fragment = (my_fragment_t *)lv_fragment_manager_get_top(manager); // 获取当前fragment
-//     for (int i = 0; i < TOOLS_LIST_COUNT; i++)
-//     { // 进去新页面前获取当前按钮的索引
-//         if (tools_list_btns[i] == btn)
-//         {
-//             // fragment->last_focused_index = i; // 将索引给fragment持有
-//             break;
-//         }
-//     }
-//     // printf(name == NULL ? "按钮标签为空\n" : "%s CLICKED (index: %d)\n", name, fragment->last_focused_index);
-//     // last_group = tools_app->group;
-
-//     printf("tools open name:%s\n",name);
-//     launch_app_fragment(name, false);
-
-// }
-// ... existing code ...
 static void btn_click_event(lv_event_t *e)
 {
     lv_obj_t *btn = lv_event_get_target(e);
     lv_obj_t *app_name = (lv_obj_t *)lv_event_get_user_data(e);
     const char *name = lv_label_get_text(app_name);
-    printf("tools open name:%s\n", name);
-
-    launch_app_fragment(name, false);
+    if (strcmp(name, "Calculators") == 0)
+    {
+        lv_page->calculator_page = calculators_create();
+        lv_scr_load_anim(lv_page->calculator_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        cleanup_page(lv_page->tools_page);
+    }
 }
 
 static void btn_return_cb(lv_event_t *e)

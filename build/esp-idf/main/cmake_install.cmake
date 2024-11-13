@@ -1,4 +1,4 @@
-# Install script for directory: /home/xxchong/esp32s3_lvgl_st7789/main
+# Install script for directory: /home/xxchong/桌面/esp32s3-lvgl/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

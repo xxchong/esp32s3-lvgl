@@ -55,7 +55,10 @@
         "system_monitor.h": "c",
         "lv_demo_widgets.h": "c",
         "demo.h": "c",
-        "boot.h": "c"
+        "boot.h": "c",
+        "max98357_driver.h": "c",
+        "sd_driver.h": "c",
+        "stat.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

@@ -30,18 +30,12 @@ static void btn_click_event(lv_event_t *e)
     lv_obj_t *btn = lv_event_get_target(e);
     lv_obj_t *app_name = (lv_obj_t *)lv_event_get_user_data(e);
     const char *name = lv_label_get_text(app_name);
-    my_fragment_t *fragment = (my_fragment_t *)lv_fragment_manager_get_top(manager); // 获取当前fragment
-    for (int i = 0; i < SETTING_LIST_COUNT; i++)
-    { // 进去新页面前获取当前按钮的索引
-        if (setting_list_btns[i] == btn)
-        {
-            fragment->last_focused_index = i; // 将索引给fragment持有
-            break;
-        }
-    }
-    printf(name == NULL ? "按钮标签为空\n" : "%s CLICKED (index: %d)\n", name, fragment->last_focused_index);
-    last_group = setting_app->group;
-    launch_app_fragment(name, false);
+    // if (strcmp(name, "WiFi") == 0)
+    // {
+    //     lv_page->wifi_page = create_wifi_app();
+    //     lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+    //     cleanup_page(lv_page->setting_page);
+    // }
 }
 
 lv_obj_t *create_setting_app(void)
@@ -69,18 +63,11 @@ lv_obj_t *create_setting_app(void)
     setting_app->setting_page = create_page("Setting"); // 创建主页面
     create_status_bar(setting_app->setting_page);       // 创建状态栏        // lv_indev_set_group(indev, setting_app->group);
 
-    // // 创建描述标签
-    // setting_app->label_desc = lv_label_create(parent);
-    // lv_obj_center(setting_app->label_desc);
-    // lv_obj_set_style_text_color(setting_app->label_desc, lv_color_black(), 0);
-    // lv_label_set_text_fmt(setting_app->label_desc, "This is Setting app");
-    // printf("This is Setting app\n");
-
+    
     // 创建返回按钮
     setting_app->btn_return = create_app_btn_return(setting_app->setting_page);
 
     lv_obj_add_event_cb(setting_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
-    // lv_group_add_obj(setting_app->group, setting_app->btn_return);
 
     setting_app->settiong_list = lv_list_create(setting_app->setting_page);
     lv_obj_set_style_text_font(setting_app->settiong_list, &lv_font_montserrat_20, 0);
