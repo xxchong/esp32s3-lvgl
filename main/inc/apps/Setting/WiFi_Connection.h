@@ -2,6 +2,6 @@
 #define __WIFI_CONNECTION_H
 
 #include "icon.h"
-void create_wifi_list(lv_obj_t *parent);
+lv_obj_t *create_wifi_app(void);
 
 #endif

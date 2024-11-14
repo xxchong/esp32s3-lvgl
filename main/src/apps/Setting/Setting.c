@@ -1,7 +1,6 @@
+
 #include "sys.h"
 
-// extern lv_indev_t *indev;
-extern lv_obj_t *user_area;
 typedef struct
 {
     lv_obj_t *setting_page;
@@ -27,15 +26,13 @@ static void btn_return_cb(lv_event_t *e)
 // 按钮的回调事件
 static void btn_click_event(lv_event_t *e)
 {
-    lv_obj_t *btn = lv_event_get_target(e);
-    lv_obj_t *app_name = (lv_obj_t *)lv_event_get_user_data(e);
-    const char *name = lv_label_get_text(app_name);
-    // if (strcmp(name, "WiFi") == 0)
-    // {
-    //     lv_page->wifi_page = create_wifi_app();
-    //     lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-    //     cleanup_page(lv_page->setting_page);
-    // }
+    lv_obj_t *app_name = lv_event_get_user_data(e);
+    if (strcmp(lv_label_get_text(app_name), "WiFi") == 0)
+    {
+        lv_page->wifi_page = create_wifi_app();
+        lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        cleanup_page(lv_page->setting_page);
+    }
 }
 
 lv_obj_t *create_setting_app(void)
@@ -63,15 +60,13 @@ lv_obj_t *create_setting_app(void)
     setting_app->setting_page = create_page("Setting"); // 创建主页面
     create_status_bar(setting_app->setting_page);       // 创建状态栏        // lv_indev_set_group(indev, setting_app->group);
 
-    
     // 创建返回按钮
     setting_app->btn_return = create_app_btn_return(setting_app->setting_page);
-
     lv_obj_add_event_cb(setting_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
 
     setting_app->settiong_list = lv_list_create(setting_app->setting_page);
     lv_obj_set_style_text_font(setting_app->settiong_list, &lv_font_montserrat_20, 0);
-    lv_obj_set_size(setting_app->settiong_list, 240, 236);
+    lv_obj_set_size(setting_app->settiong_list, 240, 240);
     lv_obj_align(setting_app->settiong_list, LV_ALIGN_BOTTOM_MID, 0, 0);
     remove_styles(setting_app->settiong_list, true, true, false, true);
 
@@ -85,7 +80,6 @@ lv_obj_t *create_setting_app(void)
 
         lv_label_set_text(app_name, SETTING_LIST_LABEL_NAME[i]);
         lv_obj_align(app_name, LV_ALIGN_CENTER, -5, 0);
-        lv_group_add_obj(setting_app->group, setting_list_btns[i]);
         lv_obj_add_event_cb(setting_list_btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
     }
 

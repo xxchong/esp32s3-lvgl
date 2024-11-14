@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "esp32s3_lvgl_st7789",
-    "project_version":    "ff28eee-dirty",
+    "project_version":    "7aa9f87-dirty",
     "project_path":       "/home/xxchong/桌面/esp32s3-lvgl",
     "idf_path":           "/home/xxchong/esp/esp-idf",
     "build_dir":          "/home/xxchong/桌面/esp32s3-lvgl/build",
@@ -100,7 +100,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/xxchong/桌面/esp32s3-lvgl/build/esp-idf/bsp/libbsp.a",
-            "sources": [ "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/wifi_sta.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/st7789_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/button_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/lv_port.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/sd_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/cst816_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/max98357_driver.c" ],
+            "sources": [ "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/wifi_sta.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/st7789_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/button_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/lv_port.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/sd_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/cst816_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/max98357_driver.c", "/home/xxchong/桌面/esp32s3-lvgl/components/bsp/wifi_scan_driver.c" ],
             "include_dirs": [ "include" ]
         },
         "bt": {

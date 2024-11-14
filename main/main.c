@@ -26,7 +26,8 @@
 #include "max98357_driver.h"
 #include <math.h>
 #include "audio_player.h"
-
+#include "file_iterator.h"
+#include "wifi_scan_driver.h"
 lv_group_t *group;
 
 TaskHandle_t lvgl_task_handle;
@@ -161,8 +162,10 @@ void generate_sine_wave(uint8_t *buffer, size_t length, float frequency)
 // 主函数
 void app_main(void)
 {
-    ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
-    sd_write_and_read_test();
+    // ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
+    // // sd_write_and_read_test();
+
+    // file_iterator_new("/sdcard/");
 
     // 测试MP3文件读取
     // esp_err_t ret = test_mp3_file_read("zjl.mp3");
@@ -183,8 +186,7 @@ void app_main(void)
     // {
     //     ESP_LOGI(TAG, "MP3 file test succeeded");
     // }
-    //初始化播放器
-   
+    // 初始化播放器
 
     // // 初始化MAX98357
     // ESP_ERROR_CHECK(max98357_init(SAMPLE_RATE));
@@ -207,22 +209,27 @@ void app_main(void)
     // max98357_deinit();
 
     // NVS初始化（WIFI底层驱动有用到NVS，所以这里要初始化）
-    // esp_err_t ret = nvs_flash_init();
-    // if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    // {
-    //     ESP_ERROR_CHECK(nvs_flash_erase());
-    //     ret = nvs_flash_init();
-    // }
-    // ESP_ERROR_CHECK(ret);
-    // // wifi STA工作模式初始化
-    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
-    // // 等待WiFi连接
-    // ESP_LOGI(TAG, "等待 WiFi 连接...");
-    // while (!is_wifi_connected())
-    // {
-    //     vTaskDelay(pdMS_TO_TICKS(100));
-    // }
-    // ESP_LOGI(TAG, "WiFi 已连接");
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+    // wifi STA工作模式初始化
+    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    // 等待WiFi连接
+    ESP_LOGI(TAG, "等待 WiFi 连接...");
+    while (!is_wifi_connected())
+    {
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    ESP_LOGI(TAG, "WiFi 已连接");
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    ESP_LOGI(TAG, "扫描WiFi");
+
+    wifi_scan();
     // initialize_sntp(); // 获取时间
     // // 测试打印当前时间
     // char timestr[64];
@@ -243,25 +250,25 @@ void app_main(void)
     // 在需要时获取系统信息
     // system_info_t *info = get_latest_system_info();
     // printf("CPU: %.1f%%\n", info->cpu.usage);
+    wifi_scan();
+    // 创建 LVGL 任务
+    // xTaskCreatePinnedToCore(
+    //     lv_task,                  // 任务函数
+    //     "lv_task_handler",        // 任务名称
+    //     4096,                     // 栈大小（字节）
+    //     NULL,                     // 参数
+    //     configMAX_PRIORITIES - 2, // 优先级
+    //     &lvgl_task_handle,        // 任务句柄
+    //     1                         // 在 Core 1 上运行
+    // );
 
-    //     // 创建 LVGL 任务
-    //     xTaskCreatePinnedToCore(
-    //         lv_task,                  // 任务函数
-    //         "lv_task_handler",        // 任务名称
-    //         4096,                     // 栈大小（字节）
-    //         NULL,                     // 参数
-    //         configMAX_PRIORITIES - 2, // 优先级
-    //         &lvgl_task_handle,        // 任务句柄
-    //         1                         // 在 Core 1 上运行
-    //     );
-
-    // //创建内存监控任务
+    // // 创建内存监控任务
     // xTaskCreate(
-    //     memory_monitor_task,    // 任务函数
-    //     "memory_monitor",       // 任务名称
-    //     4096,                   // 栈大小
-    //     NULL,                   // 参数
-    //     1,                      // 优先级
-    //     NULL                    // 任务句柄
+    //     memory_monitor_task, // 任务函数
+    //     "memory_monitor",    // 任务名称
+    //     4096,                // 栈大小
+    //     NULL,                // 参数
+    //     1,                   // 优先级
+    //     NULL                 // 任务句柄
     // );
 }
