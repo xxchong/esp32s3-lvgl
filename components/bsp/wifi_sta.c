@@ -62,6 +62,9 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 // WIFI STA初始化
 esp_err_t wifi_sta_init(const char *wifi_ssid,const char *pwd)
 {
+    esp_log_level_set(TAG, ESP_LOG_ERROR);
+
+
     ESP_ERROR_CHECK(esp_netif_init());                // 用于初始化tcpip协议栈
     ESP_ERROR_CHECK(esp_event_loop_create_default()); // 创建一个默认系统事件调度循环，之后可以注册回调函数来处理系统的一些事件
     esp_netif_create_default_wifi_sta();              // 使用默认配置创建STA对象

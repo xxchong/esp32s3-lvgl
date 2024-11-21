@@ -21,5 +21,4 @@ extern uint8_t btn_index;
 extern lv_obj_t *btns[APP_COUNTS];
 lv_obj_t *create_root(void);
 void create_second_page(void);
-
 #endif

@@ -31,10 +31,19 @@
 #include "root_page.h"
 #include "pwm_ledc.h"
 #include "weather_http.h"
-#include "desktop_clock.h"
 #include "apps/Game/Tetris.h"
 #include <stdbool.h>
 #include <time.h>
+
+
+#include "desktop_clock_1.h"
+#include "desktop_clock_2.h"
+
+#include "desktop_clock_3.h"
+
+#include "desktop_clock_4.h"
+#include "Version.h"
+
 #define USE_ENCODER_BY_BUTTON 1
 
 typedef struct
@@ -60,8 +69,8 @@ typedef struct
   lv_obj_t *notification_page;
   lv_obj_t *calculator_page;
   lv_obj_t *wifi_page;
+  lv_obj_t *version_page;
 }page_t;
-
 extern gesture_t *lv_gesture;
 extern page_t *lv_page;
 extern now_weather_info_t now_weather_info;

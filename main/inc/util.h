@@ -11,6 +11,7 @@ lv_obj_t *create_page(const char *name);
 void cleanup_page(lv_obj_t *page);
 void back_to_home(lv_obj_t *page);
 void get_now_time(void);
+void stop_watch_timer(void);
 
 extern struct tm *timeinfo;
 

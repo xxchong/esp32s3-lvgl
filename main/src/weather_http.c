@@ -208,20 +208,22 @@ static void parse_3D_weather_json(const char *json_data, three_day_weather_info_
 }
 
 // 初始化天气HTTP客户端
+// 2. URL构建时明确指定协议
 esp_err_t weather_http_init(weather_type_t type)
 {
     memset(weather_url, 0, sizeof(weather_url));
-    if (type == WEATHER_TYPE_NOW) 
-    {
-        snprintf(weather_url, sizeof(weather_url),
-                 "https://%s/v7/weather/%s?location=%s&key=%s",
-                 WEATHER_API_HOST, WEATHER_PATH_NOW, WEATHER_LOCATION, WEATHER_API_KEY);
-    } else if (type == WEATHER_TYPE_3D) {
-        snprintf(weather_url, sizeof(weather_url),
-                 "https://%s/v7/weather/%s?location=%s&key=%s",
-                 WEATHER_API_HOST, WEATHER_PATH_3D, WEATHER_LOCATION, WEATHER_API_KEY);
+    const char *path = (type == WEATHER_TYPE_NOW) ? WEATHER_PATH_NOW : WEATHER_PATH_3D;
+    
+    int ret = snprintf(weather_url, sizeof(weather_url),
+                      "https://%s/v7/weather/%s?location=%s&key=%s",
+                      WEATHER_API_HOST, path, WEATHER_LOCATION, WEATHER_API_KEY);
+                      
+    if (ret < 0 || ret >= sizeof(weather_url)) {
+        ESP_LOGE(TAG, "URL buffer overflow");
+        return ESP_FAIL;
     }
-    ESP_LOGI(TAG, "Weather HTTP client initialized");
+    
+    ESP_LOGI(TAG, "Weather URL: %s", weather_url);  // 打印URL进行调试
     return ESP_OK;
 }
 

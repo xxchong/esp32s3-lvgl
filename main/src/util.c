@@ -201,6 +201,11 @@ void gestureCallback(lv_event_t *event)
                 lv_page->setting_page = create_setting_app();
                 lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
                 cleanup_page(lv_page->wifi_page);
+            } else if (strcmp(name, "Version") == 0)
+            {
+                lv_page->setting_page = create_setting_app();
+                lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+                cleanup_page(lv_page->version_page);
             }
         }
         else
@@ -241,11 +246,9 @@ void back_to_home(lv_obj_t *page)
         printf("返回释放内存\n");
     }
     lv_page->root_page = create_root();
-
     lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
     lv_obj_set_tile(root_page->tileview, root_page->page2, 0);
     lv_obj_scroll_to_view(btns[btn_index], LV_ANIM_ON);
-
     cleanup_page(page);
 }
 lv_obj_t *create_page(const char *name)
@@ -259,6 +262,39 @@ lv_obj_t *create_page(const char *name)
     lv_obj_add_event_cb(page, gestureCallback, LV_EVENT_GESTURE, name);
 
     return page;
+}
+
+void stop_watch_timer(void)
+{
+   
+    if (clock_watch_time_timer != NULL)
+    {
+        lv_timer_pause(clock_watch_time_timer);
+        lv_timer_del(clock_watch_time_timer);
+        clock_watch_time_timer = NULL;
+    }
+
+    if (clock_watch_time_timer_2)
+    {
+        lv_timer_pause(clock_watch_time_timer_2);
+        lv_timer_del(clock_watch_time_timer_2);
+        clock_watch_time_timer_2 = NULL;
+    }
+    if(clock_watch_time_timer_3 )
+    {
+        lv_timer_pause(clock_watch_time_timer_3);
+        lv_timer_del(clock_watch_time_timer_3);
+        clock_watch_time_timer_3 = NULL;
+    }
+
+    if(clock_watch_time_timer_4 )
+    {
+        lv_timer_pause(clock_watch_time_timer_4);
+        lv_timer_del(clock_watch_time_timer_4);
+        clock_watch_time_timer_4 = NULL;
+    }
+   
+    
 }
 
 void cleanup_page(lv_obj_t *page)

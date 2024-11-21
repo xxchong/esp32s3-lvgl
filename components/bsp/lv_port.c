@@ -233,7 +233,7 @@ static void lcd_init(void)
     st7789_config.dc = GPIO_NUM_17;
     st7789_config.rst = GPIO_NUM_16;
     st7789_config.bl = GPIO_NUM_15;
-    st7789_config.spi_fre = 40 * 1000 * 1000;    // SPI时钟频率
+    st7789_config.spi_fre = 80 * 1000 * 1000;    // SPI时钟频率
     st7789_config.width = LCD_WIDTH;             // 屏宽
     st7789_config.height = LCD_HEIGHT;           // 屏高
     st7789_config.spin = 2;                      // 顺时针旋转90度

@@ -1,10 +1,4 @@
 dependencies:
-  chmorgan/esp-libhelix-mp3:
-    dependencies: []
-    source:
-      path: /home/xxchong/桌面/esp32s3-lvgl/components/chmorgan__esp-libhelix-mp3
-      type: local
-    version: 1.0.3
   idf:
     source:
       type: idf
@@ -17,9 +11,7 @@ dependencies:
       type: service
     version: 8.3.11
 direct_dependencies:
-- chmorgan/esp-libhelix-mp3
-- idf
 - lvgl/lvgl
-manifest_hash: 49b9a41a4ee3a271e78264b420dd3fccd350bdc09e0af0aa28bda3948f9425e5
+manifest_hash: 756bfc9359a439d7751042cb1b4b5194d7e4433010d29eb3cbe82f5af48878f0
 target: esp32s3
 version: 2.0.0

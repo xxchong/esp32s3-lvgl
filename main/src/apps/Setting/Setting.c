@@ -26,13 +26,19 @@ static void btn_return_cb(lv_event_t *e)
 // 按钮的回调事件
 static void btn_click_event(lv_event_t *e)
 {
-    lv_obj_t *app_name = lv_event_get_user_data(e);
-    if (strcmp(lv_label_get_text(app_name), "WiFi") == 0)
-    {
+   lv_obj_t *app_name = lv_event_get_user_data(e);
+   if (strcmp(lv_label_get_text(app_name), "WiFi") == 0)
+   {
         lv_page->wifi_page = create_wifi_app();
         lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
         cleanup_page(lv_page->setting_page);
+   }else if (strcmp(lv_label_get_text(app_name), "Version") == 0)  
+   {
+        lv_page->version_page = create_version_app();
+        lv_scr_load_anim(lv_page->version_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        cleanup_page(lv_page->setting_page);
     }
+
 }
 
 lv_obj_t *create_setting_app(void)
@@ -47,18 +53,10 @@ lv_obj_t *create_setting_app(void)
             printf("Failed to allocate memory for setting_app\n");
             return NULL;
         }
-        // 初始化成员变量
-        setting_app->setting_page = NULL;
-        setting_app->group = NULL;
-        setting_app->btn_return = NULL;
-        setting_app->label_desc = NULL;
-        setting_app->label_btn = NULL;
-        setting_app->settiong_list = NULL;
-        setting_app->icon = NULL;
-        setting_app->label_name = NULL;
+        memset(setting_app, 0, sizeof(Setting));
     }
-    setting_app->setting_page = create_page("Setting"); // 创建主页面
-    create_status_bar(setting_app->setting_page);       // 创建状态栏        // lv_indev_set_group(indev, setting_app->group);
+    setting_app->setting_page = create_page("Setting"); //创建主页面
+    create_status_bar(setting_app->setting_page); //创建状态栏        // lv_indev_set_group(indev, setting_app->group);
 
     // 创建返回按钮
     setting_app->btn_return = create_app_btn_return(setting_app->setting_page);

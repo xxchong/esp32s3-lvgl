@@ -170,4 +170,3 @@ lv_font_t music_font_22_t = {
 
 
 #endif /*#if MUSIC_FONT_22_T*/
-

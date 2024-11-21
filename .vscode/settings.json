@@ -58,7 +58,9 @@
         "boot.h": "c",
         "max98357_driver.h": "c",
         "sd_driver.h": "c",
-        "stat.h": "c"
+        "stat.h": "c",
+        "custom.h": "c",
+        "events_init.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"
