@@ -12,8 +12,6 @@ static lv_obj_t *current_time;
 lv_timer_t *time_timer;
 
 // 更新所有状态栏时间的回调函数
-
-// 更新所有状态栏时间的回调函数
 static void update_time_cb(lv_timer_t *timer)
 {
     // 首先检查 label 是否有效
@@ -92,5 +90,5 @@ void create_status_bar(lv_obj_t *parent)
 
     set_status_bar_time_label(current_time);
 
-    time_timer = lv_timer_create(update_time_cb, 5000, NULL);
+    // time_timer = lv_timer_create(update_time_cb, 5000, NULL);
 }

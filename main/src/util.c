@@ -138,57 +138,78 @@ void gestureCallback(lv_event_t *event)
 {
     lv_obj_t *screen = lv_event_get_current_target(event);
     lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
-    const char *name = lv_event_get_user_data(event);
+    const char *name = (const char *)lv_event_get_user_data(event);
     switch (dir)
     {
     case LV_DIR_LEFT:
-        // printf(" %s LV_DIR_LEFT",name);
+        if (lv_scr_act() == lv_page->root_page)
+        {
+            del_root_page_time_timer();
+            lv_page->app_screen_page = create_app_screen();
+            lv_scr_load_anim(lv_page->app_screen_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        }
+        else if (lv_scr_act() == lv_page->watch_screen_page)
+        {
+            del_watch_screen_time_timer();
+            lv_page->root_page = create_root();
+            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        }
+
         break;
     case LV_DIR_RIGHT:
-
-        if (lv_scr_act() != lv_page->root_page)
+        if (lv_scr_act() == lv_page->root_page)
+        {
+            del_root_page_time_timer();
+            lv_page->watch_screen_page = create_watch_screen();
+            lv_scr_load_anim(lv_page->watch_screen_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+        }
+        else if (lv_scr_act() == lv_page->app_screen_page)
+        {
+            lv_page->root_page = create_root();
+            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+        }
+        if (lv_scr_act() != lv_page->root_page && lv_scr_act() != lv_page->watch_screen_page && lv_scr_act() != lv_page->app_screen_page)
         {
             if (strcmp(name, "Game") == 0)
             {
-                back_to_home(lv_page->game_page);
+                back_to_app_screen(lv_page->game_page);
             }
             else if (strcmp(name, "Setting") == 0)
             {
-                back_to_home(lv_page->setting_page);
+                back_to_app_screen(lv_page->setting_page);
             }
             else if (strcmp(name, "Serial") == 0)
             {
-                back_to_home(lv_page->serial_page);
+                back_to_app_screen(lv_page->serial_page);
             }
             else if (strcmp(name, "Music") == 0)
             {
-                back_to_home(lv_page->music_page);
+                back_to_app_screen(lv_page->music_page);
             }
             else if (strcmp(name, "Tools") == 0)
             {
-                back_to_home(lv_page->tools_page);
+                back_to_app_screen(lv_page->tools_page);
             }
             else if (strcmp(name, "Calendar") == 0)
             {
-                back_to_home(lv_page->calender_page);
+                back_to_app_screen(lv_page->calender_page);
             }
             else if (strcmp(name, "MQTT") == 0)
             {
-                back_to_home(lv_page->mqtt_page);
+                back_to_app_screen(lv_page->mqtt_page);
             }
             else if (strcmp(name, "BlueTooth") == 0)
             {
-                back_to_home(lv_page->bluetooth_page);
+                back_to_app_screen(lv_page->bluetooth_page);
             }
             else if (strcmp(name, "Weather") == 0)
             {
-                back_to_home(lv_page->weather_page);
+                back_to_app_screen(lv_page->weather_page);
             }
             else if (strcmp(name, "Calculators") == 0)
             {
                 lv_page->tools_page = tools_list_create();
                 lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-                cleanup_page(lv_page->calculator_page);
             }
             else if (strcmp(name, "Calculators2") == 0)
             {
@@ -200,125 +221,76 @@ void gestureCallback(lv_event_t *event)
             {
                 lv_page->setting_page = create_setting_app();
                 lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-                cleanup_page(lv_page->wifi_page);
-            } else if (strcmp(name, "Version") == 0)
+            }
+            else if (strcmp(name, "Version") == 0)
             {
                 lv_page->setting_page = create_setting_app();
                 lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-                cleanup_page(lv_page->version_page);
             }
         }
-        else
-        {
-        }
 
-        // printf(" %s LV_DIR_RIGHT",name);
         break;
     case LV_DIR_TOP:
-        if (lv_scr_act() == lv_page->notification_page)
+        if (lv_scr_act() == lv_page->notification_page || lv_scr_act() == lv_page->root_page || lv_scr_act() == lv_page->watch_screen_page || lv_scr_act() == lv_page->app_screen_page)
         {
             lv_page->root_page = create_root();
-
             lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, true);
-
-            cleanup_page(lv_page->notification_page);
         }
 
         break;
     case LV_DIR_BOTTOM:
         if (lv_scr_act() == lv_page->root_page)
         {
+            del_root_page_time_timer(); // 删除root页面的时间刷新定时器
             lv_page->notification_page = create_notification();
-
             lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
-
-            cleanup_page(lv_page->root_page);
         }
+        else if (lv_scr_act() == lv_page->watch_screen_page)
+        {
+            del_watch_screen_time_timer();
+            lv_page->notification_page = create_notification();
+            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
+        }
+        else if (lv_scr_act() == lv_page->app_screen_page)
+        {
+            lv_page->notification_page = create_notification();
+            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
+        }
+
         break;
     }
 }
-
-void back_to_home(lv_obj_t *page)
+void back_to_app_screen(lv_obj_t *page)
 {
     if (lv_page->game_page == lv_scr_act())
     {
         Stop_Game();
         printf("返回释放内存\n");
     }
-    lv_page->root_page = create_root();
-    lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-    lv_obj_set_tile(root_page->tileview, root_page->page2, 0);
+    lv_page->app_screen_page = create_app_screen();
+    lv_scr_load_anim(lv_page->app_screen_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
     lv_obj_scroll_to_view(btns[btn_index], LV_ANIM_ON);
-    cleanup_page(page);
 }
+
 lv_obj_t *create_page(const char *name)
 {
     lv_obj_t *page = lv_obj_create(NULL);
     lv_obj_set_size(page, 240, 280);
     lv_obj_set_style_pad_all(page, 0, 0);
     lv_obj_set_style_border_width(page, 0, 0);
-
-    // 注册手势回调
-    lv_obj_add_event_cb(page, gestureCallback, LV_EVENT_GESTURE, name);
-
+    lv_obj_add_event_cb(page, gestureCallback, LV_EVENT_GESTURE, (void *)name); // 注册手势回调
     return page;
 }
 
 void stop_watch_timer(void)
 {
-   
-    if (clock_watch_time_timer != NULL)
-    {
-        lv_timer_pause(clock_watch_time_timer);
-        lv_timer_del(clock_watch_time_timer);
-        clock_watch_time_timer = NULL;
-    }
-
-    if (clock_watch_time_timer_2)
-    {
-        lv_timer_pause(clock_watch_time_timer_2);
-        lv_timer_del(clock_watch_time_timer_2);
-        clock_watch_time_timer_2 = NULL;
-    }
-    if(clock_watch_time_timer_3 )
-    {
-        lv_timer_pause(clock_watch_time_timer_3);
-        lv_timer_del(clock_watch_time_timer_3);
-        clock_watch_time_timer_3 = NULL;
-    }
-
-    if(clock_watch_time_timer_4 )
-    {
-        lv_timer_pause(clock_watch_time_timer_4);
-        lv_timer_del(clock_watch_time_timer_4);
-        clock_watch_time_timer_4 = NULL;
-    }
-   
-    
 }
 
-void cleanup_page(lv_obj_t *page)
+void stop_status_bar_timer(void)
 {
     if (time_timer)
     {
         lv_timer_del(time_timer);
         time_timer = NULL;
     }
-    if (page == lv_page->root_page)
-    {
-        if (clock_widget_time_timer)
-        {
-            lv_timer_pause(clock_widget_time_timer);
-            lv_timer_del(clock_widget_time_timer);
-            clock_widget_time_timer = NULL;
-        }
-        if (clock_watch_time_timer)
-        {
-            lv_timer_pause(clock_watch_time_timer);
-            lv_timer_del(clock_watch_time_timer);
-            clock_watch_time_timer = NULL;
-        }
-    }
-
-    lv_obj_clean(page);
 }

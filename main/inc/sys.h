@@ -35,7 +35,6 @@
 #include <stdbool.h>
 #include <time.h>
 
-
 #include "desktop_clock_1.h"
 #include "desktop_clock_2.h"
 
@@ -43,14 +42,18 @@
 
 #include "desktop_clock_4.h"
 #include "Version.h"
+#include "desktop_clock_5.h"
+
+#include "watch_screen.h"
+#include "app_screen.h"
 
 #define USE_ENCODER_BY_BUTTON 1
 
 typedef struct
 {
-    lv_obj_t *scr;
-    lv_obj_t *boot_container;
-    lv_obj_t *notification;
+  lv_obj_t *scr;
+  lv_obj_t *boot_container;
+  lv_obj_t *notification;
 } gesture_t;
 
 typedef struct
@@ -70,7 +73,9 @@ typedef struct
   lv_obj_t *calculator_page;
   lv_obj_t *wifi_page;
   lv_obj_t *version_page;
-}page_t;
+  lv_obj_t *app_screen_page;
+  lv_obj_t *watch_screen_page;
+} page_t;
 extern gesture_t *lv_gesture;
 extern page_t *lv_page;
 extern now_weather_info_t now_weather_info;

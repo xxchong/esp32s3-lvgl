@@ -27,12 +27,9 @@ static const char *btnm_map[] = {"AC", LV_SYMBOL_LEFT, "%", "/", "\n", "7", "8",
 static void btn_return_cb(lv_event_t *e)
 {
     //返回上一级
-
     lv_page->tools_page = tools_list_create();
-
     lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
 
-    cleanup_page(lv_page->calculator_page);
 }
 
 

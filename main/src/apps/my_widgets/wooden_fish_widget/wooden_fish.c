@@ -41,7 +41,7 @@ static void btn_event_cb(lv_event_t *e)
     }
 }
 
-lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent, lv_group_t *group)
+lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent)
 {
     if (wooden_fish_widget_app == NULL)
     {
@@ -104,8 +104,6 @@ lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent, lv_group_t *group)
     lv_obj_add_event_cb(wooden_fish_widget_app->btn, btn_event_cb, LV_EVENT_ALL, NULL);
 
     lv_obj_clear_flag(wooden_fish_widget_app->cont, LV_OBJ_FLAG_SCROLLABLE);
-
-    lv_group_add_obj(group, wooden_fish_widget_app->btn);
 
     return wooden_fish_widget_app->cont;
 }

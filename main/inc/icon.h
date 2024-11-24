@@ -7,7 +7,7 @@ extern "C"
 {
 #endif
 
-#include "lvgl.h"
+#include "lvgl/lvgl.h"
 #define USE_MY_SYMBOL_FONT_10_T
 #define USE_MY_SYMBOL_FONT_12_T
 #define USE_MY_SYMBOL_FONT_14_T
@@ -29,6 +29,16 @@ extern "C"
 
 #define USE_WEATHER_SYMBOL_FONT_40_T
 #define USE_WEATHER_SYMBOL_FONT_60_T
+
+#define USE_WATCH_5_FONT_CN_10_T
+
+    /**
+     * watchedUTF-8定义
+     */
+#define USER_WATCH_5_SYMBOL_BATTERY_STATUS "\xEE\x99\xA5" // Unicode: 0xe665  电量
+#define USER_WATCH_5_SYMBOL_STEPS "\xEE\x9B\xA2"          // Unicode: 0xe6e2  步数
+#define USER_WATCH_5_SYMBOL_HEART_RATE "\xEE\x98\x8B"     // Unicode: 0xe60b  心率
+#define USER_WATCH_5_SYMBOL_TARGET "\xEE\x99\x95"         // Unicode: 0xe655  目标任务
 
     /**
      * 音乐图标UTF-8定义
@@ -141,6 +151,10 @@ extern "C"
 #define USER_SYMBOL_BATTERY "\xEE\x98\xB5"
 #define USER_SYMBOL_GPIO2 "\xEE\x98\xB1"
 #define USER_SYMBOL_CONNECTEED_WIFI "\xEE\xA3\x81"
+
+#ifdef USE_WATCH_5_FONT_CN_10_T
+    extern const lv_font_t watch_5_font_icon_10_t; //
+#endif
 
 #ifdef USE_MUSIC_FONT_22_T
     extern const lv_font_t music_font_22_t; //

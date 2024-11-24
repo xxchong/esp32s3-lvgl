@@ -3,6 +3,6 @@
 
 #include "icon.h"
 
-lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent, lv_group_t *group);
+lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent);
 
 #endif

@@ -61,7 +61,7 @@ static void btn_event_cb(lv_event_t *e)
     }
 }
 
-lv_obj_t *create_weather_widget_app(lv_obj_t *parent, lv_group_t *group)
+lv_obj_t *create_weather_widget_app(lv_obj_t *parent)
 {
     if (weather_widget_app == NULL)
     {
@@ -72,16 +72,7 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent, lv_group_t *group)
             printf("Failed to allocate memory for weather_app\n");
             return NULL;
         }
-        // 初始化成员变量
-        weather_widget_app->group = NULL;
-        weather_widget_app->btn = NULL;
-        weather_widget_app->label_Gps = NULL;
-        weather_widget_app->label_cerrent_max_min_temp = NULL;
-        weather_widget_app->label_location = NULL;
-        weather_widget_app->label_weather_text = NULL;
-        weather_widget_app->label_current_temp = NULL;
-        weather_widget_app->label_current_icon = NULL;
-        weather_widget_app->label = NULL;
+        memset(weather_widget_app, 0, sizeof(lv_weather_widget_t));
     }
 
     weather_widget_app->btn = lv_btn_create(parent);
@@ -93,8 +84,6 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent, lv_group_t *group)
     lv_obj_set_style_shadow_width(weather_widget_app->btn, 0, 0);
     lv_obj_set_style_radius(weather_widget_app->btn, 8, 0);
     lv_obj_add_event_cb(weather_widget_app->btn, btn_event_cb, LV_EVENT_CLICKED, NULL);
-
-    lv_group_add_obj(group, weather_widget_app->btn);
 
     weather_widget_app->label_current_temp = lv_label_create(weather_widget_app->btn);
     lv_obj_set_style_text_font(weather_widget_app->label_current_temp, &lv_font_montserrat_30, 0);
@@ -131,6 +120,6 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent, lv_group_t *group)
     lv_obj_align_to(weather_widget_app->label_Gps, weather_widget_app->label_location, LV_ALIGN_OUT_RIGHT_MID, 2, 1);
     lv_label_set_text(weather_widget_app->label_Gps, LV_SYMBOL_GPS);
     lv_obj_set_style_text_color(weather_widget_app->label_Gps, lv_color_white(), 0);
-    update_weather_widgetdata();
+
     return weather_widget_app->btn;
 }

@@ -29,8 +29,9 @@ const char *weekdays[7] = {"周日", "周一", "周二", "周三", "周四", "�
 
 lv_timer_t *clock_widget_time_timer = NULL;
 
-void clock_widget_time_refresh(lv_timer_t *timer)
+void clock_widget_time_refresh(void)
 {
+    
     char temp[20];
     get_now_time();
 
@@ -43,13 +44,15 @@ void clock_widget_time_refresh(lv_timer_t *timer)
     float hour_value = hour_12 + timeinfo->tm_min / 60.0f;
 
     // 设置小时指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_hour, hour_value);
+    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_hour, (int)hour_value);
 
     // 设置分钟指针
     lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_minute, timeinfo->tm_min);
 
     // 设置秒指针
     lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_second, timeinfo->tm_sec);
+
+
 
     sprintf(temp, "%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     lv_label_set_text(digital_clock_widget_app->label_time, temp);
@@ -58,7 +61,6 @@ void clock_widget_time_refresh(lv_timer_t *timer)
     lv_label_set_text(digital_clock_widget_app->label_date, temp);
 
     lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo->tm_wday]);
-
 }
 
 lv_obj_t *create_clock_widget1(lv_obj_t *parent)
@@ -74,19 +76,13 @@ lv_obj_t *create_clock_widget1(lv_obj_t *parent)
             return NULL;
         }
         // 初始化成员变量
-        clock_widget_app->root = NULL;
-        clock_widget_app->meter = NULL;
-        clock_widget_app->scale_min = NULL;
-        clock_widget_app->scale_hour = NULL;
-        clock_widget_app->lv_meterneedle_line_hour = NULL;
-        clock_widget_app->lv_meterneedle_line_minute = NULL;
-        clock_widget_app->lv_meterneedle_line_second = NULL;
+        memset(clock_widget_app, 0, sizeof(lv_clock_widget1_t));
     }
 
     // 创建表盘对象
     clock_widget_app->root = lv_obj_create(parent);
     lv_obj_set_size(clock_widget_app->root, 100, 100);
-    lv_obj_center(clock_widget_app->root);
+    // lv_obj_center(clock_widget_app->root);
     lv_obj_set_style_border_width(clock_widget_app->root, 0, 0);
     lv_obj_set_style_pad_all(clock_widget_app->root, 0, 0);
     lv_obj_set_style_bg_color(clock_widget_app->root, lv_color_black(), 0);
@@ -150,15 +146,12 @@ lv_obj_t *create_clock_widget2(lv_obj_t *parent)
             printf("Failed to allocate memory for weather_app\n");
             return NULL;
         }
-        digital_clock_widget_app->root = NULL;
-        digital_clock_widget_app->label_time = NULL;
-        digital_clock_widget_app->label_date = NULL;
-        digital_clock_widget_app->label_week = NULL;
+        memset(digital_clock_widget_app, 0, sizeof(lv_clock_widget2_t));
     }
 
     digital_clock_widget_app->root = lv_obj_create(parent);
     lv_obj_set_size(digital_clock_widget_app->root, 220, 90);
-    lv_obj_center(digital_clock_widget_app->root);
+    lv_obj_align(digital_clock_widget_app->root, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_set_style_border_width(digital_clock_widget_app->root, 0, 0);
     lv_obj_set_style_pad_all(digital_clock_widget_app->root, 0, 0);
     lv_obj_set_style_bg_color(digital_clock_widget_app->root, lv_color_hex(0x202020), 0);
@@ -181,8 +174,6 @@ lv_obj_t *create_clock_widget2(lv_obj_t *parent)
     lv_obj_set_style_text_color(digital_clock_widget_app->label_week, lv_color_hex(0x5096fc), 0);
     lv_obj_align(digital_clock_widget_app->label_week, LV_ALIGN_BOTTOM_MID, 48, -13);
     lv_label_set_text(digital_clock_widget_app->label_week, "周一");
-
-    clock_widget_time_timer = lv_timer_create(clock_widget_time_refresh, 1000, NULL);
 
     return digital_clock_widget_app->root;
 }

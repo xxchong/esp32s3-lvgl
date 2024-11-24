@@ -16,7 +16,7 @@ static Game *game_app;
 static void btn_return_cb(lv_event_t *e)
 {
     Stop_Game();
-    back_to_home(lv_page->game_page);
+    back_to_app_screen(lv_page->game_page);
 }
 
 lv_obj_t *create_game_app(void)

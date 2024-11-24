@@ -8,11 +8,11 @@ struct tm get_timeinfo(void);
 lv_obj_t *create_app_btn_return(lv_obj_t *parent);
 void gestureCallback(lv_event_t *event);
 lv_obj_t *create_page(const char *name);
-void cleanup_page(lv_obj_t *page);
-void back_to_home(lv_obj_t *page);
+void back_to_app_screen(lv_obj_t *page);
 void get_now_time(void);
 void stop_watch_timer(void);
-
+void stop_status_bar_timer(void);
+void stop_clock_widget_timer(void);
 extern struct tm *timeinfo;
 
 #endif

@@ -72,9 +72,7 @@ static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {
     0x39, 0xc0, 0x7, 0x18, 0x0, 0xe0, 0x0, 0x38,
     0x0, 0x7, 0x31, 0x80, 0xe1, 0x9c, 0x7c, 0xf,
     0xe7, 0x0, 0x7f, 0x0, 0x0, 0xe0, 0x0, 0x1c,
-    0x0, 0x1, 0x80
-};
-
+    0x0, 0x1, 0x80};
 
 /*---------------------
  *  GLYPH DESCRIPTION
@@ -87,27 +85,19 @@ static const lv_font_fmt_txt_glyph_dsc_t glyph_dsc[] = {
     {.bitmap_index = 107, .adv_w = 352, .box_w = 20, .box_h = 22, .ofs_x = 1, .ofs_y = -3},
     {.bitmap_index = 162, .adv_w = 352, .box_w = 22, .box_h = 17, .ofs_x = 0, .ofs_y = 0},
     {.bitmap_index = 209, .adv_w = 352, .box_w = 20, .box_h = 22, .ofs_x = 1, .ofs_y = -5},
-    {.bitmap_index = 264, .adv_w = 352, .box_w = 20, .box_h = 17, .ofs_x = 1, .ofs_y = 0}
-};
+    {.bitmap_index = 264, .adv_w = 352, .box_w = 20, .box_h = 17, .ofs_x = 1, .ofs_y = 0}};
 
 /*---------------------
  *  CHARACTER MAPPING
  *--------------------*/
 
 static const uint16_t unicode_list_0[] = {
-    0x0, 0x7, 0x8, 0xf, 0x13, 0x20
-};
+    0x0, 0x7, 0x8, 0xf, 0x13, 0x20};
 
 /*Collect the unicode lists and glyph_id offsets*/
 static const lv_font_fmt_txt_cmap_t cmaps[] =
-{
     {
-        .range_start = 58882, .range_length = 33, .glyph_id_start = 1,
-        .unicode_list = unicode_list_0, .glyph_id_ofs_list = NULL, .list_length = 6, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY
-    }
-};
-
-
+        {.range_start = 58882, .range_length = 33, .glyph_id_start = 1, .unicode_list = unicode_list_0, .glyph_id_ofs_list = NULL, .list_length = 6, .type = LV_FONT_FMT_TXT_CMAP_SPARSE_TINY}};
 
 /*--------------------
  *  ALL CUSTOM DATA
@@ -115,7 +105,7 @@ static const lv_font_fmt_txt_cmap_t cmaps[] =
 
 #if LVGL_VERSION_MAJOR == 8
 /*Store all the custom data of the font*/
-static  lv_font_fmt_txt_glyph_cache_t cache;
+static lv_font_fmt_txt_glyph_cache_t cache;
 #endif
 
 #if LVGL_VERSION_MAJOR >= 8
@@ -137,8 +127,6 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 #endif
 };
 
-
-
 /*-----------------
  *  PUBLIC FONT
  *----------------*/
@@ -149,10 +137,10 @@ const lv_font_t music_font_22_t = {
 #else
 lv_font_t music_font_22_t = {
 #endif
-    .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
-    .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
-    .line_height = 24,          /*The maximum line height required by the font*/
-    .base_line = 5,             /*Baseline measured from the bottom of the line*/
+    .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt, /*Function pointer to get glyph's data*/
+    .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt, /*Function pointer to get glyph's bitmap*/
+    .line_height = 24,                              /*The maximum line height required by the font*/
+    .base_line = 5,                                 /*Baseline measured from the bottom of the line*/
 #if !(LVGL_VERSION_MAJOR == 6 && LVGL_VERSION_MINOR == 0)
     .subpx = LV_FONT_SUBPX_NONE,
 #endif
@@ -160,13 +148,11 @@ lv_font_t music_font_22_t = {
     .underline_position = 0,
     .underline_thickness = 0,
 #endif
-    .dsc = &font_dsc,          /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
+    .dsc = &font_dsc, /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 #if LV_VERSION_CHECK(8, 2, 0) || LVGL_VERSION_MAJOR >= 9
     .fallback = NULL,
 #endif
     .user_data = NULL,
 };
-
-
 
 #endif /*#if MUSIC_FONT_22_T*/

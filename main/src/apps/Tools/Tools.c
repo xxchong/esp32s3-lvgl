@@ -29,13 +29,12 @@ static void btn_click_event(lv_event_t *e)
     {
         lv_page->calculator_page = calculators_create();
         lv_scr_load_anim(lv_page->calculator_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        cleanup_page(lv_page->tools_page);
     }
 }
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(lv_page->tools_page);
+    back_to_app_screen(lv_page->tools_page);
 }
 
 lv_obj_t *tools_list_create(void)

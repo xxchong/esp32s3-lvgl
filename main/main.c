@@ -32,7 +32,6 @@
 #include "Gui-Guider/generated/gui_guider.h"
 #include "Gui-Guider/generated/events_init.h"
 
-
 lv_ui guider_ui;
 
 lv_group_t *group;
@@ -43,8 +42,8 @@ three_day_weather_info_t three_day_weather_info[3];
 
 static const char *TAG = "app—main";
 
-#define WIFI_SSID "Mi10s"
-#define WIFI_PASSWORD "12345678"
+#define WIFI_SSID "Mi 10S"
+#define WIFI_PASSWORD "87654321"
 
 // 添加内存监控函数
 void print_memory_info(const char *message)
@@ -88,43 +87,18 @@ page_t *lv_page = NULL;
 
 void init_page(void)
 {
-    if (lv_gesture == NULL)
-    {
-        lv_gesture = (gesture_t *)malloc(sizeof(gesture_t));
-    }
     if (lv_page == NULL)
     {
         lv_page = (page_t *)malloc(sizeof(page_t));
+        memset(lv_page, 0, sizeof(page_t));
     }
-
     lv_page->boot_page = create_boot();
-    lv_page->root_page = create_root();
-}
-
-void lv_demo(void)
-{
-
-    // lv_obj_t *scr = lv_scr_act();
-    // lv_obj_set_size(scr, 240, 280);
-    // // group = lv_group_create();
-    // // lv_group_remove_all_objs(group);
-    // // lv_group_set_default(group);
-    // // lv_indev_set_group(indev, group);
-
-    // // lv_obj_t *root = create_root(scr);
-    // lv_obj_t *Notification = create_Notification(group);
-    // // // lv_group_add_obj(group, Notification);
-    // // // lv_group_focus_obj(Notification);
-    // // // create_second_page();
-    // lv_scr_load(Notification);
 }
 
 void lv_task(void *pvParameters)
 {
-
     init_page();
     lv_scr_load(lv_page->boot_page);
-    // example_scroll();
     while (1)
     {
         lv_task_handler();
@@ -250,7 +224,7 @@ void app_main(void)
     // get_3D_weather_data(three_day_weather_info);
 
     // setup_ui(&guider_ui);
-   	// events_init(&guider_ui);
+    // events_init(&guider_ui);
 
     // mqtt_init();
 
@@ -264,7 +238,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(
         lv_task,                  // 任务函数
         "lv_task_handler",        // 任务名称
-        4096,                     // 栈大小（字节）
+        8192,                     // 栈大小（字节）
         NULL,                     // 参数
         configMAX_PRIORITIES - 2, // 优先级
         &lvgl_task_handle,        // 任务句柄
@@ -272,12 +246,12 @@ void app_main(void)
     );
 
     // 创建内存监控任务
-    xTaskCreate(
-        memory_monitor_task, // 任务函数
-        "memory_monitor",    // 任务名称
-        4096,                // 栈大小
-        NULL,                // 参数
-        1,                   // 优先级
-        NULL                 // 任务句柄
-    );
+    // xTaskCreate(
+    //     memory_monitor_task, // 任务函数
+    //     "memory_monitor",    // 任务名称
+    //     4096,                // 栈大小
+    //     NULL,                // 参数
+    //     1,                   // 优先级
+    //     NULL                 // 任务句柄
+    // );
 }

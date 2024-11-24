@@ -21,7 +21,7 @@ lv_obj_t *setting_list_btns[SETTING_LIST_COUNT];             // 定义列表按�
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(lv_page->setting_page);
+    back_to_app_screen(lv_page->setting_page);
 }
 // 按钮的回调事件
 static void btn_click_event(lv_event_t *e)
@@ -31,12 +31,10 @@ static void btn_click_event(lv_event_t *e)
    {
         lv_page->wifi_page = create_wifi_app();
         lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        cleanup_page(lv_page->setting_page);
    }else if (strcmp(lv_label_get_text(app_name), "Version") == 0)  
    {
         lv_page->version_page = create_version_app();
         lv_scr_load_anim(lv_page->version_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        cleanup_page(lv_page->setting_page);
     }
 
 }

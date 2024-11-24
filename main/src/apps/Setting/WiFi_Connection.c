@@ -225,7 +225,6 @@ static void btn_return_cb(lv_event_t *e)
 
     lv_page->setting_page = create_setting_app();
     lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-    cleanup_page(lv_page->wifi_page);
     
 }
 

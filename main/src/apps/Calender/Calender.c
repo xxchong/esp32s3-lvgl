@@ -16,7 +16,7 @@ static Calender_t *calender_app;
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(lv_page->calender_page);
+    back_to_app_screen(lv_page->calender_page);
   
 }
 LV_FONT_DECLARE(Calender_font_cn_14_t)

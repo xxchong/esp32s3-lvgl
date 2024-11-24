@@ -45,7 +45,7 @@ static lv_obj_t *day_cont[4];
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(lv_page->weather_page);
+    back_to_app_screen(lv_page->weather_page);
 }
 
 // static void lv_weather_update_icon(uint8_t threedays, int weatherid)

@@ -15,7 +15,7 @@ static Serial_t *serial_app;
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(serial_app->serial_page);
+    back_to_app_screen(serial_app->serial_page);
 }
 
 lv_obj_t *create_serial_app(void)

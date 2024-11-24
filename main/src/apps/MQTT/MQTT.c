@@ -14,7 +14,7 @@ static Mqtt *mqtt_app;
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_home(lv_page->mqtt_page);
+    back_to_app_screen(lv_page->mqtt_page);
 }
 
 lv_obj_t *create_mqtt_app(void)
