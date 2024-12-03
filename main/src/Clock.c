@@ -601,6 +601,7 @@ static void create_Timer(lv_obj_t *tab)
 
     timer_picker->btn_start = create_timer_btn(tab, 60, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_PLAY,false,10);
     lv_obj_align(timer_picker->btn_start, LV_ALIGN_BOTTOM_MID, 0, 10); // 调整位置
+    lv_obj_set_style_text_font(timer_picker->btn_start, &lv_font_montserrat_14, 0);
     lv_obj_add_event_cb(timer_picker->btn_start, timer_btn_start_event_cb, LV_EVENT_CLICKED, NULL);
 
     // 创建圆弧
@@ -628,11 +629,13 @@ static void create_Timer(lv_obj_t *tab)
     
     // 创建暂停按钮
     timer_picker->btn_pause = create_timer_btn(tab, 40, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_PAUSE,true,0);
+    lv_obj_set_style_text_font(timer_picker->btn_pause, &lv_font_montserrat_14, 0);
     lv_obj_add_event_cb(timer_picker->btn_pause, timer_btn_pause_event_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_flag(timer_picker->btn_pause, LV_OBJ_FLAG_HIDDEN);
     
     // 创建停止按钮
     timer_picker->btn_stop = create_timer_btn(tab, 40, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_STOP,true,0);
+    lv_obj_set_style_text_font(timer_picker->btn_stop, &lv_font_montserrat_14, 0);
     lv_obj_add_event_cb(timer_picker->btn_stop, timer_btn_stop_event_cb, LV_EVENT_CLICKED, NULL);
     lv_obj_add_flag(timer_picker->btn_stop, LV_OBJ_FLAG_HIDDEN);
 
@@ -664,9 +667,10 @@ lv_obj_t *create_clock_app(void)
     lv_obj_t *tab_btns = lv_tabview_get_tab_btns(clock_app->clock_tabview);
     tab_btns_style(tab_btns);
 
-    clock_app->tab_Alarm = tabview_add_tab(clock_app->clock_tabview, "Alarm");
-    clock_app->tab_Stopwatch = tabview_add_tab(clock_app->clock_tabview, "Stopwatch");
-    clock_app->tab_timer = tabview_add_tab(clock_app->clock_tabview, "Timer");
+    lv_obj_set_style_text_font(clock_app->clock_tabview, &Clock_font_cn_16_t, 0);
+    clock_app->tab_Alarm = tabview_add_tab(clock_app->clock_tabview, "闹钟");
+    clock_app->tab_Stopwatch = tabview_add_tab(clock_app->clock_tabview, "秒表");
+    clock_app->tab_timer = tabview_add_tab(clock_app->clock_tabview, "计时");
 
     lv_obj_remove_style(clock_app->clock_tabview, NULL, LV_PART_SCROLLBAR);
     lv_obj_remove_style(clock_app->tab_Alarm, NULL, LV_PART_SCROLLBAR);
