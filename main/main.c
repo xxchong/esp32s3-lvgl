@@ -190,25 +190,25 @@ void app_main(void)
     // max98357_deinit();
 
     // NVS初始化（WIFI底层驱动有用到NVS，所以这里要初始化）
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-    // wifi STA工作模式初始化
-    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
-    // 等待WiFi连接
-    ESP_LOGI(TAG, "等待 WiFi 连接...");
-    while (!is_wifi_connected())
-    {
-        vTaskDelay(pdMS_TO_TICKS(100));
-    }
-    ESP_LOGI(TAG, "WiFi 已连接");
+    // esp_err_t ret = nvs_flash_init();
+    // if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    // {
+    //     ESP_ERROR_CHECK(nvs_flash_erase());
+    //     ret = nvs_flash_init();
+    // }
+    // ESP_ERROR_CHECK(ret);
+    // // wifi STA工作模式初始化
+    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    // // 等待WiFi连接
+    // ESP_LOGI(TAG, "等待 WiFi 连接...");
+    // while (!is_wifi_connected())
+    // {
+    //     vTaskDelay(pdMS_TO_TICKS(100));
+    // }
+    // ESP_LOGI(TAG, "WiFi 已连接");
 
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    ESP_LOGI(TAG, "扫描WiFi");
+    // vTaskDelay(pdMS_TO_TICKS(1000));
+    // ESP_LOGI(TAG, "扫描WiFi");
 
     // wifi_scan();
     initialize_sntp(); // 获取时间

@@ -100,14 +100,14 @@ static void time_picker_cancel_event_cb(lv_event_t *e)
     }
 }
 
-static lv_obj_t *create_alarm_roller(lv_obj_t *parent, lv_coord_t width, lv_coord_t height)
+static lv_obj_t *create_alarm_roller(lv_obj_t *parent, lv_coord_t width, lv_coord_t height,lv_color_t bg_color)
 {
 
     lv_obj_t *roller = lv_roller_create(parent);
     lv_obj_set_size(roller, width, height); // 设置固定宽度和高度
 
     lv_obj_set_style_text_align(roller, LV_TEXT_ALIGN_CENTER, 0); // 文本居中对齐
-    lv_obj_set_style_bg_color(roller, lv_color_hex(0x2c2c2e), 0);
+    lv_obj_set_style_bg_color(roller, bg_color, 0);
     lv_obj_set_style_text_color(roller, lv_color_hex(0x666666), 0); // 未选中项的颜色
     lv_obj_set_style_border_width(roller, 0, 0);
     lv_obj_set_style_bg_opa(roller, 0, LV_PART_SELECTED);
@@ -161,13 +161,13 @@ static void create_time_picker(void)
     lv_obj_set_style_text_color(minute_label, lv_color_white(), 0);
 
     // 创建小时选择器
-    picker->hour_roller = create_alarm_roller(picker->popup, 80, 150);
+    picker->hour_roller = create_alarm_roller(picker->popup, 80, 150,lv_color_hex(0x2c2c2e));
     lv_roller_set_options(picker->hour_roller, hour_options, LV_ROLLER_MODE_INFINITE);
     lv_roller_set_visible_row_count(picker->hour_roller, 5);
     lv_obj_align(picker->hour_roller, LV_ALIGN_LEFT_MID, 10, 0); // 调整位置
 
     // 创建分钟选择器
-    picker->minute_roller = create_alarm_roller(picker->popup, 80, 150);
+    picker->minute_roller = create_alarm_roller(picker->popup, 80, 150,lv_color_hex(0x2c2c2e));
     lv_roller_set_options(picker->minute_roller, minute_options, LV_ROLLER_MODE_INFINITE);
     lv_roller_set_visible_row_count(picker->minute_roller, 5);
     lv_obj_align(picker->minute_roller, LV_ALIGN_RIGHT_MID, -10, 0); // 调整位置
@@ -312,17 +312,11 @@ static void btn_lap_event_cb(lv_event_t *e)
         lv_obj_t *lap_label = lv_label_create(sw->lap_list);
         lv_obj_set_style_text_color(lap_label, lv_color_white(), 0);
         lv_label_set_text(lap_label, lap_text);
-
-
         // 滚动到新添加的记录
         lv_obj_scroll_to_y(sw->lap_list, LV_COORD_MAX, LV_ANIM_ON);
-
-        
     }
     else
     {
-
-        
         lv_obj_set_style_bg_color(sw->btn_start, lv_color_hex(0x2ed573), 0);
         lv_obj_t *label = lv_obj_get_child(sw->btn_start, 0);
         lv_label_set_text(label, "start");
@@ -359,7 +353,7 @@ static void create_Stopwatch(lv_obj_t *tab)
     // 创建开始按钮
     stopwatch->btn_start = lv_btn_create(tab);
     lv_obj_set_size(stopwatch->btn_start, 80, 40);
-    lv_obj_align(stopwatch->btn_start, LV_ALIGN_BOTTOM_LEFT, 20, 15);
+    lv_obj_align(stopwatch->btn_start, LV_ALIGN_BOTTOM_LEFT, 20, 10);
     lv_obj_set_style_bg_color(stopwatch->btn_start, lv_color_hex(0x2ed573), 0);
     lv_obj_t *start_label = lv_label_create(stopwatch->btn_start);
     lv_label_set_text(start_label, "start");
@@ -369,7 +363,7 @@ static void create_Stopwatch(lv_obj_t *tab)
     // 创建计圈按钮
     stopwatch->btn_lap = lv_btn_create(tab);
     lv_obj_set_size(stopwatch->btn_lap, 80, 40);
-    lv_obj_align(stopwatch->btn_lap, LV_ALIGN_BOTTOM_RIGHT, -20, 15);
+    lv_obj_align(stopwatch->btn_lap, LV_ALIGN_BOTTOM_RIGHT, -20, 10);
     lv_obj_set_style_bg_color(stopwatch->btn_lap, lv_color_hex(0x5352ed), 0);
     lv_obj_t *lap_label = lv_label_create(stopwatch->btn_lap);
     lv_label_set_text(lap_label, "lap");
@@ -391,14 +385,265 @@ static void create_Stopwatch(lv_obj_t *tab)
     stopwatch->running = false;
     stopwatch->elapsed_time = 0;
 }
+/***********************************************************************************************************************************/
+/***********************************************************************************************************************************/
+
+
+/*************************************************************计时器****************************************************************/
+/***********************************************************************************************************************************/
+
+// 添加新的结构体用于保存时间选择器控件
+// 在timer_picker_t结构体中添加新的成员
+typedef struct
+{
+    lv_obj_t *hour_roller;
+    lv_obj_t *minute_roller;
+    lv_obj_t *second_roller;
+    lv_obj_t *btn_start;
+    // 新增成员
+    lv_obj_t *arc;
+    lv_obj_t *time_label;
+    lv_obj_t *btn_pause;
+    lv_obj_t *btn_stop;
+    uint32_t total_time;    // 总时间(ms)
+    uint32_t remaining_time; // 剩余时间(ms)
+    bool is_running;        // 运行状态
+} timer_picker_t;
+
+static timer_picker_t *timer_picker;
+static lv_timer_t *countdown_timer = NULL;
+
+// 格式化时间显示函数
+static void format_countdown_time(uint32_t ms, char *buf)
+{
+    uint32_t ss = ms / 1000;
+    uint32_t mm = ss / 60;
+    uint32_t hh = mm / 60;
+    ss %= 60;
+    mm %= 60;
+    sprintf(buf, "%02lu:%02lu:%02lu", hh, mm, ss);
+}
+// 修改定时器回调函数
+static void countdown_timer_cb(lv_timer_t *timer)
+{
+    timer_picker_t *t = (timer_picker_t *)timer->user_data;
+    if (t->is_running && t->remaining_time > 0)
+    {
+        // 每次减少1000ms (1秒)
+        t->remaining_time -= 1000;
+        
+        if (t->remaining_time <= 0) {
+            // 计时结束
+            t->remaining_time = 0;
+            t->is_running = false;
+            lv_arc_set_value(t->arc, 0);
+            lv_obj_set_style_text_font(t->time_label, &lv_font_montserrat_30, 0);
+            lv_obj_set_style_text_color(t->time_label, lv_color_hex(0x61ff61), 0);
+            lv_label_set_text(t->time_label, LV_SYMBOL_OK);
+            
+            if (countdown_timer) {
+                lv_timer_del(countdown_timer);
+                countdown_timer = NULL;
+            }
+        } else {
+            // 继续计时
+            uint32_t percentage = (t->remaining_time * 100) / t->total_time;
+            lv_arc_set_value(t->arc, percentage);
+            
+            // 更新时间标签
+            char buf[16];
+            format_countdown_time(t->remaining_time, buf);
+            lv_label_set_text(t->time_label, buf);
+        }
+    }
+}
+
+
+// 暂停按钮回调
+static void timer_btn_pause_event_cb(lv_event_t *e)
+{
+    timer_picker_t *t = timer_picker;
+    if (t->is_running)
+    {
+        // 暂停
+        t->is_running = false;
+        lv_obj_t *label = lv_obj_get_child(t->btn_pause, 0);
+        lv_label_set_text(label, LV_SYMBOL_PLAY);
+    }
+    else
+    {
+        // 继续
+        t->is_running = true;
+        lv_obj_t *label = lv_obj_get_child(t->btn_pause, 0);
+        lv_label_set_text(label, LV_SYMBOL_PAUSE);
+    }
+}
+// 停止按钮回调
+static void timer_btn_stop_event_cb(lv_event_t *e)
+{
+    timer_picker_t *t = timer_picker;
+    t->is_running = false;
+    
+    // 删除定时器
+    if (countdown_timer)
+    {
+        lv_timer_del(countdown_timer);
+        countdown_timer = NULL;
+    }
+    
+    // 显示选择器界面
+    lv_obj_clear_flag(t->hour_roller, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(t->minute_roller, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(t->second_roller, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(t->btn_start, LV_OBJ_FLAG_HIDDEN);
+    
+    // 隐藏倒计时界面
+    lv_obj_add_flag(t->arc, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(t->time_label, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(t->btn_pause, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(t->btn_stop, LV_OBJ_FLAG_HIDDEN);
+}
+// 修改开始按钮回调函数
+static void timer_btn_start_event_cb(lv_event_t *e)
+{
+    timer_picker_t *t = timer_picker;
+    
+    // 获取选择的时间
+    char h_str[3], m_str[3], s_str[3];
+    lv_roller_get_selected_str(t->hour_roller, h_str, sizeof(h_str));
+    lv_roller_get_selected_str(t->minute_roller, m_str, sizeof(m_str));
+    lv_roller_get_selected_str(t->second_roller, s_str, sizeof(s_str));
+    lv_obj_set_style_text_font(t->time_label, &Clock_font_24_t, 0);
+    lv_obj_set_style_text_color(t->time_label, lv_color_white(), 0);
+
+
+    // 计算总时间(ms)
+    t->total_time = (atoi(h_str) * 3600 + atoi(m_str) * 60 + atoi(s_str)) * 1000;
+    t->remaining_time = t->total_time;
+    
+    if (t->total_time > 0) // 如果总时间大于0
+    {
+       // 修改：将范围设置为0-100，用于百分比显示
+        lv_arc_set_range(timer_picker->arc, 0, 100);
+        // 初始值设为100%
+        lv_arc_set_value(t->arc, 100);
+        // 隐藏选择器界面
+        lv_obj_add_flag(t->hour_roller, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(t->minute_roller, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(t->second_roller, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(t->btn_start, LV_OBJ_FLAG_HIDDEN);
+        
+        // 显示倒计时界面
+        lv_obj_clear_flag(t->arc, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(t->time_label, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(t->btn_pause, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(t->btn_stop, LV_OBJ_FLAG_HIDDEN);
+        
+      
+        // 启动定时器 (1000ms = 1秒)
+        t->is_running = true;
+        if (countdown_timer == NULL)
+        {
+            countdown_timer = lv_timer_create(countdown_timer_cb, 1000, t);
+        }
+    }
+}
+
+static lv_obj_t* create_timer_btn(lv_obj_t *parent,lv_coord_t width,lv_coord_t height,lv_color_t bg_color,const char *text,bool is_circle,lv_coord_t radius)
+{
+
+    lv_obj_t *btn = lv_btn_create(parent);
+    lv_obj_set_size(btn, width, height);
+    if(is_circle)
+    {
+        lv_obj_set_style_radius(btn, LV_RADIUS_CIRCLE, 0);
+    }else
+    {
+        lv_obj_set_style_radius(btn, radius, 0);
+    }
+    lv_obj_set_style_bg_color(btn, bg_color, 0);
+    lv_obj_set_style_shadow_width(btn, 0, 0);
+
+    lv_obj_t *label = lv_label_create(btn);
+    lv_label_set_text(label, text);
+    lv_obj_center(label);
+    
+    return btn;
+}
 
 static void create_Timer(lv_obj_t *tab)
 {
-    lv_obj_t *label1 = lv_label_create(tab);
-    lv_obj_set_style_text_color(label1, lv_color_white(), 0);
-    lv_label_set_text(label1, "Timer");
-    lv_obj_center(label1);
+     if (timer_picker != NULL)
+    {
+        free(timer_picker);
+        timer_picker = NULL;
+    }
+    if(timer_picker == NULL)
+    {
+        timer_picker = (timer_picker_t *)calloc(1, sizeof(timer_picker_t));
+    }
+    // 创建小时选择器
+    timer_picker->hour_roller = create_alarm_roller(tab, 80, 150,lv_color_black()); //使用create_alarm_roller函数创建选择器 复用
+    lv_roller_set_options(timer_picker->hour_roller, hour_options, LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(timer_picker->hour_roller, 5);
+    lv_obj_align(timer_picker->hour_roller, LV_ALIGN_LEFT_MID, 2, -20); // 调整位置
+
+    // 创建分钟选择器
+    timer_picker->minute_roller = create_alarm_roller(tab, 80, 150,lv_color_black());
+    lv_roller_set_options(timer_picker->minute_roller, minute_options, LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(timer_picker->minute_roller, 5);
+    lv_obj_align(timer_picker->minute_roller, LV_ALIGN_CENTER, 0, -20); // 调整位置
+
+    timer_picker->second_roller = create_alarm_roller(tab, 80, 150,lv_color_black());
+    lv_roller_set_options(timer_picker->second_roller, minute_options, LV_ROLLER_MODE_INFINITE);
+    lv_roller_set_visible_row_count(timer_picker->second_roller, 5);
+    lv_obj_align(timer_picker->second_roller, LV_ALIGN_RIGHT_MID, -2, -20); // 调整位置
+
+    timer_picker->btn_start = create_timer_btn(tab, 60, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_PLAY,false,10);
+    lv_obj_align(timer_picker->btn_start, LV_ALIGN_BOTTOM_MID, 0, 10); // 调整位置
+    lv_obj_add_event_cb(timer_picker->btn_start, timer_btn_start_event_cb, LV_EVENT_CLICKED, NULL);
+
+    // 创建圆弧
+    timer_picker->arc = lv_arc_create(tab);
+    lv_obj_set_size(timer_picker->arc, 180, 180);
+    lv_obj_center(timer_picker->arc);
+    lv_arc_set_rotation(timer_picker->arc, 270);
+    lv_arc_set_bg_angles(timer_picker->arc, 0, 360);
+    lv_obj_clear_flag(timer_picker->arc, LV_OBJ_FLAG_CLICKABLE);    // 禁用点击
+    lv_obj_clear_flag(timer_picker->arc, LV_OBJ_FLAG_GESTURE_BUBBLE); // 禁用手势冒泡
+
+    lv_obj_set_style_arc_color(timer_picker->arc, lv_color_hex(0x1856c3), LV_PART_INDICATOR);
+    lv_obj_set_style_arc_width(timer_picker->arc, 10, LV_PART_MAIN);        // 设置背景圆弧宽度
+    lv_obj_set_style_arc_width(timer_picker->arc, 10, LV_PART_INDICATOR);   // 设置前景圆弧宽度
+    lv_obj_remove_style(timer_picker->arc, NULL, LV_PART_KNOB);
+    lv_obj_add_flag(timer_picker->arc, LV_OBJ_FLAG_HIDDEN);
+    
+    // 创建时间标签
+    timer_picker->time_label = lv_label_create(tab);
+    lv_obj_set_style_text_font(timer_picker->time_label, &Clock_font_24_t, 0);
+    lv_obj_set_style_text_color(timer_picker->time_label, lv_color_white(), 0);
+    lv_label_set_text(timer_picker->time_label, "00:00:00");
+    lv_obj_center(timer_picker->time_label);
+    lv_obj_add_flag(timer_picker->time_label, LV_OBJ_FLAG_HIDDEN);
+    
+    // 创建暂停按钮
+    timer_picker->btn_pause = create_timer_btn(tab, 40, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_PAUSE,true,0);
+    lv_obj_add_event_cb(timer_picker->btn_pause, timer_btn_pause_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_flag(timer_picker->btn_pause, LV_OBJ_FLAG_HIDDEN);
+    
+    // 创建停止按钮
+    timer_picker->btn_stop = create_timer_btn(tab, 40, 40,lv_color_hex(0x2c2c2e),LV_SYMBOL_STOP,true,0);
+    lv_obj_add_event_cb(timer_picker->btn_stop, timer_btn_stop_event_cb, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_flag(timer_picker->btn_stop, LV_OBJ_FLAG_HIDDEN);
+
+    lv_obj_align(timer_picker->btn_pause, LV_ALIGN_BOTTOM_LEFT, 20, 14);
+    lv_obj_align(timer_picker->btn_stop, LV_ALIGN_BOTTOM_RIGHT, -20, 14);
+
+
 }
+
+/***********************************************************************************************************************************/
+/***********************************************************************************************************************************/
 
 /*创建时钟app页面*/
 lv_obj_t *create_clock_app(void)
@@ -431,7 +676,8 @@ lv_obj_t *create_clock_app(void)
        // 添加这一行来禁用 tab_Stopwatch 的滚动
     lv_obj_set_scroll_dir(clock_app->tab_Stopwatch, LV_DIR_NONE);
 
-    lv_obj_set_scrollbar_mode(clock_app->tab_Stopwatch, LV_SCROLLBAR_MODE_OFF);
+
+    lv_obj_set_scroll_dir(clock_app->tab_timer, LV_DIR_NONE);
 
     create_Alarm(clock_app->tab_Alarm);
     create_Stopwatch(clock_app->tab_Stopwatch);
