@@ -308,28 +308,14 @@ static void wifi_switch_cb(lv_event_t *e)
 
 lv_obj_t *create_wifi_app(void)
 {
-    // 确保 setting_app 已经被分配内存
+    if (wifi_app != NULL)
+    {
+        free(wifi_app);
+        wifi_app = NULL;
+    }
     if (wifi_app == NULL)
     {
-        wifi_app = (WiFi_app_t *)malloc(sizeof(WiFi_app_t));
-        if (wifi_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for tools_app\n");
-            return NULL;
-        }
-        // 初始化成员变量
-        wifi_app->wifi_page = NULL;
-        wifi_app->label_wifi = NULL;
-        wifi_app->btn_return = NULL;
-        wifi_app->wifi_switch_cont = NULL;
-        wifi_app->wifi_switch = NULL;
-        wifi_app->timer_upload_wifi_list = NULL;
-        wifi_app->wifi_list = NULL;
-        wifi_app->search_bar = NULL;
-        wifi_app->connect_window = NULL;
-        wifi_app->keyboard = NULL;
-        wifi_app->mask = NULL;
+        wifi_app = (WiFi_app_t *)calloc(1, sizeof(WiFi_app_t));
 
     }
 

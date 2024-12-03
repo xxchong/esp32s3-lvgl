@@ -1,4 +1,4 @@
-/* * Data converted from /home/xxchong/桌面/esp32s3-lvgl/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from /home/xxchong/esp32s3_lvgl_st7789/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

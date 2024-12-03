@@ -27,7 +27,9 @@ static const char *btnm_map[] = {"AC", LV_SYMBOL_LEFT, "%", "/", "\n", "7", "8",
 static void btn_return_cb(lv_event_t *e)
 {
     //返回上一级
+
     lv_page->tools_page = tools_list_create();
+
     lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
 
 }
@@ -35,32 +37,21 @@ static void btn_return_cb(lv_event_t *e)
 
 lv_obj_t *calculators_create(void)
 {
+    if (calculators_app != NULL)
+    {
+        free(calculators_app);
+        calculators_app = NULL;
+    }
     if (calculators_app == NULL)
     {
-        calculators_app = (Calculators *)malloc(sizeof(Calculators));
-        if (calculators_app == NULL)
-        {
-            printf("Failed to allocate memory for calculators_app\n");
-            return NULL;
-        }
-        calculators_app->calculator_page = NULL;
-        calculators_app->group = NULL;
-        calculators_app->btn_return = NULL;
-        calculators_app->label_btn = NULL;
-        calculators_app->btnmatrix = NULL;
-        calculators_app->textarea = NULL;
-        calculators_app->expression[0] = '\0';
-        calculators_app->result = 0;
-        calculators_app->is_new_input = true;
+        calculators_app = (Calculators *)calloc(1, sizeof(Calculators));
+      
     }
  
     calculators_app->calculator_page = create_page("Calculators");
-
-
- 
     // 创建输入输出框
     calculators_app->textarea = lv_textarea_create(calculators_app->calculator_page);
-    lv_obj_set_size(calculators_app->textarea, 230, 60);
+    lv_obj_set_size(calculators_app->textarea, 230, 80);
     lv_obj_align(calculators_app->textarea, LV_ALIGN_TOP_MID, 0, 2);
     lv_textarea_set_text(calculators_app->textarea, "");
     lv_obj_add_state(calculators_app->textarea, LV_STATE_DISABLED);
@@ -75,6 +66,7 @@ lv_obj_t *calculators_create(void)
     lv_obj_set_style_radius(calculators_app->btnmatrix, LV_RADIUS_CIRCLE, LV_PART_ITEMS);
     lv_obj_align(calculators_app->btnmatrix, LV_ALIGN_BOTTOM_MID, 0, -5);
     lv_obj_set_style_text_font(calculators_app->btnmatrix, &lv_font_montserrat_20, 0);
+    // lv_group_add_obj(calculators_app->group, calculators_app->btnmatrix);
 
     return calculators_app->calculator_page;
 

@@ -35,19 +35,14 @@ void watch_1_time_refresh(void)
 
 lv_obj_t *lv_clock_watch_1(lv_obj_t *parent, bool is_preview)
 {
-
+    if (watch_1 != NULL)
+    {
+        free(watch_1);
+        watch_1 = NULL;
+    }
     if (watch_1 == NULL)
     {
-        watch_1 = (watch_1_t *)malloc(sizeof(watch_1_t));
-        if (watch_1 == NULL)
-        {
-            printf("Failed to allocate memory for watch_1\n");
-            return NULL;
-        }
-        watch_1->bg = NULL;
-        watch_1->gui_hour = NULL;
-        watch_1->gui_minute = NULL;
-        watch_1->gui_second = NULL;
+        watch_1 = (watch_1_t *)calloc(1, sizeof(watch_1_t));
     }
 
     if (clock_watch_time_timer != NULL)

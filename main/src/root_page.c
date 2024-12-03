@@ -34,15 +34,14 @@ static void screen_switch_event_cb(lv_event_t *e)
 
 lv_obj_t *create_root(void)
 {
+    if (root_page != NULL)
+    {
+        free(root_page);
+        root_page = NULL;
+    }
     if (root_page == NULL)
     {
-        root_page = (root_page_t *)malloc(sizeof(root_page_t));
-        if (root_page == NULL)
-        {
-            printf("root_page malloc failed\n");
-            return NULL;
-        }
-        memset(root_page, 0, sizeof(root_page_t));
+        root_page = (root_page_t *)calloc(1, sizeof(root_page_t));
     }
 
     root_page->root_page = create_page("Root");

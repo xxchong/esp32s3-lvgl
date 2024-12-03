@@ -1,14 +1,13 @@
 #include "sys.h"
 
 // 定义主题颜色
-// 定义主题颜色
-#define THEME_PRIMARY lv_color_hex(0x7C4DFF)        // 主色调：深紫色
-#define THEME_SECONDARY lv_color_hex(0x00BCD4)      // 次要色：青色
-#define THEME_ACCENT lv_color_hex(0xFF4081)         // 强调色：粉红色
-#define THEME_BACKGROUND lv_color_hex(0x121212)     // 深色背景
-#define THEME_SURFACE lv_color_hex(0x1E1E1E)        // 表面色
+#define THEME_PRIMARY lv_color_hex(0x6C63FF)        // 主色调：靛蓝色
+#define THEME_SECONDARY lv_color_hex(0xFF6B6B)      // 次要色：珊瑚红
+#define THEME_ACCENT lv_color_hex(0x4ECDC4)         // 强调色：青绿色
+#define THEME_BACKGROUND lv_color_hex(0x2A2D3E)     // 深色背景
+#define THEME_SURFACE lv_color_hex(0x3F4156)        // 表面色
 #define THEME_TEXT_PRIMARY lv_color_hex(0xFFFFFF)   // 主要文本色
-#define THEME_TEXT_SECONDARY lv_color_hex(0xB3B3B3) // 次要文本色
+#define THEME_TEXT_SECONDARY lv_color_hex(0x8E8E93) // 次要文本色
 
 typedef struct
 {
@@ -43,20 +42,25 @@ static lv_style_t style_btn;
 static lv_style_t style_arc;
 static lv_style_t style_slider;
 static lv_style_t style_play_btn;
+#define THEME_PRIMARY lv_color_hex(0x7C4DFF)        // 主色调：深紫色
+#define THEME_SECONDARY lv_color_hex(0x00BCD4)      // 次要色：青色
+#define THEME_ACCENT lv_color_hex(0xFF4081)         // 强调色：粉红色
+#define THEME_BACKGROUND lv_color_hex(0x121212)     // 深色背景
+#define THEME_SURFACE lv_color_hex(0x1E1E1E)        // 表面色
+#define THEME_TEXT_PRIMARY lv_color_hex(0xFFFFFF)   // 主要文本色
+#define THEME_TEXT_SECONDARY lv_color_hex(0xB3B3B3) // 次要文本色
 
 // 如果还是有问题，可以使用更简单的方式实现按钮动画
-static void btn_event_cb(lv_event_t *e)
+static void btn_event_cb(lv_event_t * e)
 {
-    lv_obj_t *btn = lv_event_get_target(e);
+    lv_obj_t * btn = lv_event_get_target(e);
     lv_event_code_t code = lv_event_get_code(e);
-
-    if (code == LV_EVENT_PRESSED)
-    {
+    
+    if(code == LV_EVENT_PRESSED) {
         // 按下时缩小
         lv_obj_set_style_transform_zoom(btn, 230, LV_STATE_PRESSED);
     }
-    else if (code == LV_EVENT_RELEASED)
-    {
+    else if(code == LV_EVENT_RELEASED) {
         // 释放时恢复
         lv_obj_set_style_transform_zoom(btn, 256, LV_STATE_DEFAULT);
     }
@@ -204,15 +208,14 @@ void btn_cb_hadler(lv_event_t *e)
 
 lv_obj_t *create_music_app(void)
 {
+    if (music_app != NULL)
+    {
+        free(music_app);
+        music_app = NULL;
+    }
     if (music_app == NULL)
     {
-        music_app = (Music *)malloc(sizeof(Music));
-        if (music_app == NULL)
-        {
-            printf("Failed to allocate memory for music_app\n");
-            return NULL;
-        }
-        memset(music_app, 0, sizeof(Music));
+        music_app = (Music *)calloc(1, sizeof(Music));
     }
 
     init_styles();
@@ -286,7 +289,7 @@ lv_obj_t *create_music_app(void)
 
     // 创建音量按钮
     music_app->volume = lv_btn_create(music_app->music_page);
-    lv_obj_set_size(music_app->volume, 40, 40);
+    lv_obj_set_size(music_app->volume, 30, 30);
     lv_obj_align(music_app->volume, LV_ALIGN_BOTTOM_LEFT, 50, -15);
     lv_obj_add_style(music_app->volume, &style_btn, 0);
     lv_obj_add_event_cb(music_app->volume, btn_event_cb, LV_EVENT_ALL, NULL);
@@ -298,7 +301,7 @@ lv_obj_t *create_music_app(void)
 
     // 创建随机播放按钮
     music_app->shuffle = lv_btn_create(music_app->music_page);
-    lv_obj_set_size(music_app->shuffle, 40, 40);
+    lv_obj_set_size(music_app->shuffle, 30, 30);
     lv_obj_align(music_app->shuffle, LV_ALIGN_BOTTOM_RIGHT, -50, -15);
     lv_obj_add_style(music_app->shuffle, &style_btn, 0);
     lv_obj_add_event_cb(music_app->shuffle, btn_event_cb, LV_EVENT_ALL, NULL);

@@ -46,7 +46,7 @@
 
 #include "watch_screen.h"
 #include "app_screen.h"
-
+#include "Clock.h"
 #define USE_ENCODER_BY_BUTTON 1
 
 typedef struct
@@ -75,7 +75,9 @@ typedef struct
   lv_obj_t *version_page;
   lv_obj_t *app_screen_page;
   lv_obj_t *watch_screen_page;
+  lv_obj_t *clock_page;
 } page_t;
+
 extern gesture_t *lv_gesture;
 extern page_t *lv_page;
 extern now_weather_info_t now_weather_info;

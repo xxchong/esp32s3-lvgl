@@ -1,24 +1,30 @@
 #include "sys.h"
 
+/*函数声明*/
+static void app_screen_scroll_event_cb(lv_event_t *e);
+void app_screen_load_page(const char *app);
+static void app_screen_btn_icon_cb(lv_event_t *e);
+static void app_screen_scroll_layout(lv_obj_t *parent);
+static void app_screen_grid_layout(lv_obj_t *parent);
+
+/*app_screen 结构体*/
 typedef struct
 {
     lv_obj_t *app_screen_page;
     lv_obj_t *grid;
-
 } app_screen_t;
 
-lv_obj_t *btns[APP_COUNTS];
-const char *apps[] = {APP_NAMES};
-const char *symbols[] = {APP_SYMBOL};
-// 设置网格布局
+lv_obj_t *btns[APP_COUNTS];/*按钮*/
+const char *apps[] = {APP_NAMES};/*应用名称*/
+const char *symbols[] = {APP_SYMBOL};/*应用图标*/
+/*网格布局*/
 static lv_coord_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 static lv_coord_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-
 app_screen_t *app_screen;
 
-// 定义页面创建函数类型
+/*函数指针*/
 typedef lv_obj_t *(*page_creator_fn)(void);
-// 页面配置结构体
+/*页面配置结构体*/
 typedef struct
 {
     const char *name;
@@ -26,12 +32,8 @@ typedef struct
     lv_obj_t **page_ptr;
 } page_config_t;
 
-static page_config_t page_configs[10]; // 确保数组大小足够
+static page_config_t page_configs[10]; /*确保数组大小足够*/
 
-static void scroll_event_cb(lv_event_t *e);
-void load_page(const char *app);
-static void btn_cb(lv_event_t *e);
-static void page2_scroll_layout(lv_obj_t *parent);
 
 static void init_page_configs(void)
 {
@@ -44,10 +46,11 @@ static void init_page_configs(void)
     page_configs[6] = (page_config_t){"MQTT", create_mqtt_app, &lv_page->mqtt_page};
     page_configs[7] = (page_config_t){"BlueTooth", create_bluetooth_app, &lv_page->bluetooth_page};
     page_configs[8] = (page_config_t){"Weather", create_weather_app, &lv_page->weather_page};
-    page_configs[9] = (page_config_t){NULL, NULL, NULL}; // 结束标记
+    page_configs[9] = (page_config_t){"Clock", create_clock_app, &lv_page->clock_page};
+    page_configs[10] = (page_config_t){NULL, NULL, NULL}; // 结束标记
 }
 
-void load_page(const char *app)
+void app_screen_load_page(const char *app)
 {
     printf("load_page: %s\n", app);
     const page_config_t *config = page_configs;
@@ -60,7 +63,6 @@ void load_page(const char *app)
             // 创建新页面
             *config->page_ptr = config->creator();
             // 统一的切换动画处理
-            // cleanup_page(lv_page->root_page);
             lv_scr_load_anim(*config->page_ptr, LV_SCR_LOAD_ANIM_MOVE_LEFT, 30, 0, true);
             return;
         }
@@ -70,7 +72,7 @@ void load_page(const char *app)
 
 uint8_t btn_index = 0;
 
-static void btn_cb(lv_event_t *e)
+static void app_screen_btn_icon_cb(lv_event_t *e)
 {
     lv_obj_t *btn = lv_event_get_target(e);
     const char *app = (const char *)lv_event_get_user_data(e);
@@ -79,18 +81,24 @@ static void btn_cb(lv_event_t *e)
         if (btns[i] == btn)
         {
             btn_index = i;
-            load_page(apps[i]);
+            app_screen_load_page(apps[i]);
             return;
         }
     }
 }
+
 lv_obj_t *create_app_screen(void)
 {
     init_page_configs(); // 初始化页面配置
+
+    if (app_screen != NULL)
+    {
+        free(app_screen);
+        app_screen = NULL;
+    }
     if (app_screen == NULL)
     {
-        app_screen = (app_screen_t *)malloc(sizeof(app_screen_t));
-        memset(app_screen, 0, sizeof(app_screen_t));
+        app_screen = (app_screen_t *)calloc(1, sizeof(app_screen_t));
     }
 
     app_screen->app_screen_page = create_page("App");
@@ -101,13 +109,13 @@ lv_obj_t *create_app_screen(void)
     create_flex_app(app_screen->app_screen_page);
     lv_obj_set_scrollbar_mode(app_screen->app_screen_page, LV_SCROLLBAR_MODE_OFF);
 #else
-    page2_scroll_layout(app_screen->app_screen_page);
+    app_screen_scroll_layout(app_screen->app_screen_page);
 #endif
 
     return app_screen->app_screen_page;
 }
 
-static void scroll_event_cb(lv_event_t *e)
+static void app_screen_scroll_event_cb(lv_event_t *e)
 {
     lv_obj_t *cont = lv_event_get_target(e);
     lv_area_t cont_a;
@@ -149,7 +157,7 @@ static void scroll_event_cb(lv_event_t *e)
     }
 }
 
-static void page2_scroll_layout(lv_obj_t *parent)
+static void app_screen_scroll_layout(lv_obj_t *parent)
 {
     lv_obj_t *cont = lv_obj_create(parent);
     lv_obj_center(cont);
@@ -163,7 +171,7 @@ static void page2_scroll_layout(lv_obj_t *parent)
     lv_obj_set_style_border_width(cont, 0, 0);
     lv_obj_set_style_clip_corner(cont, true, 0);
     lv_obj_set_flex_flow(cont, LV_FLEX_FLOW_COLUMN);
-    lv_obj_add_event_cb(cont, scroll_event_cb, LV_EVENT_SCROLL, NULL);
+    lv_obj_add_event_cb(cont, app_screen_scroll_event_cb, LV_EVENT_SCROLL, NULL);
     lv_obj_set_scroll_dir(cont, LV_DIR_VER);
     lv_obj_set_scroll_snap_y(cont, LV_SCROLL_SNAP_CENTER);
     lv_obj_set_scrollbar_mode(cont, LV_SCROLLBAR_MODE_OFF);
@@ -179,10 +187,12 @@ static void page2_scroll_layout(lv_obj_t *parent)
         lv_color_hex(0xFF6161), // 珊瑚红
         lv_color_hex(0x61FFFF), // 青色
         lv_color_hex(0xFFFF61), // 柠檬黄
-        lv_color_hex(0xFF61B9)  // 玫瑰粉
+        lv_color_hex(0xFF61B9),  // 玫瑰粉
+        lv_color_hex(0x61FF61)  // 绿色
+
     };
 
-    for (uint32_t i = 0; i < 9; i++)
+    for (uint32_t i = 0; i < APP_COUNTS; i++)
     {
         btns[i] = lv_btn_create(cont);
         lv_obj_set_size(btns[i], lv_pct(90), 65);
@@ -232,14 +242,14 @@ static void page2_scroll_layout(lv_obj_t *parent)
         lv_obj_set_style_text_color(label, lv_color_hex(0xeeeeee), 0);
 
         lv_obj_align_to(label, label_symbol, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-        lv_obj_add_event_cb(btns[i], btn_cb, LV_EVENT_SHORT_CLICKED, (void *)apps[i]);
+        lv_obj_add_event_cb(btns[i], app_screen_btn_icon_cb, LV_EVENT_SHORT_CLICKED, (void *)apps[i]);
     }
     lv_event_send(cont, LV_EVENT_SCROLL, NULL);
     lv_obj_scroll_to_view(lv_obj_get_child(cont, 0), LV_ANIM_OFF);
 }
 
 #ifdef USE_GRID_PAGE2
-static void create_flex_app(lv_obj_t *parent)
+static void app_screen_grid_layout(lv_obj_t *parent)
 {
     // 创建网格
     grid = lv_obj_create(parent);
@@ -301,7 +311,7 @@ static void create_flex_app(lv_obj_t *parent)
         lv_obj_set_style_text_color(label, lv_color_black(), 0);
 
         lv_obj_align_to(label, btns[i], LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
-        lv_obj_add_event_cb(btns[i], btn_cb, LV_EVENT_SHORT_CLICKED, apps[i]);
+        lv_obj_add_event_cb(btns[i], app_screen_btn_icon_cb, LV_EVENT_SHORT_CLICKED, apps[i]);
     }
 }
 #endif

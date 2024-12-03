@@ -1,3 +1,5 @@
+
+
 #include "sys.h"
 
 // extern lv_indev_t *indev;
@@ -26,23 +28,14 @@ const char* day_names[7] = { "日","一", "二","三","四","五","六"};
 
 lv_obj_t *create_calendar_app(void)
 {
-    // 确保 gpio_app 已经被分配内存
+    if (calender_app != NULL)
+    {
+        free(calender_app);
+        calender_app = NULL;
+    }
     if (calender_app == NULL)
     {
-        calender_app = (Calender_t *)malloc(sizeof(Calender_t));
-        if (calender_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for gpio_app\n");
-            return NULL;
-        }
-        // 初始化成员变量
-        calender_app->calender_page = NULL;
-        calender_app->calender = NULL;
-        calender_app->group=NULL;
-        calender_app->btn_return = NULL;
-        calender_app->label_desc = NULL;
-        calender_app->label_btn = NULL;
+        calender_app = (Calender_t *)calloc(1, sizeof(Calender_t));
     }
 
     calender_app->calender_page = create_page("Calendar"); //创建主页面
@@ -51,8 +44,7 @@ lv_obj_t *create_calendar_app(void)
     lv_obj_set_size(calender_app->calender, 240, 260);
     lv_obj_align(calender_app->calender, LV_ALIGN_BOTTOM_MID, 0, 0);
 
- 
-    lv_calendar_set_today_date(calender_app->calender, 2024, 11, 11);
+    lv_calendar_set_today_date(calender_app->calender, timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
     /* 设置日历显示的月份 */
     lv_obj_t* header = lv_calendar_header_arrow_create(calender_app->calender);
     // 获取并修改header中的按钮
@@ -81,7 +73,7 @@ lv_obj_t *create_calendar_app(void)
     lv_obj_center(label_right);
     lv_obj_set_style_text_font(calender_app->calender, &Calender_font_cn_14_t, LV_STATE_DEFAULT);
     lv_calendar_set_day_names(calender_app->calender, day_names);
-    lv_calendar_set_showed_date(calender_app->calender, 2024, 11);
+    lv_calendar_set_showed_date(calender_app->calender, timeinfo->tm_year+1900, timeinfo->tm_mon+1);
     lv_obj_update_layout(calender_app->calender);
     return calender_app->calender_page;
 }

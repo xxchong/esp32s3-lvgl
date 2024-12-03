@@ -61,7 +61,8 @@
         "stat.h": "c",
         "custom.h": "c",
         "events_init.h": "c",
-        "desktop_clock_4.h": "c"
+        "desktop_clock_4.h": "c",
+        "app_screen.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

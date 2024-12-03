@@ -134,137 +134,136 @@ lv_obj_t *create_app_btn_return(lv_obj_t *parent)
     return app_btn_return;
 }
 
-void gestureCallback(lv_event_t *event)
-{
-    lv_obj_t *screen = lv_event_get_current_target(event);
-    lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
-    const char *name = (const char *)lv_event_get_user_data(event);
-    switch (dir)
-    {
-    case LV_DIR_LEFT:
-        if (lv_scr_act() == lv_page->root_page)
-        {
+// 获取当前页面类型
+static page_type_t get_current_page_type(void) {
+    lv_obj_t *current = lv_scr_act();
+    if (current == lv_page->root_page) return PAGE_ROOT;
+    if (current == lv_page->watch_screen_page) return PAGE_WATCH;
+    if (current == lv_page->app_screen_page) return PAGE_APP;
+    if (current == lv_page->notification_page) return PAGE_NOTIFICATION;
+    return PAGE_OTHER;
+}
+
+// 切换到新页面
+static void switch_to_page(lv_obj_t *new_page, lv_scr_load_anim_t anim_type) {
+    lv_scr_load_anim(new_page, anim_type, 300, 0, true);
+}
+
+// 处理向左滑动
+static void handle_left_swipe(page_type_t current_type) {
+    switch (current_type) {
+        case PAGE_ROOT:
             del_root_page_time_timer();
             lv_page->app_screen_page = create_app_screen();
-            lv_scr_load_anim(lv_page->app_screen_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        }
-        else if (lv_scr_act() == lv_page->watch_screen_page)
-        {
+            switch_to_page(lv_page->app_screen_page, LV_SCR_LOAD_ANIM_MOVE_LEFT);
+            break;
+            
+        case PAGE_WATCH:
             del_watch_screen_time_timer();
             lv_page->root_page = create_root();
-            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        }
+            switch_to_page(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT);
+            break;
+            
+        default:
+            break;
+    }
+}
 
-        break;
-    case LV_DIR_RIGHT:
-        if (lv_scr_act() == lv_page->root_page)
-        {
+// 处理向右滑动
+static void handle_right_swipe(page_type_t current_type, const char *name) {
+    switch (current_type) {
+        case PAGE_ROOT:
             del_root_page_time_timer();
             lv_page->watch_screen_page = create_watch_screen();
-            lv_scr_load_anim(lv_page->watch_screen_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
-        }
-        else if (lv_scr_act() == lv_page->app_screen_page)
-        {
+            switch_to_page(lv_page->watch_screen_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
+            break;
+            
+        case PAGE_APP:
             lv_page->root_page = create_root();
-            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-        }
-        if (lv_scr_act() != lv_page->root_page && lv_scr_act() != lv_page->watch_screen_page && lv_scr_act() != lv_page->app_screen_page)
-        {
-            if (strcmp(name, "Game") == 0)
-            {
-                back_to_app_screen(lv_page->game_page);
-            }
-            else if (strcmp(name, "Setting") == 0)
-            {
-                back_to_app_screen(lv_page->setting_page);
-            }
-            else if (strcmp(name, "Serial") == 0)
-            {
-                back_to_app_screen(lv_page->serial_page);
-            }
-            else if (strcmp(name, "Music") == 0)
-            {
-                back_to_app_screen(lv_page->music_page);
-            }
-            else if (strcmp(name, "Tools") == 0)
-            {
-                back_to_app_screen(lv_page->tools_page);
-            }
-            else if (strcmp(name, "Calendar") == 0)
-            {
-                back_to_app_screen(lv_page->calender_page);
-            }
-            else if (strcmp(name, "MQTT") == 0)
-            {
-                back_to_app_screen(lv_page->mqtt_page);
-            }
-            else if (strcmp(name, "BlueTooth") == 0)
-            {
-                back_to_app_screen(lv_page->bluetooth_page);
-            }
-            else if (strcmp(name, "Weather") == 0)
-            {
-                back_to_app_screen(lv_page->weather_page);
-            }
-            else if (strcmp(name, "Calculators") == 0)
-            {
+            switch_to_page(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_LEFT);
+            break;
+            
+        case PAGE_OTHER:
+            // 处理特殊页面
+            if (strcmp(name, "Calculators") == 0) {
                 lv_page->tools_page = tools_list_create();
-                lv_scr_load_anim(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+                switch_to_page(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
             }
-            else if (strcmp(name, "Calculators2") == 0)
-            {
-            }
-            else if (strcmp(name, "Calculators3") == 0)
-            {
-            }
-            else if (strcmp(name, "WiFi") == 0)
-            {
+            else if (strcmp(name, "WiFi") == 0 || strcmp(name, "Version") == 0) {
                 lv_page->setting_page = create_setting_app();
-                lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+                switch_to_page(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
             }
-            else if (strcmp(name, "Version") == 0)
-            {
-                lv_page->setting_page = create_setting_app();
-                lv_scr_load_anim(lv_page->setting_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
+            // 其他页面返回到应用屏幕
+            else {
+                if (lv_scr_act() == lv_page->clock_page)
+                {
+                    stop_stopwatch_timer();
+                }
+                back_to_app_screen(lv_scr_act());
             }
-        }
+            break;
+            
+        default:
+            break;
+    }
+}
 
-        break;
-    case LV_DIR_TOP:
-        if (lv_scr_act() == lv_page->notification_page || lv_scr_act() == lv_page->root_page || lv_scr_act() == lv_page->watch_screen_page || lv_scr_act() == lv_page->app_screen_page)
-        {
-            lv_page->root_page = create_root();
-            lv_scr_load_anim(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, true);
-        }
+// 处理向下滑动
+static void handle_down_swipe(page_type_t current_type) {
+    // 清理定时器
+    if (current_type == PAGE_ROOT) {
+        del_root_page_time_timer();
+    } else if (current_type == PAGE_WATCH) {
+        del_watch_screen_time_timer();
+    }
+    
+    // 创建通知页面
+    if (current_type == PAGE_ROOT || current_type == PAGE_WATCH || current_type == PAGE_APP) {
+        lv_page->notification_page = create_notification();
+        switch_to_page(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM);
+    }
+}
+// 处理向上滑动
+static void handle_up_swipe(page_type_t current_type) {
 
-        break;
-    case LV_DIR_BOTTOM:
-        if (lv_scr_act() == lv_page->root_page)
-        {
-            del_root_page_time_timer(); // 删除root页面的时间刷新定时器
-            lv_page->notification_page = create_notification();
-            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
-        }
-        else if (lv_scr_act() == lv_page->watch_screen_page)
-        {
-            del_watch_screen_time_timer();
-            lv_page->notification_page = create_notification();
-            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
-        }
-        else if (lv_scr_act() == lv_page->app_screen_page)
-        {
-            lv_page->notification_page = create_notification();
-            lv_scr_load_anim(lv_page->notification_page, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, true);
-        }
+    if (current_type == PAGE_ROOT || current_type == PAGE_WATCH || 
+        current_type == PAGE_APP || current_type == PAGE_NOTIFICATION) {
+        lv_page->root_page = create_root();
+        switch_to_page(lv_page->root_page, LV_SCR_LOAD_ANIM_MOVE_TOP);
+    }
 
-        break;
+}
+
+
+// 主手势回调函数
+void gestureCallback(lv_event_t *event) {
+    lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
+    const char *name = (const char *)lv_event_get_user_data(event);
+    page_type_t current_type = get_current_page_type();
+    
+    switch (dir) {
+        case LV_DIR_LEFT:
+            handle_left_swipe(current_type);
+            break;
+            
+        case LV_DIR_RIGHT:
+            handle_right_swipe(current_type, name);
+            break;
+            
+        case LV_DIR_TOP:
+            handle_up_swipe(current_type);
+            break;
+            
+        case LV_DIR_BOTTOM:
+            handle_down_swipe(current_type);
+            break;
     }
 }
 void back_to_app_screen(lv_obj_t *page)
 {
     if (lv_page->game_page == lv_scr_act())
     {
-        Stop_Game();
+        // Stop_Game();
         printf("返回释放内存\n");
     }
     lv_page->app_screen_page = create_app_screen();
@@ -282,8 +281,10 @@ lv_obj_t *create_page(const char *name)
     return page;
 }
 
+
 void stop_watch_timer(void)
 {
+
 }
 
 void stop_status_bar_timer(void)

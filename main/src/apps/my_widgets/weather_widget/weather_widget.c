@@ -39,14 +39,14 @@ static lv_weather_widget_t *weather_widget_app;
 
 void update_weather_widgetdata(void)
 {
-    char temp_str[64];
-    lv_label_set_text(weather_widget_app->label_weather_text, now_weather_info.text);
+    // char temp_str[64];
+    // lv_label_set_text(weather_widget_app->label_weather_text, now_weather_info.text);
 
-    snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
-    lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
+    // snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
+    // lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
 
-    snprintf(temp_str, sizeof(temp_str), "%s° / %s°", three_day_weather_info[0].tempMin, three_day_weather_info[0].tempMax);
-    lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
+    // snprintf(temp_str, sizeof(temp_str), "%s° / %s°", three_day_weather_info[0].tempMin, three_day_weather_info[0].tempMax);
+    // lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
 
     // lv_weather_update_icon(WeatherData_current.icon);
 }
@@ -63,16 +63,14 @@ static void btn_event_cb(lv_event_t *e)
 
 lv_obj_t *create_weather_widget_app(lv_obj_t *parent)
 {
+    if (weather_widget_app != NULL)
+    {
+        free(weather_widget_app);
+        weather_widget_app = NULL;
+    }
     if (weather_widget_app == NULL)
     {
-        weather_widget_app = (lv_weather_widget_t *)malloc(sizeof(lv_weather_widget_t));
-        if (weather_widget_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for weather_app\n");
-            return NULL;
-        }
-        memset(weather_widget_app, 0, sizeof(lv_weather_widget_t));
+        weather_widget_app = (lv_weather_widget_t *)calloc(1, sizeof(lv_weather_widget_t));
     }
 
     weather_widget_app->btn = lv_btn_create(parent);

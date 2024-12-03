@@ -127,16 +127,14 @@ static lv_obj_t *create_arc_with_labels(lv_obj_t *parent, int32_t range_max, int
 
 lv_obj_t *lv_clock_watch_2(lv_obj_t *parent, bool is_preview)
 {
-    // 初始化watch_2结构体
+    if (watch_2 != NULL)
+    {
+        free(watch_2);
+        watch_2 = NULL;
+    }
     if (watch_2 == NULL)
     {
-        watch_2 = (watch_2_t *)malloc(sizeof(watch_2_t));
-        if (watch_2 == NULL)
-        {
-            printf("Failed to allocate memory for watch_2\n");
-            return NULL;
-        }
-        memset(watch_2, 0, sizeof(watch_2_t));
+        watch_2 = (watch_2_t *)calloc(1, sizeof(watch_2_t));
     }
 
     if (clock_watch_time_timer_2 != NULL)

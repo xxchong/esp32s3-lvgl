@@ -43,22 +43,14 @@ static void btn_event_cb(lv_event_t *e)
 
 lv_obj_t *create_wooden_fish_widget(lv_obj_t *parent)
 {
+    if (wooden_fish_widget_app != NULL)
+    {
+        free(wooden_fish_widget_app);
+        wooden_fish_widget_app = NULL;
+    }
     if (wooden_fish_widget_app == NULL)
     {
-        wooden_fish_widget_app = (lv_wooden_fish_widget_t *)malloc(sizeof(lv_wooden_fish_widget_t));
-        if (wooden_fish_widget_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for weather_app\n");
-            return NULL;
-        }
-        // 初始化成员变量
-        wooden_fish_widget_app->add_1 = NULL;
-        wooden_fish_widget_app->cont = NULL;
-        wooden_fish_widget_app->imgbtn_fish = NULL;
-        wooden_fish_widget_app->label_num = NULL;
-        wooden_fish_widget_app->label_today = NULL;
-        wooden_fish_widget_app->btn = NULL;
+        wooden_fish_widget_app = (lv_wooden_fish_widget_t *)calloc(1, sizeof(lv_wooden_fish_widget_t)); 
     }
 
     wooden_fish_widget_app->cont = lv_obj_create(parent);

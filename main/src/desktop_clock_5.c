@@ -118,16 +118,14 @@ static lv_obj_t *create_icon_label(lv_obj_t *parent, const char *text, const lv_
 
 lv_obj_t *lv_clock_watch_5(lv_obj_t *parent, bool is_preview)
 {
-    // 初始化watch_2结构体
+    if (watch_5 != NULL)    
+    {
+        free(watch_5);
+        watch_5 = NULL;
+    }
     if (watch_5 == NULL)
     {
-        watch_5 = (watch_5_t *)malloc(sizeof(watch_5_t));
-        if (watch_5 == NULL)
-        {
-            printf("Failed to allocate memory for watch_2\n");
-            return NULL;
-        }
-        memset(watch_5, 0, sizeof(watch_5_t));
+        watch_5 = (watch_5_t *)calloc(1, sizeof(watch_5_t));
     }
 
     if (clock_watch_time_timer_5 != NULL)

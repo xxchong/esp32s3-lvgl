@@ -27,18 +27,15 @@ static void btn_start_cb(lv_event_t *e)
 }
 lv_obj_t *create_boot(void)
 {
+
+    if (boot != NULL)
+    {
+        free(boot);
+        boot = NULL;
+    }
     if (boot == NULL)
     {
-        boot = (BOOT_T *)malloc(sizeof(BOOT_T));
-        if (boot == NULL)
-        {
-            printf("boot malloc failed\n");
-        }
-        boot->boot_page = NULL;
-        boot->boot_label = NULL;
-        boot->obj1 = NULL;
-        boot->img = NULL;
-        boot->btn_start = NULL;
+        boot = (BOOT_T *)calloc(1, sizeof(BOOT_T));
     }
 
     boot->boot_page = lv_obj_create(NULL);

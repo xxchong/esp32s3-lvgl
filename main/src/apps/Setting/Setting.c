@@ -38,20 +38,18 @@ static void btn_click_event(lv_event_t *e)
     }
 
 }
-
 lv_obj_t *create_setting_app(void)
 {
-    // 确保 setting_app 已经被分配内存
+    if (setting_app != NULL)
+    {
+        free(setting_app);
+        setting_app = NULL;
+    }
     if (setting_app == NULL)
     {
-        setting_app = (Setting *)malloc(sizeof(Setting));
-        if (setting_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for setting_app\n");
-            return NULL;
-        }
-        memset(setting_app, 0, sizeof(Setting));
+        setting_app = (Setting *)calloc(1, sizeof(Setting));
+
+
     }
     setting_app->setting_page = create_page("Setting"); //创建主页面
     create_status_bar(setting_app->setting_page); //创建状态栏        // lv_indev_set_group(indev, setting_app->group);

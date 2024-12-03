@@ -1,4 +1,4 @@
-#include <lvgl.h>
+#include "lvgl/lvgl.h"
 #include "util.h"
 #include "icon.h"
 #include "Notification.h"

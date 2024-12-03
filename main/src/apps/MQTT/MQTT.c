@@ -1,3 +1,11 @@
+/*
+ * @Author: xxchong 2106997706@qq.com
+ * @Date: 2024-11-04 16:19:58
+ * @LastEditors: xxchong 2106997706@qq.com
+ * @LastEditTime: 2024-11-07 15:36:26
+ * @FilePath: \lv_port_pc_eclipse-release-v8.3\gui\src\MQTT.c
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 #include "sys.h"
 // extern lv_indev_t *indev;
 extern lv_obj_t *user_area;
@@ -14,31 +22,24 @@ static Mqtt *mqtt_app;
 
 static void btn_return_cb(lv_event_t *e)
 {
-    back_to_app_screen(lv_page->mqtt_page);
+    back_to_app_screen(mqtt_app->mqtt_page);
 }
 
 lv_obj_t *create_mqtt_app(void)
 {
-    // 确保 mqtt_app 已经被分配内存
+    if (mqtt_app != NULL)
+    {
+        free(mqtt_app);
+        mqtt_app = NULL;
+    }
     if (mqtt_app == NULL)
     {
-        mqtt_app = (Mqtt *)malloc(sizeof(Mqtt));
-        if (mqtt_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for mqtt_app\n");
-            return NULL;
-        }
-        // 初始化成员变量
-        mqtt_app->mqtt_page = NULL;
-        mqtt_app->group = NULL;
-        mqtt_app->btn_return = NULL;
-        mqtt_app->label_desc = NULL;
-        mqtt_app->label_btn = NULL;
+        mqtt_app = (Mqtt *)calloc(1, sizeof(Mqtt));
     }
     //  lv_indev_set_group(indev, mqtt_app->group);
-    mqtt_app->mqtt_page = create_page("MQTT"); // 创建主页面
-    create_status_bar(mqtt_app->mqtt_page);    // 创建状态栏
+    mqtt_app->mqtt_page = create_page("MQTT"); //创建主页面
+    create_status_bar(mqtt_app->mqtt_page); //创建状态栏
+
 
     // 创建描述标签
     mqtt_app->label_desc = lv_label_create(mqtt_app->mqtt_page);
@@ -49,6 +50,7 @@ lv_obj_t *create_mqtt_app(void)
 
     // 创建返回按钮
     mqtt_app->btn_return = create_app_btn_return(mqtt_app->mqtt_page);
+    
 
     // 配置按钮事件（如果需要）
     lv_obj_add_event_cb(mqtt_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);

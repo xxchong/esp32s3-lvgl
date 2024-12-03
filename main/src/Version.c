@@ -23,21 +23,14 @@ static void btn_return_cb(lv_event_t *e)
 
 lv_obj_t *create_version_app(void)
 {
-    // 确保 serial_app 已经被分配内存
+    if (version_app != NULL)
+    {
+        free(version_app);
+        version_app = NULL;
+    }
     if (version_app == NULL)
     {
-        version_app = (Version_page_t *)malloc(sizeof(Version_page_t));
-        if (version_app == NULL)
-        {
-            // 处理内存分配失败的情况
-            printf("Failed to allocate memory for serial_app\n");
-            return NULL;
-        }
-        // 初始化成员变量
-        version_app->version_page = NULL;
-        version_app->btn_return = NULL;
-        version_app->label_btn = NULL;
-        version_app->label_desc = NULL;
+        version_app = (Version_page_t *)calloc(1, sizeof(Version_page_t));
     }
     version_app->version_page = create_page("Version"); //创建主页面
     create_status_bar(version_app->version_page); //创建状态栏    

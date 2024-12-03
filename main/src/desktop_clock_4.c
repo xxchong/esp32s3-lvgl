@@ -64,10 +64,14 @@ static void init_styles(bool is_preview)
 
 lv_obj_t *lv_clock_watch_4(lv_obj_t *parent, bool is_preview)
 {
+    if (watch_4 != NULL)
+    {
+        free(watch_4);
+        watch_4 = NULL;
+    }
     if (watch_4 == NULL)
     {
-        watch_4 = (watch_4_t *)malloc(sizeof(watch_4_t));
-        memset(watch_4, 0, sizeof(watch_4_t));
+        watch_4 = (watch_4_t *)calloc(1, sizeof(watch_4_t));
     }
 
     if (clock_watch_time_timer_4 != NULL)
