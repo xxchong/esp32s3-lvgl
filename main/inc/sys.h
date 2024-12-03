@@ -34,6 +34,10 @@
 #include "apps/Game/Tetris.h"
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "desktop_clock_1.h"
 #include "desktop_clock_2.h"

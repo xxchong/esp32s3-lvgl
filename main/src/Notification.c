@@ -19,22 +19,7 @@ static void my_slider_cb(lv_event_t *e)
     lv_obj_t *slider = lv_event_get_target(e);
     char buf[8];
     int val = (int)lv_slider_get_value(slider);
-
-    // // 将滑块值从0-5映射到0-100范围
-    // int brightness = (val * 100) / 5;                            // 将滑块值映射到0-100
-    // brightness = brightness < 0 ? 0 : (brightness > 100 ? 100 : brightness); // 确保亮度值在0到100之间
-
-    // printf("滑块值:%d, 亮度值:%d%%\n", val, val);
-
-    // set_backlight(val);
-
-    // // 更新显示的百分比
-    // sprintf(buf, "%d%%", (int)((val * 100) / 5)); // 显示当前滑块值的百分比
-
-    // ledcWrite(CHANNEL, pwm_value);
-
-    // 更新滑块的值
-    // lv_slider_set_value(slider, val, LV_ANIM_OFF); // 确保滑块的值被更新
+    set_backlight(val);
 }
 
 
