@@ -113,6 +113,7 @@ static lv_obj_t *create_alarm_roller(lv_obj_t *parent, lv_coord_t width, lv_coor
     lv_obj_set_style_bg_opa(roller, 0, LV_PART_SELECTED);
     lv_obj_set_style_text_color(roller, lv_color_white(), LV_PART_SELECTED);
     lv_obj_set_style_text_font(roller, &lv_font_montserrat_24, LV_PART_SELECTED);
+    lv_obj_set_style_text_font(roller, &lv_font_montserrat_16, 0);
 
     return roller;
 }
@@ -311,6 +312,7 @@ static void btn_lap_event_cb(lv_event_t *e)
         sprintf(lap_text, "lap %d    %s", (int)lv_obj_get_child_cnt(sw->lap_list) + 1, buf);
         lv_obj_t *lap_label = lv_label_create(sw->lap_list);
         lv_obj_set_style_text_color(lap_label, lv_color_white(), 0);
+        lv_obj_set_style_text_font(lap_label, &lv_font_montserrat_14, 0);
         lv_label_set_text(lap_label, lap_text);
         // 滚动到新添加的记录
         lv_obj_scroll_to_y(sw->lap_list, LV_COORD_MAX, LV_ANIM_ON);
@@ -357,6 +359,7 @@ static void create_Stopwatch(lv_obj_t *tab)
     lv_obj_set_style_bg_color(stopwatch->btn_start, lv_color_hex(0x2ed573), 0);
     lv_obj_t *start_label = lv_label_create(stopwatch->btn_start);
     lv_label_set_text(start_label, "start");
+    lv_obj_set_style_text_font(start_label, &lv_font_montserrat_14, 0);
     lv_obj_center(start_label);
     lv_obj_add_event_cb(stopwatch->btn_start, btn_start_event_cb, LV_EVENT_CLICKED, NULL);
 
@@ -367,6 +370,7 @@ static void create_Stopwatch(lv_obj_t *tab)
     lv_obj_set_style_bg_color(stopwatch->btn_lap, lv_color_hex(0x5352ed), 0);
     lv_obj_t *lap_label = lv_label_create(stopwatch->btn_lap);
     lv_label_set_text(lap_label, "lap");
+    lv_obj_set_style_text_font(lap_label, &lv_font_montserrat_14, 0);
     lv_obj_center(lap_label);
     lv_obj_add_event_cb(stopwatch->btn_lap, btn_lap_event_cb, LV_EVENT_CLICKED, NULL);
 
