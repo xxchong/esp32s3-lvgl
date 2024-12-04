@@ -5,10 +5,7 @@ typedef struct
     lv_group_t *group;
     lv_obj_t *btn_return;
     lv_obj_t *label_btn;
-    lv_obj_t *tools_list; // 工具列表
-    lv_obj_t *label_name; // 列表按钮对象名
-    lv_obj_t *icon;       // 按钮图标
-
+    lv_obj_t *btns[TOOLS_LIST_COUNT];    // 改为按钮数组，移除原来的 tools_list 相关变量
 } Tools;
 static void btn_click_event(lv_event_t *e); // 列表按钮回调事件
 
@@ -48,37 +45,48 @@ lv_obj_t *tools_list_create(void)
         tools_app = (Tools *)calloc(1, sizeof(Tools));
 
     }
-    // tools_app->group = lv_group_create();
-    // lv_indev_set_group(indev, tools_app->group);
-    tools_app->tools_page = create_page("Tools"); //创建主页面
-    create_status_bar(tools_app->tools_page); //创建状态栏
 
+    tools_app->tools_page = create_page("Tools");
+    create_status_bar(tools_app->tools_page);
+    lv_obj_set_style_text_color(lv_obj_get_child(tools_app->tools_page, 0), lv_color_white(), 0);
+    lv_obj_set_style_text_color(lv_obj_get_child(tools_app->tools_page, 1), lv_color_white(), 0);
+    lv_obj_set_style_text_color(lv_obj_get_child(tools_app->tools_page, 2), lv_color_white(), 0);
 
-    // 创建返回按钮
     tools_app->btn_return = create_app_btn_return(tools_app->tools_page);
-   
-
-    // 配置按钮事件（如果需要）
+    lv_obj_set_style_text_color(lv_obj_get_child(tools_app->btn_return, 0), lv_color_white(), 0);
     lv_obj_add_event_cb(tools_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
-    // lv_group_add_obj(tools_app->group, tools_app->btn_return);
 
-    tools_app->tools_list = lv_list_create(tools_app->tools_page);
-    lv_obj_set_size(tools_app->tools_list, 240, 235);
-    lv_obj_align(tools_app->tools_list, LV_ALIGN_BOTTOM_MID, 0, 0);
-    remove_styles(tools_app->tools_list, true, true, false, true);
-
-    lv_obj_set_scrollbar_mode(tools_app->tools_list, LV_SCROLLBAR_MODE_AUTO); // 关闭滚动条
-    lv_obj_set_style_text_font(tools_app->tools_list, &lv_font_montserrat_20, 0);
+    // 设置页面背景为黑色
+    lv_obj_set_style_bg_color(tools_app->tools_page, lv_color_hex(0x000000), LV_PART_MAIN);
 
     for (int i = 0; i < TOOLS_LIST_COUNT; i++)
     {
-        tools_list_btns[i] = lv_list_add_btn(tools_app->tools_list, tools_list_icon[i], NULL);
-        lv_obj_t *app_name = lv_label_create(tools_list_btns[i]);
-        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_20, 0);
-
+        // 创建按钮
+        tools_app->btns[i] = lv_btn_create(tools_app->tools_page);
+        lv_obj_set_size(tools_app->btns[i], 220, 45);
+        lv_obj_align(tools_app->btns[i], LV_ALIGN_TOP_MID, 0, 60 + i * 50);
+        
+        // 设置按钮样式
+        lv_obj_set_style_bg_color(tools_app->btns[i], lv_color_hex(0x101010), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(tools_app->btns[i], LV_OPA_COVER, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(tools_app->btns[i], lv_color_hex(0x303030), LV_STATE_PRESSED);
+        
+        // 创建图标
+        lv_obj_t *icon = lv_label_create(tools_app->btns[i]);
+        lv_obj_set_style_text_font(icon, &lv_font_montserrat_24, 0);
+        lv_obj_set_style_text_color(icon, lv_color_hex(0x1E90FF), LV_PART_MAIN);
+        lv_label_set_text(icon, tools_list_icon[i]);
+        lv_obj_align(icon, LV_ALIGN_LEFT_MID, 10, 0);
+        
+        // 创建文本标签
+        lv_obj_t *app_name = lv_label_create(tools_app->btns[i]);
+        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_14, 0);
+        lv_obj_set_style_text_color(app_name, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
         lv_label_set_text(app_name, LIST_LABEL_NAME[i]);
-        lv_obj_align(app_name, LV_ALIGN_CENTER, -5, 0);
-        lv_obj_add_event_cb(tools_list_btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
+        lv_obj_align(app_name, LV_ALIGN_LEFT_MID, 40, 0);
+
+        // 添加点击事件
+        lv_obj_add_event_cb(tools_app->btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
     }
 
     return tools_app->tools_page;

@@ -7,16 +7,13 @@ typedef struct
     lv_obj_t *btn_return;
     lv_obj_t *label_desc;
     lv_obj_t *label_btn;
-    lv_obj_t *settiong_list; // 设置列表
-    lv_obj_t *label_name;    // 列表按钮对象名
-    lv_obj_t *icon;          // 按钮图标
+    lv_obj_t *btns[SETTING_LIST_COUNT];    // 改为按钮数组
 } Setting;
 
 static Setting *setting_app;
 
 const char *setting_list_icon[] = {SETTING_LIST_ICON};       // 图标数组
 const char *SETTING_LIST_LABEL_NAME[] = {SETTING_LIST_NAME}; // app名称数组
-lv_obj_t *setting_list_btns[SETTING_LIST_COUNT];             // 定义列表按钮数组
 
 static void btn_return_cb(lv_event_t *e)
 {
@@ -26,11 +23,11 @@ static void btn_return_cb(lv_event_t *e)
 static void btn_click_event(lv_event_t *e)
 {
    lv_obj_t *app_name = lv_event_get_user_data(e);
-   if (strcmp(lv_label_get_text(app_name), "WiFi") == 0)
+   if (strcmp(lv_label_get_text(app_name), "WLAN") == 0)
    {
         lv_page->wifi_page = create_wifi_app();
         lv_scr_load_anim(lv_page->wifi_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
-   }else if (strcmp(lv_label_get_text(app_name), "Version") == 0)  
+   }else if (strcmp(lv_label_get_text(app_name), "我的设备") == 0)  
    {
         lv_page->version_page = create_version_app();
         lv_scr_load_anim(lv_page->version_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
@@ -47,11 +44,13 @@ lv_obj_t *create_setting_app(void)
     if (setting_app == NULL)
     {
         setting_app = (Setting *)calloc(1, sizeof(Setting));
-
-
     }
     setting_app->setting_page = create_page("Setting"); //创建主页面
-    create_status_bar(setting_app->setting_page); //创建状态栏        // lv_indev_set_group(indev, setting_app->group);
+    create_status_bar(setting_app->setting_page); //创建状态栏
+    lv_obj_set_style_text_color(lv_obj_get_child(setting_app->setting_page, 0), lv_color_white(), 0);
+    lv_obj_set_style_text_color(lv_obj_get_child(setting_app->setting_page, 1), lv_color_white(), 0);
+    lv_obj_set_style_text_color(lv_obj_get_child(setting_app->setting_page, 2), lv_color_white(), 0);
+
 
     // 创建返回按钮
     setting_app->btn_return = create_app_btn_return(setting_app->setting_page);
@@ -61,45 +60,34 @@ lv_obj_t *create_setting_app(void)
     // 设置页面背景为黑色
     lv_obj_set_style_bg_color(setting_app->setting_page, lv_color_hex(0x000000), LV_PART_MAIN);
 
-    // 设置列表样式
-    setting_app->settiong_list = lv_list_create(setting_app->setting_page);
-    lv_obj_set_style_bg_color(setting_app->settiong_list, lv_color_hex(0x000000), LV_PART_MAIN);
-    lv_obj_set_style_text_font(setting_app->settiong_list, &app_setting_icon_25_t, 0);
-    lv_obj_set_size(setting_app->settiong_list, 240, 240);
-    lv_obj_align(setting_app->settiong_list, LV_ALIGN_BOTTOM_MID, 0, 0);
-    remove_styles(setting_app->settiong_list, true, true, false, true);
-
-    // 设置滚动条样式
-    lv_obj_set_style_bg_color(setting_app->settiong_list, lv_color_hex(0x202020), LV_PART_SCROLLBAR);
-    lv_obj_set_scrollbar_mode(setting_app->settiong_list, LV_SCROLLBAR_MODE_AUTO);
-
     for (int i = 0; i < SETTING_LIST_COUNT; i++)
     {
-        setting_list_btns[i] = lv_list_add_btn(setting_app->settiong_list, setting_list_icon[i], NULL);
+        // 创建按钮
+        setting_app->btns[i] = lv_btn_create(setting_app->setting_page);
+        lv_obj_set_size(setting_app->btns[i], 220, 45);  // 设置按钮大小
+        lv_obj_align(setting_app->btns[i], LV_ALIGN_TOP_MID, 0, 60 + i * 50);  // 设置按钮位置
         
         // 设置按钮样式
-        lv_obj_set_style_bg_color(setting_list_btns[i], lv_color_hex(0x101010), LV_PART_MAIN);
-        lv_obj_set_style_bg_opa(setting_list_btns[i], LV_OPA_COVER, LV_PART_MAIN);
-        // 按钮点击效果
-        lv_obj_set_style_bg_color(setting_list_btns[i], lv_color_hex(0x303030), LV_STATE_PRESSED);
+        lv_obj_set_style_bg_color(setting_app->btns[i], lv_color_hex(0x101010), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(setting_app->btns[i], LV_OPA_COVER, LV_PART_MAIN);
+        lv_obj_set_style_bg_color(setting_app->btns[i], lv_color_hex(0x303030), LV_STATE_PRESSED);
         
-        // 设置图标颜色为浅蓝色
-        lv_obj_set_style_text_color(setting_list_btns[i], lv_color_hex(0x1E90FF), LV_PART_MAIN);
-
+        // 创建图标
+        lv_obj_t *icon = lv_label_create(setting_app->btns[i]);
+        lv_obj_set_style_text_font(icon, &app_setting_icon_25_t, 0);
+        lv_obj_set_style_text_color(icon, lv_color_hex(0x1E90FF), LV_PART_MAIN);
+        lv_label_set_text(icon, setting_list_icon[i]);
+        lv_obj_align(icon, LV_ALIGN_LEFT_MID, 10, 0);
+        
         // 创建文本标签
-        lv_obj_t *app_name = lv_label_create(setting_list_btns[i]);
-        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_16, 0);
-        // 设置文本颜色为白色
+        lv_obj_t *app_name = lv_label_create(setting_app->btns[i]);
+        lv_obj_set_style_text_font(app_name, &app_setting_cn_font_16_t, 0);
         lv_obj_set_style_text_color(app_name, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
-
         lv_label_set_text(app_name, SETTING_LIST_LABEL_NAME[i]);
-        lv_obj_align(app_name, LV_ALIGN_CENTER, -5, 0);
-        
-        // 添加按钮间距
-        lv_obj_set_style_pad_top(setting_list_btns[i], 10, LV_PART_MAIN);
-        lv_obj_set_style_pad_bottom(setting_list_btns[i], 10, LV_PART_MAIN);
-        
-        lv_obj_add_event_cb(setting_list_btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
+        lv_obj_align(app_name, LV_ALIGN_LEFT_MID, 40, 0);
+
+        // 添加点击事件
+        lv_obj_add_event_cb(setting_app->btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
     }
 
     return setting_app->setting_page;

@@ -138,12 +138,11 @@ lv_obj_t *create_weather_app(void)
 
 
     weather_app->weather_page = create_page("Weather"); // 创建主页面
-    // create_status_bar(weather_app->weather_page);       // 创建状态栏
     // 创建返回按钮
     weather_app->btn_return = create_app_btn_return(weather_app->weather_page);
     lv_obj_add_event_cb(weather_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
 
-    lv_obj_set_style_bg_color(weather_app->weather_page, lv_color_hex(0x1b7ff1), 0);
+    lv_obj_set_style_bg_color(weather_app->weather_page, lv_color_hex(0x5ba1f2), 0); 
 
     weather_app->label_Gps = lv_label_create(weather_app->weather_page);
     lv_label_set_text(weather_app->label_Gps, LV_SYMBOL_GPS);

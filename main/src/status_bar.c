@@ -70,7 +70,7 @@ void create_status_bar(lv_obj_t *parent)
     wifi_status = lv_label_create(parent);
     current_time = lv_label_create(parent);
     battery_status = lv_label_create(parent);
-    lv_obj_set_style_text_font(wifi_status, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_font(wifi_status, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(wifi_status, lv_color_black(), 0);
     lv_obj_set_style_text_font(current_time, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(current_time, lv_color_black(), 0);

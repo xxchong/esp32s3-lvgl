@@ -211,7 +211,7 @@ void app_main(void)
     // ESP_LOGI(TAG, "扫描WiFi");
 
     // wifi_scan();
-    initialize_sntp(); // 获取时间
+    // initialize_sntp(); // 获取时间
     // 测试打印当前时间
     char timestr[64];
     get_time_string(timestr, sizeof(timestr));

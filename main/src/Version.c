@@ -57,11 +57,13 @@ lv_obj_t *create_version_app(void)
         lv_obj_t *cont = lv_obj_create(version_app->version_page);
         lv_obj_set_size(cont, 240, 36);  // 设置容器大小
         lv_obj_align(cont, LV_ALIGN_TOP_MID, 0, 60 + i * 40);  // 调整位置
-        lv_obj_set_style_bg_color(cont, lv_color_make(40, 40, 40), 0);  // 深灰色背景
         lv_obj_set_style_border_width(cont, 1, 0);  // 设置边框宽度
         lv_obj_set_style_border_color(cont, lv_color_make(60, 60, 60), 0);  // 边框颜色
         lv_obj_set_style_radius(cont, 8, 0);  // 圆角
         lv_obj_set_style_pad_all(cont, 0, 0);  // 移除内边距
+
+        lv_obj_set_style_bg_color(cont, lv_color_hex(0x101010), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(cont, LV_OPA_COVER, LV_PART_MAIN);
 
         lv_obj_t* icon_label = lv_label_create(cont);
         lv_obj_set_style_text_font(icon_label, &app_setting_icon_25_t, 0);
@@ -71,7 +73,7 @@ lv_obj_t *create_version_app(void)
         
         // 创建标题标签
         labels[i] = lv_label_create(cont);  // 改为在容器内创建
-        lv_obj_set_style_text_font(labels[i], &version_font_cn_16_t, 0);
+        lv_obj_set_style_text_font(labels[i], &version_font_cn_14_t, 0);
         lv_obj_set_style_text_color(labels[i], lv_color_white(), 0);
         lv_label_set_text(labels[i], titles[i]);
         lv_obj_align_to(labels[i], icon_label, LV_ALIGN_OUT_RIGHT_MID, 5, 0);  // 相对容器左侧对齐

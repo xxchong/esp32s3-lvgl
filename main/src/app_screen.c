@@ -37,16 +37,16 @@ static page_config_t page_configs[10]; /*确保数组大小足够*/
 
 static void init_page_configs(void)
 {
-    page_configs[0] = (page_config_t){"Game", create_game_app, &lv_page->game_page};
-    page_configs[1] = (page_config_t){"Setting", create_setting_app, &lv_page->setting_page};
-    page_configs[2] = (page_config_t){"Serial", create_serial_app, &lv_page->serial_page};
-    page_configs[3] = (page_config_t){"Music", create_music_app, &lv_page->music_page};
-    page_configs[4] = (page_config_t){"Tools", tools_list_create, &lv_page->tools_page};
-    page_configs[5] = (page_config_t){"Calendar", create_calendar_app, &lv_page->calender_page};
+    page_configs[0] = (page_config_t){"游戏", create_game_app, &lv_page->game_page};
+    page_configs[1] = (page_config_t){"设置", create_setting_app, &lv_page->setting_page};
+    page_configs[2] = (page_config_t){"串口", create_serial_app, &lv_page->serial_page};
+    page_configs[3] = (page_config_t){"音乐", create_music_app, &lv_page->music_page};
+    page_configs[4] = (page_config_t){"工具箱", tools_list_create, &lv_page->tools_page};
+    page_configs[5] = (page_config_t){"日历", create_calendar_app, &lv_page->calender_page};
     page_configs[6] = (page_config_t){"MQTT", create_mqtt_app, &lv_page->mqtt_page};
-    page_configs[7] = (page_config_t){"BlueTooth", create_bluetooth_app, &lv_page->bluetooth_page};
-    page_configs[8] = (page_config_t){"Weather", create_weather_app, &lv_page->weather_page};
-    page_configs[9] = (page_config_t){"Clock", create_clock_app, &lv_page->clock_page};
+    page_configs[7] = (page_config_t){"蓝牙", create_bluetooth_app, &lv_page->bluetooth_page};
+    page_configs[8] = (page_config_t){"天气", create_weather_app, &lv_page->weather_page};
+    page_configs[9] = (page_config_t){"时钟", create_clock_app, &lv_page->clock_page};
     page_configs[10] = (page_config_t){NULL, NULL, NULL}; // 结束标记
 }
 
@@ -231,7 +231,7 @@ static void app_screen_scroll_layout(lv_obj_t *parent)
 
         // 文本标签
         lv_obj_t *label = lv_label_create(btns[i]);
-        lv_obj_set_style_text_font(label, &lv_font_montserrat_20, 0);
+        lv_obj_set_style_text_font(label, &app_screen_cn_font_20_t, 0);
         lv_label_set_text_fmt(label, "%s", apps[i]);
         // 设置文本为亮色
         lv_obj_set_style_text_color(label, lv_color_hex(0xeeeeee), 0);
@@ -301,7 +301,7 @@ static void app_screen_grid_layout(lv_obj_t *parent)
         lv_obj_set_style_text_color(label_symbol, lv_color_black(), 0);
 
         lv_obj_t *label = lv_label_create(obj);
-        lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+        lv_obj_set_style_text_font(label, &app_screen_cn_font_20_t, 0);
         lv_label_set_text_fmt(label, "%s", apps[i]);
         lv_obj_set_style_text_color(label, lv_color_black(), 0);
 
