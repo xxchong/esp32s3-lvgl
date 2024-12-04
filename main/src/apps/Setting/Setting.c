@@ -1,4 +1,3 @@
-
 #include "sys.h"
 
 typedef struct
@@ -56,24 +55,50 @@ lv_obj_t *create_setting_app(void)
 
     // 创建返回按钮
     setting_app->btn_return = create_app_btn_return(setting_app->setting_page);
+    lv_obj_set_style_text_color(lv_obj_get_child(setting_app->btn_return, 0), lv_color_white(), 0);
     lv_obj_add_event_cb(setting_app->btn_return, btn_return_cb, LV_EVENT_CLICKED, NULL);
 
+    // 设置页面背景为黑色
+    lv_obj_set_style_bg_color(setting_app->setting_page, lv_color_hex(0x000000), LV_PART_MAIN);
+
+    // 设置列表样式
     setting_app->settiong_list = lv_list_create(setting_app->setting_page);
-    lv_obj_set_style_text_font(setting_app->settiong_list, &lv_font_montserrat_20, 0);
+    lv_obj_set_style_bg_color(setting_app->settiong_list, lv_color_hex(0x000000), LV_PART_MAIN);
+    lv_obj_set_style_text_font(setting_app->settiong_list, &app_setting_icon_25_t, 0);
     lv_obj_set_size(setting_app->settiong_list, 240, 240);
     lv_obj_align(setting_app->settiong_list, LV_ALIGN_BOTTOM_MID, 0, 0);
     remove_styles(setting_app->settiong_list, true, true, false, true);
 
-    lv_obj_set_scrollbar_mode(setting_app->settiong_list, LV_SCROLLBAR_MODE_AUTO); // 关闭滚动条
+    // 设置滚动条样式
+    lv_obj_set_style_bg_color(setting_app->settiong_list, lv_color_hex(0x202020), LV_PART_SCROLLBAR);
+    lv_obj_set_scrollbar_mode(setting_app->settiong_list, LV_SCROLLBAR_MODE_AUTO);
 
     for (int i = 0; i < SETTING_LIST_COUNT; i++)
     {
         setting_list_btns[i] = lv_list_add_btn(setting_app->settiong_list, setting_list_icon[i], NULL);
+        
+        // 设置按钮样式
+        lv_obj_set_style_bg_color(setting_list_btns[i], lv_color_hex(0x101010), LV_PART_MAIN);
+        lv_obj_set_style_bg_opa(setting_list_btns[i], LV_OPA_COVER, LV_PART_MAIN);
+        // 按钮点击效果
+        lv_obj_set_style_bg_color(setting_list_btns[i], lv_color_hex(0x303030), LV_STATE_PRESSED);
+        
+        // 设置图标颜色为浅蓝色
+        lv_obj_set_style_text_color(setting_list_btns[i], lv_color_hex(0x1E90FF), LV_PART_MAIN);
+
+        // 创建文本标签
         lv_obj_t *app_name = lv_label_create(setting_list_btns[i]);
-        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_20, 0);
+        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_16, 0);
+        // 设置文本颜色为白色
+        lv_obj_set_style_text_color(app_name, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
 
         lv_label_set_text(app_name, SETTING_LIST_LABEL_NAME[i]);
         lv_obj_align(app_name, LV_ALIGN_CENTER, -5, 0);
+        
+        // 添加按钮间距
+        lv_obj_set_style_pad_top(setting_list_btns[i], 10, LV_PART_MAIN);
+        lv_obj_set_style_pad_bottom(setting_list_btns[i], 10, LV_PART_MAIN);
+        
         lv_obj_add_event_cb(setting_list_btns[i], btn_click_event, LV_EVENT_CLICKED, app_name);
     }
 

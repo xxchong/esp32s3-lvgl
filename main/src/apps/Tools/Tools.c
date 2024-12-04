@@ -68,7 +68,7 @@ lv_obj_t *tools_list_create(void)
     remove_styles(tools_app->tools_list, true, true, false, true);
 
     lv_obj_set_scrollbar_mode(tools_app->tools_list, LV_SCROLLBAR_MODE_AUTO); // 关闭滚动条
-    lv_obj_set_style_text_font(tools_app->tools_list, &my_symbol_font_20_t, 0);
+    lv_obj_set_style_text_font(tools_app->tools_list, &lv_font_montserrat_20, 0);
 
     for (int i = 0; i < TOOLS_LIST_COUNT; i++)
     {

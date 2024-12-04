@@ -41,8 +41,8 @@ void calculators_create1(lv_obj_t *parent)
 
     // 创建按钮上的标签
     calculators_app->label_btn = lv_label_create(calculators_app->btn_return);
-    lv_obj_set_style_text_font(calculators_app->label_btn, &my_symbol_font_10_t, 0);
-    lv_label_set_text(calculators_app->label_btn, USER_SYMBOL_RETURN2);
+    lv_obj_set_style_text_font(calculators_app->label_btn, &lv_font_montserrat_10, 0);
+    lv_label_set_text(calculators_app->label_btn, LV_SYMBOL_LEFT);
     lv_obj_center(calculators_app->label_btn);
     lv_obj_set_style_text_color(calculators_app->label_btn, lv_color_black(), 0);
 

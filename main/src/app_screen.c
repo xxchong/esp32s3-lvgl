@@ -222,14 +222,9 @@ static void app_screen_scroll_layout(lv_obj_t *parent)
         // 图标
         lv_obj_t *label_symbol = lv_label_create(btns[i]);
         lv_obj_align(label_symbol, LV_ALIGN_LEFT_MID, 0, 0);
-        if (i == 5 || i == 8)
-        {
-            lv_obj_set_style_text_font(label_symbol, &add_symbol_40_t, 0);
-        }
-        else
-        {
-            lv_obj_set_style_text_font(label_symbol, &my_symbol_font_40_t, 0);
-        }
+      
+        lv_obj_set_style_text_font(label_symbol, &app_icon_36_t, 0);
+    
         lv_label_set_text(label_symbol, symbols[i]);
         // 设置图标颜色为对应的糖果色
         lv_obj_set_style_text_color(label_symbol, candy_colors[i], 0);

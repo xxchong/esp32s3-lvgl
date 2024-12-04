@@ -91,7 +91,7 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent)
 
     weather_widget_app->label_current_icon = lv_label_create(weather_widget_app->btn);
     lv_obj_set_style_text_color(weather_widget_app->label_current_icon, lv_color_hex(0xee8665), 0);
-    lv_obj_set_style_text_font(weather_widget_app->label_current_icon, &weather_font_30_t, 0);
+    lv_obj_set_style_text_font(weather_widget_app->label_current_icon, &qweather_icon_fill_30_t, 0);
     lv_obj_align_to(weather_widget_app->label_current_icon, weather_widget_app->label_current_temp, LV_ALIGN_OUT_RIGHT_MID, 10, -2);
     lv_label_set_text(weather_widget_app->label_current_icon, USER_WEATHER_SYMBOL_102);
 

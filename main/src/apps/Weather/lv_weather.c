@@ -1,11 +1,4 @@
-/*
- * @Author: xxchong 2106997706@qq.com
- * @Date: 2024-11-04 17:32:28
- * @LastEditors: xxchong 2106997706@qq.com
- * @LastEditTime: 2024-11-07 14:57:42
- * @FilePath: \lv_port_pc_eclipse-release-v8.3\gui\src\lv_weather.c
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
+
 #include "sys.h"
 // #include "weather_http.h"
 
@@ -168,7 +161,7 @@ lv_obj_t *create_weather_app(void)
     lv_obj_align_to(weather_app->label_update_time, weather_app->label_location, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
 
     weather_app->label_current_icon = lv_label_create(weather_app->weather_page);
-    lv_obj_set_style_text_font(weather_app->label_current_icon, &weather_font_60_t, 0);
+    lv_obj_set_style_text_font(weather_app->label_current_icon, &qweather_icon_fill_60_t, 0);
     lv_label_set_text(weather_app->label_current_icon, USER_WEATHER_SYMBOL_100);
     lv_obj_set_style_text_color(weather_app->label_current_icon, lv_color_hex(0xee8665), 0);
     lv_obj_align_to(weather_app->label_current_icon, weather_app->label_update_time, LV_ALIGN_OUT_BOTTOM_MID, 0, 2);
@@ -205,7 +198,7 @@ lv_obj_t *create_weather_app(void)
         lv_obj_set_size(day_cont[i], 225, 31);
         lv_obj_set_style_pad_all(day_cont[i], 0, 0);
         lv_obj_set_style_bg_opa(day_cont[i], 0, 0);
-        lv_obj_set_scrollbar_mode(day_cont[i], LV_SCROLLBAR_MODE_OFF);
+        lv_obj_set_scroll_dir(day_cont[i], LV_DIR_NONE);
 
         // 设置下边框为白色
         lv_obj_set_style_border_color(day_cont[i], lv_color_white(), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -235,7 +228,7 @@ lv_obj_t *create_weather_app(void)
 
         weather_app->label_weather_icon[i] = lv_label_create(day_cont[i + 1]);
         lv_obj_align_to(weather_app->label_weather_icon[i], weather_app->label, LV_ALIGN_OUT_RIGHT_MID, 1, -8);
-        lv_obj_set_style_text_font(weather_app->label_weather_icon[i], &weather_font_30_t, 0);
+        lv_obj_set_style_text_font(weather_app->label_weather_icon[i], &qweather_icon_fill_30_t, 0);
         lv_obj_set_style_text_color(weather_app->label_weather_icon[i], lv_color_hex(0xf3b847), 0);
         lv_label_set_text(weather_app->label_weather_icon[i], USER_WEATHER_SYMBOL_305);
 
@@ -263,14 +256,6 @@ lv_obj_t *create_weather_app(void)
         lv_bar_set_value(weather_app->bar_weather[i], 35, LV_ANIM_ON);
     }
 
-    // lv_group_add_obj(weather_app->group, weather_app->btn_return);
-    // lv_group_add_obj(weather_app->group, weather_app->root);
-    // 添加事件回调以处理编码器返回
-
-    // if (xSemaphoreGive(xBinarySemaphore) == pdTRUE)
-    // {
-    //     printf("btn clicked\n");
-    // }
     // update_weather_data();
     return weather_app->weather_page;
 }

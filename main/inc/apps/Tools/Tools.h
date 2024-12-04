@@ -1,3 +1,4 @@
+
 #ifndef __TOOLS_H
 #define __TOOLS_H
 
@@ -5,7 +6,7 @@
 
 #define TOOLS_LIST_COUNT 3
 
-#define LIST_ICON USER_SYMBOL_TOOLS, USER_SYMBOL_TOOLS, USER_SYMBOL_TOOLS
+#define LIST_ICON LV_SYMBOL_WIFI,LV_SYMBOL_WIFI,LV_SYMBOL_WIFI
 
 #define LIST_NAME "Calculators", "Calculators2", "Calculators3"
 
