@@ -14,6 +14,7 @@ extern "C"
 #define USE_QWEATHER_FILL_SYMBOL_ICON_60_T
 #define USE_APP_ICON_36_T
 #define USE_APP_SETTING_ICON_25_T
+#define USE_APP_TOOLS_ICON_25_T
 
 
    /**
@@ -116,9 +117,6 @@ extern "C"
 
 
 /**
- * 应用图标UTF-8定义
- */
-/**
  * 系统设置图标UTF-8定义
  */
 #define USER_APP_SYMBOL_FIRMWARE "\xEE\x98\x8A"     // Unicode: 0xe60a  固件升级
@@ -130,6 +128,17 @@ extern "C"
 #define USER_APP_SYMBOL_CPU "\xEE\x98\x84"          // Unicode: 0xe604  CPU
 #define USER_APP_SYMBOL_OS "\xEE\x9A\x86"           // Unicode: 0xe686  操作系统
 #define USER_APP_SYMBOL_SMARTWATCH "\xEE\x98\x85"   // Unicode: 0xe605  圆形智能手表
+
+/**
+ * 工具箱图标UTF-8定义
+ */
+#define USER_APP_SYMBOL_COMPASS "\xEE\xA0\x91"     // Unicode: 0xe811  指南针
+#define USER_APP_SYMBOL_THERMOMETER "\xEE\x98\x84" // Unicode: 0xe604  温湿度
+#define USER_APP_SYMBOL_CALCULATOR "\xEE\x98\xAD"  // Unicode: 0xe62d  计算器
+
+#ifdef USE_APP_TOOLS_ICON_25_T
+    extern const lv_font_t app_tools_icon_25_t; //
+#endif
 
 #ifdef USE_APP_SETTING_ICON_25_T
     extern const lv_font_t app_setting_icon_25_t; //
@@ -158,7 +167,6 @@ extern "C"
 #ifdef USE_APP_ICON_36_T
     extern const lv_font_t app_icon_36_t; //
 #endif
-
 
 #ifdef __cplusplus
 } /* extern "C" */

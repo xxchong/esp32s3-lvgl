@@ -20,7 +20,7 @@ static void btn_click_event(lv_event_t *e)
     lv_obj_t *btn = lv_event_get_target(e);
     lv_obj_t *app_name = (lv_obj_t *)lv_event_get_user_data(e);
     const char *name = lv_label_get_text(app_name);
-    if (strcmp(name, "Calculators") == 0)
+    if (strcmp(name, "计算器") == 0)
     {
         lv_page->calculator_page = calculators_create();
         lv_scr_load_anim(lv_page->calculator_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
@@ -73,14 +73,14 @@ lv_obj_t *tools_list_create(void)
         
         // 创建图标
         lv_obj_t *icon = lv_label_create(tools_app->btns[i]);
-        lv_obj_set_style_text_font(icon, &lv_font_montserrat_24, 0);
+        lv_obj_set_style_text_font(icon, &app_tools_icon_25_t, 0);
         lv_obj_set_style_text_color(icon, lv_color_hex(0x1E90FF), LV_PART_MAIN);
         lv_label_set_text(icon, tools_list_icon[i]);
         lv_obj_align(icon, LV_ALIGN_LEFT_MID, 10, 0);
         
         // 创建文本标签
         lv_obj_t *app_name = lv_label_create(tools_app->btns[i]);
-        lv_obj_set_style_text_font(app_name, &lv_font_montserrat_14, 0);
+        lv_obj_set_style_text_font(app_name, &app_tools_cn_font_16_t, 0);
         lv_obj_set_style_text_color(app_name, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
         lv_label_set_text(app_name, LIST_LABEL_NAME[i]);
         lv_obj_align(app_name, LV_ALIGN_LEFT_MID, 40, 0);
