@@ -1,4 +1,3 @@
-
 #include "sys.h"
 
 static uint8_t Now_Hour, Now_Minute, Now_Second;
@@ -27,10 +26,29 @@ lv_timer_t *clock_watch_time_timer = NULL;
 
 void watch_1_time_refresh(void)
 {
+    if (watch_1 == NULL)
+    {
+        return;
+    }
+
     get_now_time();
-    lv_img_set_angle(watch_1->gui_second, 60 * timeinfo->tm_sec);
-    lv_img_set_angle(watch_1->gui_hour, 300 * timeinfo->tm_hour + timeinfo->tm_min * 5);
-    lv_img_set_angle(watch_1->gui_minute, 60 * timeinfo->tm_min);
+    if (timeinfo == NULL)
+    {
+        return;
+    }
+
+    if (watch_1->gui_second)
+    {
+        lv_img_set_angle(watch_1->gui_second, 60 * timeinfo->tm_sec);
+    }
+    if (watch_1->gui_hour)
+    {
+        lv_img_set_angle(watch_1->gui_hour, 300 * timeinfo->tm_hour + timeinfo->tm_min * 5);
+    }
+    if (watch_1->gui_minute)
+    {
+        lv_img_set_angle(watch_1->gui_minute, 60 * timeinfo->tm_min);
+    }
 }
 
 lv_obj_t *lv_clock_watch_1(lv_obj_t *parent, bool is_preview)

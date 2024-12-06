@@ -19,8 +19,11 @@ static void root_page_time_refresh(lv_timer_t *timer)
 }
 void del_root_page_time_timer(void)
 {
-    lv_timer_del(root_page_time_timer);
-    root_page_time_timer = NULL;
+    if (root_page_time_timer != NULL)
+    {
+        lv_timer_del(root_page_time_timer);
+        root_page_time_timer = NULL;
+    }
 }
 
 // 定义回调函数
@@ -49,6 +52,11 @@ lv_obj_t *create_root(void)
     lv_obj_remove_style(root_page->root_page, NULL, LV_PART_SCROLLBAR);
     lv_obj_add_event_cb(root_page->root_page, screen_switch_event_cb, LV_EVENT_SCREEN_LOADED, NULL);
     lv_obj_clear_flag(root_page->root_page, LV_OBJ_FLAG_SCROLLABLE);
+    if (root_page_time_timer != NULL    )
+    {
+        lv_timer_del(root_page_time_timer);
+        root_page_time_timer = NULL;
+    }
 
     root_page_time_timer = lv_timer_create(root_page_time_refresh, 1000, NULL);
 

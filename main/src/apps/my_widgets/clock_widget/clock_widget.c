@@ -31,38 +31,60 @@ lv_timer_t *clock_widget_time_timer = NULL;
 
 void clock_widget_time_refresh(void)
 {
-    
+    // 添加空指针检查
+    if (clock_widget_app == NULL || clock_widget_app->meter == NULL)
+    {
+        return;
+    }
+
     char temp[20];
     get_now_time();
 
     // 计算小时值（12小时制）
     int hour_12 = timeinfo->tm_hour % 12;
     if (hour_12 == 0)
-        hour_12 = 12; // 将0点转换为12点
+        hour_12 = 12;
 
     // 计算小时指针的位置（考虑分钟的影响）
-    float hour_value = hour_12 + timeinfo->tm_min / 60.0f;
+    float hour_value = (hour_12 * 5) + (timeinfo->tm_min * 5.0f / 60.0f);
 
-    // 设置小时指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_hour, (int)hour_value);
+    // 添加指针检查
+    if (clock_widget_app->lv_meterneedle_line_hour)
+    {
+        lv_meter_set_indicator_value(clock_widget_app->meter,
+                                     clock_widget_app->lv_meterneedle_line_hour, (int)hour_value);
+    }
 
-    // 设置分钟指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_minute, timeinfo->tm_min);
+    if (clock_widget_app->lv_meterneedle_line_minute)
+    {
+        lv_meter_set_indicator_value(clock_widget_app->meter,
+                                     clock_widget_app->lv_meterneedle_line_minute, timeinfo->tm_min);
+    }
 
-    // 设置秒指针
-    lv_meter_set_indicator_value(clock_widget_app->meter, clock_widget_app->lv_meterneedle_line_second, timeinfo->tm_sec);
+    if (clock_widget_app->lv_meterneedle_line_second)
+    {
+        lv_meter_set_indicator_value(clock_widget_app->meter,
+                                     clock_widget_app->lv_meterneedle_line_second, timeinfo->tm_sec);
+    }
 
+    // 添加数字时钟部分的空指针检查
+    if (digital_clock_widget_app && digital_clock_widget_app->label_time)
+    {
+        sprintf(temp, "%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+        lv_label_set_text(digital_clock_widget_app->label_time, temp);
+    }
 
+    if (digital_clock_widget_app && digital_clock_widget_app->label_date)
+    {
+        sprintf(temp, "%02d.%02d", timeinfo->tm_mon + 1, timeinfo->tm_mday);
+        lv_label_set_text(digital_clock_widget_app->label_date, temp);
+    }
 
-    sprintf(temp, "%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-    lv_label_set_text(digital_clock_widget_app->label_time, temp);
-
-    sprintf(temp, "%02d.%02d", timeinfo->tm_mon + 1, timeinfo->tm_mday);
-    lv_label_set_text(digital_clock_widget_app->label_date, temp);
-
-    lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo->tm_wday]);
+    if (digital_clock_widget_app && digital_clock_widget_app->label_week)
+    {
+        lv_label_set_text(digital_clock_widget_app->label_week, weekdays[timeinfo->tm_wday]);
+    }
 }
-
 lv_obj_t *create_clock_widget1(lv_obj_t *parent)
 {
 

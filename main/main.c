@@ -189,23 +189,23 @@ void app_main(void)
     // free(audio_buffer);
     // max98357_deinit();
 
-    // NVS初始化（WIFI底层驱动有用到NVS，所以这里要初始化）
-    // esp_err_t ret = nvs_flash_init();
-    // if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    // {
-    //     ESP_ERROR_CHECK(nvs_flash_erase());
-    //     ret = nvs_flash_init();
-    // }
-    // ESP_ERROR_CHECK(ret);
-    // // wifi STA工作模式初始化
-    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
-    // // 等待WiFi连接
-    // ESP_LOGI(TAG, "等待 WiFi 连接...");
-    // while (!is_wifi_connected())
-    // {
-    //     vTaskDelay(pdMS_TO_TICKS(100));
-    // }
-    // ESP_LOGI(TAG, "WiFi 已连接");
+   // NVS初始化（WIFI底层驱动有用到NVS，所以这里要初始化）
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+    // wifi STA工作模式初始化
+    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    // 等待WiFi连接
+    ESP_LOGI(TAG, "等待 WiFi 连接...");
+    while (!is_wifi_connected())
+    {
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    ESP_LOGI(TAG, "WiFi 已连接");
 
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // ESP_LOGI(TAG, "扫描WiFi");
@@ -220,8 +220,8 @@ void app_main(void)
     st7789_lcd_backlight(true);      // 打开背光huioyhuyh
     ledc_init();                     // 初始化背光的pwm控制
     set_backlight(20);
-    // get_now_weather_data(&now_weather_info);
-    // get_3D_weather_data(three_day_weather_info);
+    get_now_weather_data(&now_weather_info);
+    get_3D_weather_data(three_day_weather_info);
 
     // setup_ui(&guider_ui);
     // events_init(&guider_ui);

@@ -1,4 +1,3 @@
-
 #include "sys.h"
 
 // LV_IMG_DECLARE(kun_background);
@@ -29,16 +28,32 @@ static const char *watch_weekdays[7] = {"周日", "周一", "周二", "周三", 
 
 static void set_time_label(void)
 {
+    if (watch_4 == NULL) {
+        return;
+    }
+    
     get_now_time();
+    if (timeinfo == NULL) {
+        return;
+    }
+    
     char buf[64];
-    sprintf(buf, "%02d", timeinfo->tm_hour);
-    lv_label_set_text(watch_4->labe_hour, buf);
+    
+    if (timeinfo->tm_hour >= 0 && timeinfo->tm_hour <= 23) {
+        sprintf(buf, "%02d", timeinfo->tm_hour);
+        lv_label_set_text(watch_4->labe_hour, buf);
+    }
 
-    sprintf(buf, "%02d", timeinfo->tm_min);
-    lv_label_set_text(watch_4->labe_minute, buf);
+    if (timeinfo->tm_min >= 0 && timeinfo->tm_min <= 59) {
+        sprintf(buf, "%02d", timeinfo->tm_min);
+        lv_label_set_text(watch_4->labe_minute, buf);
+    }
 
-    sprintf(buf, "%s %d日", watch_weekdays[timeinfo->tm_wday], timeinfo->tm_mday);
-    lv_label_set_text(watch_4->labe_date, buf);
+    if (timeinfo->tm_wday >= 0 && timeinfo->tm_wday <= 6 && 
+        timeinfo->tm_mday >= 1 && timeinfo->tm_mday <= 31) {
+        sprintf(buf, "%s %d日", watch_weekdays[timeinfo->tm_wday], timeinfo->tm_mday);
+        lv_label_set_text(watch_4->labe_date, buf);
+    }
 }
 
 void watch_4_time_refresh(void)

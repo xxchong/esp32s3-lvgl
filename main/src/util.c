@@ -199,6 +199,11 @@ static void handle_right_swipe(page_type_t current_type, const char *name) {
                 {
                     stop_stopwatch_timer();
                 }
+                if (lv_page->game_page == lv_scr_act())
+                {
+                    Stop_Game();
+                    printf("返回释放内存\n");
+                }
                 back_to_app_screen(lv_scr_act());
             }
             break;
@@ -261,11 +266,7 @@ void gestureCallback(lv_event_t *event) {
 }
 void back_to_app_screen(lv_obj_t *page)
 {
-    if (lv_page->game_page == lv_scr_act())
-    {
-        // Stop_Game();
-        printf("返回释放内存\n");
-    }
+ 
     lv_page->app_screen_page = create_app_screen();
     lv_scr_load_anim(lv_page->app_screen_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, true);
     lv_obj_scroll_to_view(btns[btn_index], LV_ANIM_ON);

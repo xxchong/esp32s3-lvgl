@@ -603,58 +603,6 @@ static void keyboard_event_cb(lv_event_t *e)
 
     if (!game_state.is_game_over)
         draw_game();
-
-    //
-    //    if (code == LV_EVENT_CLICKED)
-    //    {
-    //        uint32_t key = lv_event_get_key(e);
-    //
-    //        if (!game_state.is_game_over)
-    //        {
-    //            switch (key)
-    //            {
-    //            case LV_KEY_LEFT:
-    //                game_state.current_x--;
-    //                if (check_collision())
-    //                    game_state.current_x++;
-    //                break;
-    //            case LV_KEY_RIGHT:
-    //                game_state.current_x++;
-    //                if (check_collision())
-    //                    game_state.current_x--;
-    //                break;
-    //            case LV_KEY_DOWN:
-    //                // 快速下落
-    //                for (int i = 0; i < 3 && !game_state.is_game_over; i++)
-    //                {
-    //                    if (!move_down_and_fix())
-    //                    {
-    //                        game_state.is_game_over = true;
-    //                        break;
-    //                    }
-    //                }
-    //                break;
-    //            case LV_KEY_ENTER:
-    //                rotate_piece();
-    //                break;
-    //            case LV_KEY_ESC: // ESC 暂停以及退出操作
-    ////                printf("暂停中\n");
-    ////                lv_obj_clear_flag(exit_msgbox, LV_OBJ_FLAG_HIDDEN);
-    ////                lv_obj_add_flag(game_win, LV_OBJ_FLAG_HIDDEN);
-    ////                lv_obj_add_flag(info_win, LV_OBJ_FLAG_HIDDEN);
-    ////                lv_group_remove_obj(root);
-    ////                lv_timer_pause(timer);
-    ////                lv_group_focus_obj(btn_exit);
-    //                break;
-    //            }
-    //            if (!game_state.is_game_over)
-    //                draw_game();
-    //        }
-    //        else
-    //        {
-    //
-    //        }
-    //    }
 }
 
 // 重置游戏状态
@@ -861,6 +809,5 @@ void tetris_start_game(lv_obj_t *parent, lv_group_t *group)
         lv_timer_del(lv_game->game_timer);
     }
     lv_game->game_timer = lv_timer_create(game_loop, game_state.speed, NULL);
-    //    lv_obj_add_event_cb(parent, keyboard_event_cb, LV_EVENT_KEY, NULL);
     lv_timer_reset(lv_game->game_timer);
 }

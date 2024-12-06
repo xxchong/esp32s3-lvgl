@@ -55,11 +55,24 @@ static void set_time_label(void)
     get_now_time();
     char buf[64];
 
-    sprintf(buf, "%02d", timeinfo->tm_hour);
-    lv_label_set_text(watch_5->label_hour, buf);
+    // 检查指针和结构体是否有效
+    if (!watch_5 || !timeinfo)
+    {
+        return;
+    }
 
-    sprintf(buf, "%02d", timeinfo->tm_min);
-    lv_label_set_text(watch_5->label_minute, buf);
+    // 检查label对象是否存在
+    if (watch_5->label_hour)
+    {
+        sprintf(buf, "%02d", timeinfo->tm_hour);
+        lv_label_set_text(watch_5->label_hour, buf);
+    }
+
+    if (watch_5->label_minute)
+    {
+        sprintf(buf, "%02d", timeinfo->tm_min);
+        lv_label_set_text(watch_5->label_minute, buf);
+    }
 }
 
 void watch_5_time_refresh(void)
@@ -116,9 +129,16 @@ static lv_obj_t *create_icon_label(lv_obj_t *parent, const char *text, const lv_
     return label;
 }
 
+static void meter_delete_cb(lv_event_t *e)
+{
+    lv_obj_t *obj = lv_event_get_target(e);
+    // 删除与该对象相关的所有动画
+    lv_anim_del(obj, NULL);
+}
+
 lv_obj_t *lv_clock_watch_5(lv_obj_t *parent, bool is_preview)
 {
-    if (watch_5 != NULL)    
+    if (watch_5 != NULL)
     {
         free(watch_5);
         watch_5 = NULL;
@@ -236,6 +256,9 @@ lv_obj_t *lv_clock_watch_5(lv_obj_t *parent, bool is_preview)
         lv_obj_set_pos(watch_5->label_icon_target, 155, 150);
     }
     lv_obj_add_event_cb(watch_5->meter, anim_meter_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+
+    // 添加删除事件回调
+    lv_obj_add_event_cb(watch_5->meter, meter_delete_cb, LV_EVENT_DELETE, NULL);
 
     // 创建定时器（仅在非预览模式下）
     if (!is_preview)

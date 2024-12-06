@@ -20,16 +20,40 @@ static const char *watch_weekdays[7] = {"周日", "周一", "周二", "周三", 
 
 static void set_time_label(void)
 {
+    if (watch_2 == NULL || timeinfo == NULL)
+    {
+        return;
+    }
+
     get_now_time();
     char buf[64];
-    sprintf(buf, "%02d", timeinfo->tm_hour);
-    lv_label_set_text(watch_2->label_hour, buf);
 
-    sprintf(buf, "%02d", timeinfo->tm_min);
-    lv_label_set_text(watch_2->label_minute, buf);
+    // 检查label_hour是否存在
+    if (watch_2->label_hour != NULL)
+    {
+        sprintf(buf, "%02d", timeinfo->tm_hour);
+        lv_label_set_text(watch_2->label_hour, buf);
+    }
 
-    sprintf(buf, "%s %d日", watch_weekdays[timeinfo->tm_wday], timeinfo->tm_mday);
-    lv_label_set_text(watch_2->label_date, buf);
+    // 检查label_minute是否存在
+    if (watch_2->label_minute != NULL)
+    {
+        sprintf(buf, "%02d", timeinfo->tm_min);
+        lv_label_set_text(watch_2->label_minute, buf);
+    }
+
+    // 检查label_date是否存在
+    if (watch_2->label_date != NULL)
+    {
+        // 确保weekday索引在有效范围内
+        int wday = (timeinfo->tm_wday >= 0 && timeinfo->tm_wday < 7) ? timeinfo->tm_wday : 0;
+
+        sprintf(buf, "%d月%d日 %s",
+                timeinfo->tm_mon + 1,
+                timeinfo->tm_mday,
+                watch_weekdays[wday]);
+        lv_label_set_text(watch_2->label_date, buf);
+    }
 }
 
 void watch_2_time_refresh(void)

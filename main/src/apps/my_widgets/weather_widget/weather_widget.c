@@ -1,11 +1,6 @@
 #include "sys.h"
 
 LV_FONT_DECLARE(weather_font_cn_20_t);
-// extern SemaphoreHandle_t xBinarySemaphore;
-
-// extern Weather weather;
-extern lv_indev_t *indev;
-extern lv_obj_t *user_area;
 
 typedef struct
 {
@@ -22,33 +17,31 @@ typedef struct
 
 static lv_weather_widget_t *weather_widget_app;
 
-// static void lv_weather_update_icon(int weatherid)
-// {
-//     auto it = weather_icon_map.find(weatherid);
+static void lv_weather_update_icon(int weatherid)
+{
 
-//     if (it != weather_icon_map.end())
-//     {
-//         lv_label_set_text(weather_widget_app->label_current_icon, it->second);
-//     }
-//     else
-//     {
-//         lv_label_set_text(weather_widget_app->label_current_icon, USER_WEATHER_SYMBOL_999);
-//     }
-//     printf("天气ID: %d, 图标已更新\n", weatherid);
-// }
+    for(size_t i = 0; i < WEATHER_ICONS_SIZE; i++) {
+        if(weather_icons[i].weather_id == weatherid) {
+            lv_label_set_text(weather_widget_app->label_current_icon, weather_icons[i].icon_symbol);
+            return;
+        }
+    }
+    lv_label_set_text(weather_widget_app->label_current_icon, USER_WEATHER_SYMBOL_999);
+    printf("天气ID: %d, 图标已更新\n", weatherid);
+}
 
 void update_weather_widgetdata(void)
 {
-    // char temp_str[64];
-    // lv_label_set_text(weather_widget_app->label_weather_text, now_weather_info.text);
+    char temp_str[64];
+    lv_label_set_text(weather_widget_app->label_weather_text, now_weather_info.text);
 
-    // snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
-    // lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
+    snprintf(temp_str, sizeof(temp_str), "%s°", now_weather_info.temp);
+    lv_label_set_text(weather_widget_app->label_current_temp, temp_str);
 
-    // snprintf(temp_str, sizeof(temp_str), "%s° / %s°", three_day_weather_info[0].tempMin, three_day_weather_info[0].tempMax);
-    // lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
+    snprintf(temp_str, sizeof(temp_str), "%s° / %s°", three_day_weather_info[0].tempMin, three_day_weather_info[0].tempMax);
+    lv_label_set_text(weather_widget_app->label_cerrent_max_min_temp, temp_str);
 
-    // lv_weather_update_icon(WeatherData_current.icon);
+    lv_weather_update_icon(atoi(now_weather_info.icon));
 }
 
 static void btn_event_cb(lv_event_t *e)
@@ -119,5 +112,6 @@ lv_obj_t *create_weather_widget_app(lv_obj_t *parent)
     lv_label_set_text(weather_widget_app->label_Gps, LV_SYMBOL_GPS);
     lv_obj_set_style_text_color(weather_widget_app->label_Gps, lv_color_white(), 0);
 
+    update_weather_widgetdata();
     return weather_widget_app->btn;
 }
