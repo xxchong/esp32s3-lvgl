@@ -1,7 +1,6 @@
-
 #include "sys.h"
-#define MAX_NETWORKS 30
-#define MAX_SSID_LENGTH 64
+#include "wifi_scan_driver.h"
+
 LV_IMG_DECLARE(refresh);
 typedef struct
 {
@@ -16,12 +15,15 @@ typedef struct
     lv_obj_t *keyboard;
     lv_obj_t *connect_window;
     lv_obj_t *mask;
+    lv_obj_t *current_wifi_cont;    // 当前WiFi容器
+    lv_obj_t *current_wifi_label;   // 当前WiFi标签
+    lv_obj_t *btn_refresh;    // 刷新按钮
+
 
 } WiFi_app_t;
 
 static WiFi_app_t *wifi_app = NULL;
 
-const char *wifi_list_item_text[MAX_NETWORKS] = {"WiFi1", "WiFi2", "WiFi3", "WiFi4", "WiFi5", "WiFi6", "WiFi7", "WiFi8", "WiFi9", "WiFi10","WiFi11","WiFi12","WiFi13","WiFi14","WiFi15","WiFi16","WiFi17","WiFi18","WiFi19","WiFi20","WiFi21","WiFi22","WiFi23","WiFi24","WiFi25","WiFi26","WiFi27","WiFi28","WiFi29","WiFi30"};
 
 static bool wifi_switch_state = false;  
 
@@ -230,45 +232,79 @@ static void btn_return_cb(lv_event_t *e)
 
 static void timer_upload_wifi_list_handler(lv_timer_t *timer)
 {
-     for(int i = 0; i < MAX_NETWORKS; i++)
-    {
-        lv_obj_t *item = lv_list_add_btn(wifi_app->wifi_list, LV_SYMBOL_WIFI, NULL); 
 
-        static lv_obj_t *label;
-        label = lv_label_create(item);
-        lv_label_set_text(label, wifi_list_item_text[i]);
-        lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
-        lv_obj_set_style_text_color(label, lv_color_white(), 0);
-        lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-
-        lv_obj_set_style_bg_color(item, lv_color_hex(0x252526), 0);
-        lv_obj_set_style_text_color(lv_obj_get_child(item, 0), lv_color_white(), 0);
-        lv_obj_set_style_border_width(item, 0, 0);
-        lv_obj_add_event_cb(item, connect_wifi_handler, LV_EVENT_CLICKED, wifi_list_item_text[i]);
+    // 等待扫描完成,最多等待3秒
+    if (wait_wifi_scan_done(pdMS_TO_TICKS(3000))) {
+        lv_obj_clean(wifi_app->wifi_list);
+        
+        char ssid[33];
+        int8_t rssi;
+        int count = 0;
+        
+        // 从队列中获取扫描结果并显示
+        while (count < 30 && get_wifi_scan_result(ssid, &rssi)) {
+            lv_obj_t *item = lv_list_add_btn(wifi_app->wifi_list, LV_SYMBOL_WIFI, NULL);
+            
+            lv_obj_t *label = lv_label_create(item);
+            lv_label_set_text(label, ssid);
+            lv_obj_set_style_text_font(label, &lv_font_montserrat_14, 0);
+            lv_obj_set_style_text_color(label, lv_color_white(), 0);
+            lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+            
+            lv_obj_set_style_bg_color(item, lv_color_hex(0x252526), 0);
+            lv_obj_set_style_text_color(lv_obj_get_child(item, 0), lv_color_white(), 0);
+            lv_obj_set_style_border_width(item, 0, 0);
+            lv_obj_add_event_cb(item, connect_wifi_handler, LV_EVENT_CLICKED, (void*)strdup(ssid));
+            
+            count++;
+        }
+        
+        if (count > 0) {
+            lv_obj_scroll_to_view(lv_obj_get_child(wifi_app->wifi_list, 0), LV_ANIM_ON);
+        }
     }
-    lv_obj_scroll_to_view(lv_obj_get_child(wifi_app->wifi_list, 0), LV_ANIM_ON);
-     // 删除进度条
-    if(wifi_app->search_bar) {
+    
+    // 删除进度条
+    if (wifi_app->search_bar) {
         lv_obj_del(wifi_app->search_bar);
         wifi_app->search_bar = NULL;
     }
-    lv_timer_del(timer);
-    wifi_app->timer_upload_wifi_list = NULL;  // 重要：设置为 NULL 避免悬空指针
-
+    
+    // 删除定时器
+    if (wifi_app->timer_upload_wifi_list) {
+        lv_timer_del(timer);
+        wifi_app->timer_upload_wifi_list = NULL;
+    }
+    
+    // 清理扫描资源
+    cleanup_wifi_scan();
 }
 
 
 static void wifi_switch_cb(lv_event_t *e)
 {
-
-    bool switch_state = lv_obj_has_state(wifi_app->wifi_switch, LV_STATE_CHECKED); /* 返回 true：开启状态 */
-    printf("switch state is %s\n", switch_state ? "checked" : "unchecked");
+    bool switch_state = lv_obj_has_state(wifi_app->wifi_switch, LV_STATE_CHECKED);
     if(switch_state)
     {
-       // 创建并显示进度条
+        lv_obj_clear_flag(wifi_app->btn_refresh, LV_OBJ_FLAG_HIDDEN);
+
+        // const char* current_wifi = get_current_wifi();
+        // if(current_wifi != NULL) {
+        lv_label_set_text_fmt(wifi_app->current_wifi_label, LV_SYMBOL_WIFI " Pixel5");
+        lv_obj_clear_flag(wifi_app->current_wifi_cont, LV_OBJ_FLAG_HIDDEN);
+        // } else {
+        //     lv_obj_add_flag(wifi_app->current_wifi_cont, LV_OBJ_FLAG_HIDDEN);
+        // }
+
+        start_wifi_scan();
+
+
+
+
+        // 创建并显示进度条
         wifi_app->search_bar = lv_bar_create(wifi_app->wifi_page);
         lv_obj_set_size(wifi_app->search_bar, 200, 4);
-        lv_obj_align_to(wifi_app->search_bar, wifi_app->wifi_switch_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
+        lv_obj_align_to(wifi_app->search_bar, wifi_app->current_wifi_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
         lv_obj_set_style_bg_color(wifi_app->search_bar, lv_color_white(), LV_PART_MAIN); // 浅绿色背景
         lv_obj_set_style_bg_color(wifi_app->search_bar, lv_color_hex(0x218ee9), LV_PART_INDICATOR); // 深绿色指示器
         
@@ -290,7 +326,8 @@ static void wifi_switch_cb(lv_event_t *e)
        
     }else
     {
-
+        lv_obj_add_flag(wifi_app->btn_refresh, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(wifi_app->current_wifi_cont, LV_OBJ_FLAG_HIDDEN);
         if(wifi_app->timer_upload_wifi_list != NULL)
         {
             lv_timer_del(wifi_app->timer_upload_wifi_list);
@@ -305,6 +342,39 @@ static void wifi_switch_cb(lv_event_t *e)
     }
 
 }
+// 添加刷新按钮的回调函数
+static void btn_refresh_cb(lv_event_t *e)
+{
+    // 如果WiFi开关是打开的状态才执行刷新
+    if(lv_obj_has_state(wifi_app->wifi_switch, LV_STATE_CHECKED))
+    {
+        // 清空现有列表
+        lv_obj_clean(wifi_app->wifi_list);
+        
+        // 创建并显示进度条
+        wifi_app->search_bar = lv_bar_create(wifi_app->wifi_page);
+        lv_obj_set_size(wifi_app->search_bar, 200, 4);
+        lv_obj_align_to(wifi_app->search_bar, wifi_app->current_wifi_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
+        lv_obj_set_style_bg_color(wifi_app->search_bar, lv_color_white(), LV_PART_MAIN);
+        lv_obj_set_style_bg_color(wifi_app->search_bar, lv_color_hex(0x218ee9), LV_PART_INDICATOR);
+        
+        // 创建循环加载动画
+        lv_anim_t a;
+        lv_anim_init(&a);
+        lv_anim_set_var(&a, wifi_app->search_bar);
+        lv_anim_set_exec_cb(&a, search_anim_cb);
+        lv_anim_set_values(&a, 0, 100);
+        lv_anim_set_time(&a, 500);
+        lv_anim_set_playback_time(&a, 0);
+        lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+        lv_anim_start(&a);
+
+        // 创建定时器更新WiFi列表
+        wifi_app->timer_upload_wifi_list = lv_timer_create(timer_upload_wifi_list_handler, 2000, NULL);
+        lv_timer_set_repeat_count(wifi_app->timer_upload_wifi_list, 1);
+    }
+}
+
 
 lv_obj_t *create_wifi_app(void)
 {
@@ -354,10 +424,44 @@ lv_obj_t *create_wifi_app(void)
     lv_obj_add_event_cb(wifi_app->wifi_switch, wifi_switch_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
 
+     // 创建刷新按钮
+    wifi_app->btn_refresh = lv_btn_create(wifi_app->wifi_switch_cont);
+    lv_obj_set_size(wifi_app->btn_refresh, 30, 30);
+    lv_obj_align_to(wifi_app->btn_refresh, wifi_app->wifi_switch, LV_ALIGN_OUT_LEFT_MID, -10, 0);  // 位置可以根据需要调整
+    lv_obj_set_style_bg_color(wifi_app->btn_refresh, lv_color_hex(0x252526), 0);
+    lv_obj_set_style_border_width(wifi_app->btn_refresh, 0, 0);
+    lv_obj_set_style_radius(wifi_app->btn_refresh, 6, 0);
+    lv_obj_set_style_shadow_width(wifi_app->btn_refresh, 0, 0);
+    lv_obj_add_flag(wifi_app->btn_refresh, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(wifi_app->btn_refresh, btn_refresh_cb, LV_EVENT_CLICKED, NULL);
 
+    // 创建刷新图标
+    lv_obj_t *refresh_label = lv_label_create(wifi_app->btn_refresh);
+    lv_label_set_text(refresh_label, LV_SYMBOL_REFRESH);
+    lv_obj_set_style_text_color(refresh_label, lv_color_white(), 0);
+    lv_obj_center(refresh_label);
+
+
+
+    // 创建当前WiFi连接容器
+    wifi_app->current_wifi_cont = lv_obj_create(wifi_app->wifi_page);
+    lv_obj_set_size(wifi_app->current_wifi_cont, 220, 35);
+    lv_obj_align_to(wifi_app->current_wifi_cont, wifi_app->wifi_switch_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+    lv_obj_set_style_bg_color(wifi_app->current_wifi_cont, lv_color_hex(0x1d7ece), 0);
+    lv_obj_clear_flag(wifi_app->current_wifi_cont, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_style_border_color(wifi_app->current_wifi_cont, lv_color_hex(0x1d7ece), 0);
+    lv_obj_set_style_radius(wifi_app->current_wifi_cont, 10, 0);
+    lv_obj_add_flag(wifi_app->current_wifi_cont, LV_OBJ_FLAG_HIDDEN); // 默认隐藏
+
+    wifi_app->current_wifi_label = lv_label_create(wifi_app->current_wifi_cont);
+    lv_obj_set_style_text_color(wifi_app->current_wifi_label, lv_color_white(), 0);
+    lv_obj_set_style_text_font(wifi_app->current_wifi_label, &lv_font_montserrat_14, 0);
+    lv_obj_align(wifi_app->current_wifi_label, LV_ALIGN_LEFT_MID, 6, 0);
+
+    // 调整 wifi_list 的位置
     wifi_app->wifi_list = lv_list_create(wifi_app->wifi_page);
     lv_obj_set_size(wifi_app->wifi_list, 235, 200);
-    lv_obj_align_to(wifi_app->wifi_list,  wifi_app->wifi_switch_cont, LV_ALIGN_OUT_BOTTOM_MID ,0, 10);
+    lv_obj_align_to(wifi_app->wifi_list, wifi_app->current_wifi_cont, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
     lv_obj_set_style_bg_color(wifi_app->wifi_list, lv_color_black(), 0);
     lv_obj_set_style_border_width(wifi_app->wifi_list, 0, 0);
     lv_obj_set_scrollbar_mode(wifi_app->wifi_list, LV_SCROLLBAR_MODE_AUTO);

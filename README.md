@@ -8,7 +8,7 @@
 2. 完成了设置app、时钟app、音乐app、天气app等等的初步UI开发,待后端逻辑开发
 
 
-##手表UI(部分&初步)：
+## 手表UI(部分&初步)：
 ### 开机界面
 ![alt text](./ui-image/image.png)
 ### 主界面

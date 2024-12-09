@@ -42,8 +42,8 @@ three_day_weather_info_t three_day_weather_info[3];
 
 static const char *TAG = "app—main";
 
-#define WIFI_SSID "Mi 10S"
-#define WIFI_PASSWORD "87654321"
+#define WIFI_SSID "Pixel"
+#define WIFI_PASSWORD "12345678"
 
 // 添加内存监控函数
 void print_memory_info(const char *message)
@@ -143,52 +143,6 @@ void generate_sine_wave(uint8_t *buffer, size_t length, float frequency)
 // 主函数
 void app_main(void)
 {
-    // ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
-    // // sd_write_and_read_test();
-
-    // file_iterator_new("/sdcard/");
-
-    // 测试MP3文件读取
-    // esp_err_t ret = test_mp3_file_read("zjl.mp3");
-    // if (ret != ESP_OK)
-    // {
-    //     ESP_LOGE(TAG, "MP3 file read test failed");
-    // }
-    // else
-    // {
-    //     ESP_LOGI(TAG, "MP3 file read test succeeded");
-    // }
-    // esp_err_t ret = test_mp3_file_read_and_decode("zjl.mp3");
-    // if (ret != ESP_OK)
-    // {
-    //     ESP_LOGE(TAG, "MP3 file test failed");
-    // }
-    // else
-    // {
-    //     ESP_LOGI(TAG, "MP3 file test succeeded");
-    // }
-    // 初始化播放器
-
-    // // 初始化MAX98357
-    // ESP_ERROR_CHECK(max98357_init(SAMPLE_RATE));
-
-    // // 创建音频缓冲区
-    // const size_t buf_size = 1024;
-    // uint8_t *audio_buffer = malloc(buf_size);
-    // max98357_set_volume(0.1f); // 设置50%音量
-
-    // // 生成并播放1kHz正弦波
-    // while (1)
-    // {
-    //     generate_sine_wave(audio_buffer, buf_size, 1000.0f);
-    //     ESP_ERROR_CHECK(max98357_write_data(audio_buffer, buf_size));
-    //     vTaskDelay(pdMS_TO_TICKS(10));
-    // }
-
-    // // 清理资源
-    // free(audio_buffer);
-    // max98357_deinit();
-
    // NVS初始化（WIFI底层驱动有用到NVS，所以这里要初始化）
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
