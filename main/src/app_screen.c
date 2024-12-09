@@ -102,8 +102,7 @@ lv_obj_t *create_app_screen(void)
     }
 
     app_screen->app_screen_page = create_page("App");
-    lv_obj_set_size(app_screen->app_screen_page, 240, 280);
-    lv_obj_set_style_pad_all(app_screen->app_screen_page, 0, 0);
+    
 
 #ifdef USE_GRID_PAGE2
     create_flex_app(app_screen->app_screen_page);
@@ -162,7 +161,7 @@ static void app_screen_scroll_layout(lv_obj_t *parent)
     lv_obj_t *cont = lv_obj_create(parent);
     lv_obj_center(cont);
     // 设置容器为深色背景
-    lv_obj_set_style_bg_color(cont, lv_color_hex(0x171717), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(cont, lv_color_black(), LV_PART_MAIN);
     lv_obj_set_size(cont, 240, 280);
     lv_obj_set_style_radius(cont, 0, 0);
 
