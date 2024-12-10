@@ -2,6 +2,8 @@
 #define WEATHER_HTTP_H
 
 #include "esp_err.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 
 // 定义最大缓冲区大小
@@ -41,9 +43,18 @@ typedef struct {
 } three_day_weather_info_t;
 
 
+#define UPDATE_WEATHER_NOW_DONE_BIT BIT0
+#define UPDATE_WEATHER_3D_DONE_BIT BIT1
 
 
 esp_err_t get_http_data(void);
 esp_err_t get_now_weather_data(now_weather_info_t *info);
 esp_err_t get_3D_weather_data(three_day_weather_info_t *info);
+
+void start_weather_update(void);
+void cleanup_weather_update(void);
+
+
+bool wait_update_weather_done(TickType_t wait_ticks);
+
 #endif // WEATHER_HTTP_H

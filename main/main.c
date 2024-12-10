@@ -174,9 +174,6 @@ void app_main(void)
     st7789_lcd_backlight(true);      // 打开背光huioyhuyh
     ledc_init();                     // 初始化背光的pwm控制
     set_backlight(20);
-    get_now_weather_data(&now_weather_info);
-    get_3D_weather_data(three_day_weather_info);
-
     // setup_ui(&guider_ui);
     // events_init(&guider_ui);
 

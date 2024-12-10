@@ -17,6 +17,19 @@
 #include "apps/Setting/Setting.h"
 #include "apps/Setting/WiFi_Connection.h"
 
+
+#include "esp_event.h"
+#include "esp_netif.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "esp_http_client.h"
+#include "esp_tls.h"
+#include "cJSON.h"
+#include "weather_http.h"
+#include "uzlib/include/uzlib.h"
+
+
 #include "apps/Serial/Serial.h"
 #include "apps/Tools/Tools.h"
 #include "apps/Tools/Calculators/Calculators.h"

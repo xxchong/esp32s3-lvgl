@@ -89,7 +89,7 @@ void start_wifi_scan(void) {
     xEventGroupClearBits(wifi_scan_event_group, SCAN_DONE_BIT);
     
     // 创建扫描任务
-    xTaskCreate(wifi_scan_task, "wifi_scan", 4096, NULL, 5, NULL);
+    xTaskCreatePinnedToCore(wifi_scan_task, "wifi_scan", 4096, NULL, 5, NULL, 0);
 }
 
 // 等待扫描完成
@@ -104,7 +104,7 @@ bool wait_wifi_scan_done(TickType_t wait_ticks) {
         wait_ticks
     );
     
-    return (bits & SCAN_DONE_BIT) != 0;
+    return (bits & SCAN_DONE_BIT) != 0;//扫描完成
 }
 
 // 获取扫描结果

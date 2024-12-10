@@ -1,18 +1,6 @@
-#include <string.h>
-#include <stdlib.h>
-#include "esp_log.h"
-#include "esp_event.h"
-#include "esp_netif.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "esp_system.h"
-#include "esp_http_client.h"
-#include "esp_tls.h"
-#include "cJSON.h"
-#include "weather_http.h"
-#include "uzlib/include/uzlib.h"
+#include "sys.h"
 static const char *TAG = "WEATHER_HTTP";
-
+static EventGroupHandle_t update_weather_event_group = NULL; //更新天气完成事件组
 // 响应数据缓冲区
 static char weather_url[256];
 static uint8_t compressed_buffer[COMPRESSED_BUFFER_SIZE];  // 压缩缓冲区
@@ -75,7 +63,6 @@ static int decompress_data(const uint8_t *compressed_data, size_t compressed_siz
         ESP_LOGE(TAG, "Compressed data too small");
         return -1;
     }
-
     // 初始化解压缩状态
     struct uzlib_uncomp d;
     uzlib_uncompress_init(&d, NULL, 0);
@@ -156,8 +143,6 @@ static void parse_now_weather_json(const char *json_data, now_weather_info_t *in
     cJSON_Delete(root);
 }
 
-
-
 // 解析3天的JSON数据
 static void parse_3D_weather_json(const char *json_data, three_day_weather_info_t *info) 
 {
@@ -179,7 +164,6 @@ static void parse_3D_weather_json(const char *json_data, three_day_weather_info_
         for (int i = 0; i < days; i++) {
             cJSON *day = cJSON_GetArrayItem(daily, i);
             if (day) {
-           
                 // 获取最高温度
                 cJSON *tempMax = cJSON_GetObjectItem(day, "tempMax");
                 if (tempMax && tempMax->valuestring) {
@@ -270,8 +254,6 @@ esp_err_t get_http_data(void)
     return err;
 }
 
-
-
 // 获取实时的天气数据
 esp_err_t get_now_weather_data(now_weather_info_t *info)
 {
@@ -280,11 +262,11 @@ esp_err_t get_now_weather_data(now_weather_info_t *info)
     if (get_http_data() == ESP_OK) {
         // 解析JSON数据
         parse_now_weather_json((char *)decompressed_buffer, info);
-        printf("now_weather_data: %s\n", info->temp);
-        printf("now_weather_data: %s\n", info->text);
-        printf("now_weather_data: %s\n", info->icon);
-        printf("now_weather_data: %s\n", info->feels_like);
-        printf("now_weather_data: %s\n", info->time);
+        // printf("now_weather_data: %s\n", info->temp);
+        // printf("now_weather_data: %s\n", info->text);
+        // printf("now_weather_data: %s\n", info->icon);
+        // printf("now_weather_data: %s\n", info->feels_like);
+        // printf("now_weather_data: %s\n", info->time);
 
          return ESP_OK;
     }
@@ -299,19 +281,81 @@ esp_err_t get_3D_weather_data(three_day_weather_info_t *info)
     if (get_http_data() == ESP_OK) {
         // 解析JSON数据
         parse_3D_weather_json((char *)decompressed_buffer, info);
-        printf("3D_weather_data: %s\n", info[0].tempMax);
-        printf("3D_weather_data: %s\n", info[0].tempMin);
-        printf("3D_weather_data: %s\n", info[0].text);
-        printf("3D_weather_data: %s\n", info[0].icon);
-        printf("3D_weather_data: %s\n", info[1].tempMax);
-        printf("3D_weather_data: %s\n", info[1].tempMin);
-        printf("3D_weather_data: %s\n", info[1].text);
-        printf("3D_weather_data: %s\n", info[1].icon);
-        printf("3D_weather_data: %s\n", info[2].tempMax);
-        printf("3D_weather_data: %s\n", info[2].tempMin);
-        printf("3D_weather_data: %s\n", info[2].text);
-        printf("3D_weather_data: %s\n", info[2].icon);
+        // printf("3D_weather_data: %s\n", info[0].tempMax);
+        // printf("3D_weather_data: %s\n", info[0].tempMin);
+        // printf("3D_weather_data: %s\n", info[0].text);
+        // printf("3D_weather_data: %s\n", info[0].icon);
+        // printf("3D_weather_data: %s\n", info[1].tempMax);
+        // printf("3D_weather_data: %s\n", info[1].tempMin);
+        // printf("3D_weather_data: %s\n", info[1].text);
+        // printf("3D_weather_data: %s\n", info[1].icon);
+        // printf("3D_weather_data: %s\n", info[2].tempMax);
+        // printf("3D_weather_data: %s\n", info[2].tempMin);
+        // printf("3D_weather_data: %s\n", info[2].text);
+        // printf("3D_weather_data: %s\n", info[2].icon);
          return ESP_OK;
     }
     return ESP_FAIL;
 }
+
+
+static void weather_update_task(void* pvParameters) {
+    // 确保事件组已经创建
+    if (!update_weather_event_group) {
+        ESP_LOGE(TAG, "Event group not initialized");
+        vTaskDelete(NULL);
+        return;
+    }
+    esp_err_t err = get_now_weather_data(&now_weather_info);
+    if(err == ESP_OK)
+    {
+        // 在设置位之前再次检查事件组是否存在
+        if (update_weather_event_group) {
+            xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_NOW_DONE_BIT);
+        }
+    }
+    err = get_3D_weather_data(three_day_weather_info);
+    if(err == ESP_OK)
+    {
+        // 在设置位之前再次检查事件组是否存在
+        if (update_weather_event_group) {
+            xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_3D_DONE_BIT);
+        }
+    }
+    vTaskDelete(NULL);
+}
+
+// 启动单次WiFi扫描
+void start_weather_update(void) {
+    if (!update_weather_event_group) {
+        update_weather_event_group = xEventGroupCreate();
+    }
+    // 清除之前的扫描完成标志
+    xEventGroupClearBits(update_weather_event_group, UPDATE_WEATHER_NOW_DONE_BIT);
+    xEventGroupClearBits(update_weather_event_group, UPDATE_WEATHER_3D_DONE_BIT);
+    xTaskCreatePinnedToCore(weather_update_task, "weather_update", 4096, NULL, 5, NULL, 0);
+}
+
+// 清理资源
+void cleanup_weather_update(void) {
+    if (update_weather_event_group) {
+        vEventGroupDelete(update_weather_event_group);
+        update_weather_event_group = NULL;
+    }
+}
+
+bool wait_update_weather_done(TickType_t wait_ticks) {
+    if (!update_weather_event_group) return false;
+    
+    EventBits_t bits = xEventGroupWaitBits(
+        update_weather_event_group,
+        UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT,
+        pdTRUE,  // 清除标志位
+        pdTRUE,  // 等待所有标志位
+        wait_ticks
+    );
+    return (bits & (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT)) == (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT); // 确保两个事件位都被设置
+}
+
+
+

@@ -44,15 +44,34 @@ void update_weather_widgetdata(void)
     lv_weather_update_icon(atoi(now_weather_info.icon));
 }
 
+static void update_weather_widgetdata_timer_cb(lv_timer_t *timer)
+{
+    // 检查天气更新是否完成
+    if(wait_update_weather_done(pdMS_TO_TICKS(1000)))
+    {
+        lv_timer_del(timer); // 停止定时器
+        update_weather_widgetdata(); // 更新天气数据显示
+        cleanup_weather_update(); // 清理更新过程中的资源
+    }
+    else
+    {
+        // 如果未完成，则重新设置定时器，延长检查时间
+        lv_timer_reset(timer);
+    }
+}
+
 static void btn_event_cb(lv_event_t *e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t *obj = lv_event_get_target(e);
     if (code == LV_EVENT_CLICKED)
     {
-        update_weather_widgetdata();
+        start_weather_update(); // 启动天气更新
+        lv_timer_create(update_weather_widgetdata_timer_cb, 2000, NULL); // 创建定时器，每2秒检查一次
     }
 }
+
+
 
 lv_obj_t *create_weather_widget_app(lv_obj_t *parent)
 {
