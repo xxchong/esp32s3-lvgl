@@ -15,7 +15,9 @@ lv_timer_t *root_page_time_timer = NULL;
 
 static void root_page_time_refresh(lv_timer_t *timer)
 {
-    clock_widget_time_refresh();
+    if (root_page != NULL && clock_widget_time_refresh != NULL) {
+        clock_widget_time_refresh();
+    }
 }
 void del_root_page_time_timer(void)
 {
@@ -41,24 +43,20 @@ lv_obj_t *create_root(void)
     {
         free(root_page);
         root_page = NULL;
-    }
-    if (root_page == NULL)
-    {
-        root_page = (root_page_t *)calloc(1, sizeof(root_page_t));
+        del_root_page_time_timer();
     }
 
+    root_page = (root_page_t *)calloc(1, sizeof(root_page_t));
     root_page->root_page = create_page("Root");
     create_widgets_with_animation(root_page->root_page);
     lv_obj_remove_style(root_page->root_page, NULL, LV_PART_SCROLLBAR);
     lv_obj_add_event_cb(root_page->root_page, screen_switch_event_cb, LV_EVENT_SCREEN_LOADED, NULL);
     lv_obj_clear_flag(root_page->root_page, LV_OBJ_FLAG_SCROLLABLE);
-    if (root_page_time_timer != NULL    )
-    {
-        lv_timer_del(root_page_time_timer);
-        root_page_time_timer = NULL;
-    }
 
-    root_page_time_timer = lv_timer_create(root_page_time_refresh, 1000, NULL);
+    if (root_page_time_timer == NULL)
+    {
+        root_page_time_timer = lv_timer_create(root_page_time_refresh, 1000, NULL);
+    }
 
     return root_page->root_page;
 }

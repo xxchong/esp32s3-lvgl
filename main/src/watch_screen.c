@@ -79,7 +79,7 @@ void del_watch_screen_time_timer(void)
     }
 }
 
-// 设置表盘列表属性
+// 设置表盘��表属性
 static void setup_watch_list_properties(lv_obj_t *list)
 {
     lv_obj_set_size(list, WATCH_LIST_WIDTH, WATCH_LIST_HEIGHT);
@@ -123,7 +123,11 @@ static bool create_watch_option(int index)
 // 创建表盘列表
 static bool create_watch_list(lv_obj_t *cont)
 {
-    del_watch_screen_time_timer();
+    // 删除时间刷新定时器
+    if (g_watch_screen->time_refresh_timer) {
+        lv_timer_del(g_watch_screen->time_refresh_timer);
+        g_watch_screen->time_refresh_timer = NULL;
+    }
     
     g_watch_screen->watch_list = lv_obj_create(lv_scr_act());
     if (!g_watch_screen->watch_list) return false;
@@ -169,7 +173,7 @@ static void watch_close_cb(lv_event_t *e)
     }
 }
 
-// 选择表盘回调
+// 选择表���回调
 static void watch_select_cb(lv_event_t *e)
 {
     if (!g_watch_screen->watch_list) return;
@@ -224,7 +228,16 @@ static void watch_cont(lv_obj_t *parent)
 {
     watch_creators[current_watch_id](parent, false);
     lv_obj_add_event_cb(parent, watch_switch_event_cb, LV_EVENT_LONG_PRESSED, NULL);
+    // 确保在创建新定时器前删除旧的定时器
+    if (g_watch_screen->time_refresh_timer) {
+        lv_timer_del(g_watch_screen->time_refresh_timer);
+        g_watch_screen->time_refresh_timer = NULL;
+    }
     g_watch_screen->time_refresh_timer = lv_timer_create(watch_screen_time_refresh, 1000, NULL);
+    // 检查定时器是否创建成功
+    if (!g_watch_screen->time_refresh_timer) {
+        // 处理定时器创建失败的情况，例如通过日志记录或错误处理机制
+    }
 }
 
 
