@@ -24,6 +24,10 @@ static void btn_click_event(lv_event_t *e)
     {
         lv_page->calculator_page = calculators_create();
         lv_scr_load_anim(lv_page->calculator_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
+    }else if (strcmp(name, "温湿度") == 0)
+    {
+        lv_page->chart_page = create_chart_app();
+        lv_scr_load_anim(lv_page->chart_page, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, true);
     }
 }
 

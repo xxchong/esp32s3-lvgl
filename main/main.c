@@ -152,14 +152,14 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
     // wifi STA工作模式初始化
-    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
     // 等待WiFi连接
-    ESP_LOGI(TAG, "等待 WiFi 连接...");
-    while (!is_wifi_connected())
-    {
-        vTaskDelay(pdMS_TO_TICKS(100));
-    }
-    ESP_LOGI(TAG, "WiFi 已连接");
+    // ESP_LOGI(TAG, "等待 WiFi 连接...");
+    // while (!is_wifi_connected())
+    // {
+    //     vTaskDelay(pdMS_TO_TICKS(100));
+    // }
+    // ESP_LOGI(TAG, "WiFi 已连接");
 
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // ESP_LOGI(TAG, "扫描WiFi");

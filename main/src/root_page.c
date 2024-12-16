@@ -15,7 +15,7 @@ lv_timer_t *root_page_time_timer = NULL;
 
 static void root_page_time_refresh(lv_timer_t *timer)
 {
-    if (root_page != NULL && clock_widget_time_refresh != NULL) {
+    if (root_page != NULL) {
         clock_widget_time_refresh();
     }
 }

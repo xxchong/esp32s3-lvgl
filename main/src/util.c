@@ -185,7 +185,8 @@ static void handle_right_swipe(page_type_t current_type, const char *name) {
             
         case PAGE_OTHER:
             // 处理特殊页面
-            if (strcmp(name, "Calculators") == 0) {
+            if (strcmp(name, "Calculator") == 0 || strcmp(name, "Chart") == 0) {
+                chart_delete();
                 lv_page->tools_page = tools_list_create();
                 switch_to_page(lv_page->tools_page, LV_SCR_LOAD_ANIM_MOVE_RIGHT);
             }
