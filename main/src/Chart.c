@@ -33,37 +33,45 @@ lv_obj_t *create_chart_app(void)
     
     // 创建图表页面
     chart->chart_page = create_page("Chart");
+    lv_obj_set_style_bg_color(chart->chart_page, lv_color_black(), LV_PART_MAIN);
+
+
     chart->chart = lv_chart_create(chart->chart_page);
-    
-    // 设置图表大小和位置
+    lv_obj_set_style_pad_all(chart->chart, 0, LV_PART_MAIN);  // 设置四周内边距
+
+    lv_chart_set_update_mode(chart->chart, LV_CHART_UPDATE_MODE_SHIFT);    // 设置为SHIFT模式,新数据会使旧数据向左移动
     lv_obj_set_size(chart->chart, 200, 240);
     lv_obj_align(chart->chart, LV_ALIGN_RIGHT_MID, 0, 0);
+    lv_obj_set_style_width(chart->chart, 0, LV_PART_INDICATOR); // 设置图表INDICATOR宽度为0
 
-    // 配置图表参数
-    lv_chart_set_point_count(chart->chart, 10);  // 显示10个数据点
-    lv_chart_set_range(chart->chart, LV_CHART_AXIS_PRIMARY_Y, -100, 100);  // Y轴范围0-100
-    lv_chart_set_div_line_count(chart->chart, 5, 10); // 网格线
-    
     // 创建数据系列
     chart->ser1 = lv_chart_add_series(chart->chart, lv_palette_main(LV_PALETTE_RED), LV_CHART_AXIS_PRIMARY_Y);
     
-    // 设置为SHIFT模式,新数据会使旧数据向左移动
-    lv_chart_set_update_mode(chart->chart, LV_CHART_UPDATE_MODE_SHIFT);
+    // 配置图表参数
+    lv_chart_set_point_count(chart->chart, 10);  // 显示10个数据点
+    lv_chart_set_range(chart->chart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);  // Y轴范围0-100
+    lv_chart_set_div_line_count(chart->chart, 6, 6); // 网格线
     
+    
+    
+    
+    lv_chart_set_axis_tick(chart->chart, LV_CHART_AXIS_PRIMARY_Y, 5, 3, 6, 1, true, 40); // 设置Y轴刻度
+    lv_obj_set_style_bg_color(chart->chart, lv_color_black(), LV_PART_MAIN); // 设置背景颜色
+    lv_obj_set_style_line_color(chart->chart, lv_color_white(), LV_PART_MAIN); // 设置线条颜色
+    lv_obj_set_style_line_width(chart->chart, 2, LV_PART_ITEMS); // 设置折线线条宽度
+
+    lv_obj_set_style_line_color(chart->chart, lv_color_white(), LV_PART_TICKS);//设置刻度线颜色
+    lv_obj_set_style_text_color(chart->chart, lv_color_white(), LV_PART_TICKS);//设置刻度文字颜色
+
+    
+    lv_chart_set_next_value(chart->chart, chart->ser1, 10);
+
     // 创建定时器,每500ms更新一次数据
-    chart->timer = lv_timer_create(chart_timer_cb, 100, NULL);
+    chart->timer = lv_timer_create(chart_timer_cb, 200, NULL);
 
-    lv_obj_set_style_size(chart->chart_page, 0, LV_PART_INDICATOR);
-    lv_chart_set_axis_tick(chart->chart, LV_CHART_AXIS_PRIMARY_Y, 5, 3, 21, 1, true, 40);
-    // lv_chart_set_zoom_y(chart->chart, 512);
-
-    lv_obj_set_style_bg_color(chart->chart, lv_palette_main(LV_PALETTE_BLUE_GREY), LV_PART_MAIN);
-
-    lv_obj_set_style_width(chart->chart, 0, LV_PART_INDICATOR);
-
-    
     return chart->chart_page;
 }
+
 
 void chart_delete(void)
 {
