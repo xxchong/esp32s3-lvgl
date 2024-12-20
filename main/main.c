@@ -31,7 +31,7 @@
 
 #include "Gui-Guider/generated/gui_guider.h"
 #include "Gui-Guider/generated/events_init.h"
-
+#include "ble_driver.h"
 lv_ui guider_ui;
 
 lv_group_t *group;
@@ -174,6 +174,8 @@ void app_main(void)
     st7789_lcd_backlight(true);      // 打开背光huioyhuyh
     ledc_init();                     // 初始化背光的pwm控制
     set_backlight(20);
+
+    ble_driver_init();
     // setup_ui(&guider_ui);
     // events_init(&guider_ui);
 
