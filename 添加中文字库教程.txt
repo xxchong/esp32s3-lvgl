@@ -1,0 +1,81 @@
+1，分区表
+确定大概的大小，不需要自己计算长度，idf会自动算出来的。
+2.烧写字库bin文件
+查看偏移地址:idf.py partition-table
+烧写:esptool.py --chip esp32s3 --port /dev/ttyUSB0 write_flash 0xa10000 flash_font_16_t.bin
+3.寻址代码，有一次性读取到psram和从flash中频繁读取的
+static uint8_t __g_font_buf[714];//如bin文件存在SPI FLASH可使用此buff
+
+esp_partition_t* partition_res=NULL;
+// static uint8_t *__user_font_getdata(int offset, int size)
+// {
+//     static uint8_t first_in = 1;  
+//     if(first_in==1)
+//     {      
+//         partition_res=esp_partition_find_first(0x01,0x40,NULL);//这个函数第一个参数是我们分区表的第四行的，第二列的参数，第二个是第三列的值
+//         first_in=0;
+//         if (partition_res == NULL)
+//         {
+//             printf("Failed to open file for reading\n");
+//             return NULL;
+//         }
+//         else
+//         {
+//              printf("Successfully open file for reading\n");
+//         }
+//     }
+//     esp_err_t res=esp_partition_read(partition_res,offset,__g_font_buf,size);//读取数据
+//     if(res!=ESP_OK)
+//     {
+//         printf("Failed to reading\n");
+//     }
+
+//     return __g_font_buf;
+// }
+
+// 添加PSRAM缓存指针
+static uint8_t *font_psram_cache = NULL;
+static size_t font_cache_size = 0;
+
+// 修改数据获取函数
+static uint8_t *__user_font_getdata(int offset, int size)
+{
+    static uint8_t first_in = 1;  
+    if(first_in == 1)
+    {      
+        partition_res = esp_partition_find_first(0x01, 0x40, NULL);
+        if (partition_res == NULL) {
+            printf("Failed to open file for reading\n");
+            return NULL;
+        }
+
+        // 获取分区大小并分配PSRAM
+        size_t partition_size = partition_res->size;
+        font_psram_cache = heap_caps_malloc(partition_size, MALLOC_CAP_SPIRAM);
+        if (font_psram_cache == NULL) {
+            printf("Failed to allocate PSRAM\n");
+            return NULL;
+        }
+        font_cache_size = partition_size;
+
+        // 一次性将整个字体文件读入PSRAM
+        esp_err_t res = esp_partition_read(partition_res, 0, font_psram_cache, partition_size);
+        if (res != ESP_OK) {
+            printf("Failed to read font data to PSRAM\n");
+            heap_caps_free(font_psram_cache);
+            font_psram_cache = NULL;
+            return NULL;
+        }
+        
+        first_in = 0;
+        printf("Successfully loaded font to PSRAM\n");
+    }
+
+    // 直接从PSRAM返回数据
+    if (font_psram_cache && offset + size <= font_cache_size) {
+        return &font_psram_cache[offset];
+    }
+    
+    return NULL;
+}
+
