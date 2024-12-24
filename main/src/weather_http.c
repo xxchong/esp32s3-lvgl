@@ -6,6 +6,15 @@ static char weather_url[256];
 static uint8_t compressed_buffer[COMPRESSED_BUFFER_SIZE];  // 压缩缓冲区
 static uint8_t decompressed_buffer[DECOMPRESSED_BUFFER_SIZE]; // 解压缩缓冲区
 
+
+static QueueHandle_t weather_http_data_queue = NULL;   //保存天气数据的队列
+#define WEATHER_QUEUE_SIZE 1  
+
+typedef struct{
+    uint8_t *data;
+    size_t len;
+}weather_http_data_t;
+
 // HTTP 事件处理函数
 static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
@@ -42,6 +51,25 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
             break;
         case HTTP_EVENT_ON_FINISH:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
+            if (output_len > 0) 
+            {
+                weather_http_data_t http_data = {
+                    .data = malloc(output_len + 1),  // +1 用于null终止符
+                    .len = output_len
+                };
+                
+                if (http_data.data) {
+                    memcpy(http_data.data, compressed_buffer, output_len);
+                    http_data.data[output_len] = '\0';
+                    
+                    // 发送数据到队列
+                    if (xQueueSend(weather_http_data_queue, &http_data, pdMS_TO_TICKS(1000)) != pdTRUE) {
+                        ESP_LOGE(TAG, "Failed to send data to queue");
+                        free(http_data.data);
+                    }
+                }
+            }
+
             break;
         case HTTP_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
@@ -208,12 +236,24 @@ esp_err_t weather_http_init(weather_type_t type)
     }
     
     ESP_LOGI(TAG, "Weather URL: %s", weather_url);  // 打印URL进行调试
+    if (weather_http_data_queue == NULL) 
+    {
+        weather_http_data_queue = xQueueCreate(WEATHER_QUEUE_SIZE, sizeof(weather_http_data_t));
+        if (weather_http_data_queue == NULL) {
+            ESP_LOGE(TAG, "Failed to create queue");
+            return ESP_FAIL;
+        }
+    }
     return ESP_OK;
 }
 
 esp_err_t get_http_data(void)
 {
-    esp_http_client_config_t config = {
+    const int max_retries = 3;
+    int retry_count = 0;
+    
+    while (retry_count < max_retries) {
+        esp_http_client_config_t config = {
             .url = weather_url,
             .transport_type = HTTP_TRANSPORT_OVER_SSL,
             .event_handler = _http_event_handler,
@@ -222,36 +262,30 @@ esp_err_t get_http_data(void)
             .timeout_ms = 5000,
             .skip_cert_common_name_check = true,
         };
-
-     esp_http_client_handle_t client = esp_http_client_init(&config);
-    if (client == NULL) {
-        return ESP_FAIL;
-    }
-
-    esp_http_client_set_header(client, "Accept", "application/json");
-    esp_http_client_set_header(client, "Accept-Encoding", "gzip");
-
-    esp_err_t err = esp_http_client_perform(client);
-    if (err == ESP_OK) {
-        int status_code = esp_http_client_get_status_code(client);
-        int content_length = esp_http_client_get_content_length(client);
         
-        if (status_code == 200 && content_length > 0) {
-            // 解压数据
-            int decompressed_length = decompress_data(
-                compressed_buffer, 
-                content_length,
-                decompressed_buffer,
-                sizeof(decompressed_buffer)
-            );
-            if (decompressed_length > 0) {
-                // 确保字符串结束
-                decompressed_buffer[decompressed_length] = '\0';
-            }
+        esp_http_client_handle_t client = esp_http_client_init(&config);
+        if (client == NULL) {
+            ESP_LOGE(TAG, "Failed to init HTTP client");
+            return ESP_FAIL;
         }
+        
+        esp_err_t err = esp_http_client_perform(client);
+        int status_code = esp_http_client_get_status_code(client);
+        
+        if (err == ESP_OK && status_code == 200) {
+            esp_http_client_cleanup(client);
+            return ESP_OK;
+        }
+        
+        ESP_LOGW(TAG, "HTTP request failed with err=%d, status=%d, retry=%d", 
+                 err, status_code, retry_count);
+        
+        esp_http_client_cleanup(client);
+        retry_count++;
+        vTaskDelay(pdMS_TO_TICKS(1000)); // 等待1秒后重试
     }
-    esp_http_client_cleanup(client);
-    return err;
+    
+    return ESP_FAIL;
 }
 
 // 获取实时的天气数据
@@ -260,13 +294,26 @@ esp_err_t get_now_weather_data(now_weather_info_t *info)
     if (!info) return ESP_ERR_INVALID_ARG;
     weather_http_init(WEATHER_TYPE_NOW);
     if (get_http_data() == ESP_OK) {
-        // 解析JSON数据
-        parse_now_weather_json((char *)decompressed_buffer, info);
-        // printf("now_weather_data: %s\n", info->temp);
-        // printf("now_weather_data: %s\n", info->text);
-        // printf("now_weather_data: %s\n", info->icon);
-        // printf("now_weather_data: %s\n", info->feels_like);
-        // printf("now_weather_data: %s\n", info->time);
+         weather_http_data_t received_data;
+        if (xQueueReceive(weather_http_data_queue, &received_data, pdMS_TO_TICKS(5000)) == pdTRUE) {
+            // 解压数据
+            int decompressed_length = decompress_data(
+                received_data.data,
+                received_data.len,
+                decompressed_buffer,
+                sizeof(decompressed_buffer)
+            );
+            
+            if (decompressed_length > 0) {
+                decompressed_buffer[decompressed_length] = '\0';
+                // 解析JSON数据
+                parse_now_weather_json((char *)decompressed_buffer, info);
+                free(received_data.data);  // 释放分配的内存
+                return ESP_OK;
+            }
+            free(received_data.data);
+        }
+
 
          return ESP_OK;
     }
@@ -278,22 +325,28 @@ esp_err_t get_3D_weather_data(three_day_weather_info_t *info)
 {
     if (!info) return ESP_ERR_INVALID_ARG;
     weather_http_init(WEATHER_TYPE_3D);
-    if (get_http_data() == ESP_OK) {
-        // 解析JSON数据
-        parse_3D_weather_json((char *)decompressed_buffer, info);
-        // printf("3D_weather_data: %s\n", info[0].tempMax);
-        // printf("3D_weather_data: %s\n", info[0].tempMin);
-        // printf("3D_weather_data: %s\n", info[0].text);
-        // printf("3D_weather_data: %s\n", info[0].icon);
-        // printf("3D_weather_data: %s\n", info[1].tempMax);
-        // printf("3D_weather_data: %s\n", info[1].tempMin);
-        // printf("3D_weather_data: %s\n", info[1].text);
-        // printf("3D_weather_data: %s\n", info[1].icon);
-        // printf("3D_weather_data: %s\n", info[2].tempMax);
-        // printf("3D_weather_data: %s\n", info[2].tempMin);
-        // printf("3D_weather_data: %s\n", info[2].text);
-        // printf("3D_weather_data: %s\n", info[2].icon);
-         return ESP_OK;
+    if (get_http_data() == ESP_OK) 
+    {
+         // 从队列接收数据
+        weather_http_data_t received_data;
+        if (xQueueReceive(weather_http_data_queue, &received_data, pdMS_TO_TICKS(5000)) == pdTRUE) {
+            // 解压数据
+            int decompressed_length = decompress_data(
+                received_data.data,
+                received_data.len,
+                decompressed_buffer,
+                sizeof(decompressed_buffer)
+            );
+            
+            if (decompressed_length > 0) {
+                decompressed_buffer[decompressed_length] = '\0';
+                // 解析JSON数据
+                parse_3D_weather_json((char *)decompressed_buffer, info);
+                free(received_data.data);  // 释放分配的内存
+                return ESP_OK;
+            }
+            free(received_data.data);
+        }
     }
     return ESP_FAIL;
 }
@@ -306,21 +359,24 @@ static void weather_update_task(void* pvParameters) {
         vTaskDelete(NULL);
         return;
     }
+    // 获取实时天气
     esp_err_t err = get_now_weather_data(&now_weather_info);
-    if(err == ESP_OK)
-    {
-        // 在设置位之前再次检查事件组是否存在
-        if (update_weather_event_group) {
-            xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_NOW_DONE_BIT);
-        }
+    if (err == ESP_OK) {
+        xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_NOW_DONE_BIT);
+        ESP_LOGI(TAG, "获取实时天气数据成功");
+    } else {
+        xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_NOW_ERROR_BIT);
+        ESP_LOGE(TAG, "获取实时天气数据失败");
     }
+
+    // 获取3天天气
     err = get_3D_weather_data(three_day_weather_info);
-    if(err == ESP_OK)
-    {
-        // 在设置位之前再次检查事件组是否存在
-        if (update_weather_event_group) {
-            xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_3D_DONE_BIT);
-        }
+    if (err == ESP_OK) {
+        xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_3D_DONE_BIT);
+        ESP_LOGI(TAG, "获取3天天气数据成功");
+    } else {
+        xEventGroupSetBits(update_weather_event_group, UPDATE_WEATHER_3D_ERROR_BIT);
+        ESP_LOGE(TAG, "获取3天天气数据失败");
     }
     vTaskDelete(NULL);
 }
@@ -342,20 +398,34 @@ void cleanup_weather_update(void) {
         vEventGroupDelete(update_weather_event_group);
         update_weather_event_group = NULL;
     }
+    if(weather_http_data_queue)
+    {
+        vQueueDelete(weather_http_data_queue);
+        weather_http_data_queue = NULL;
+    }
 }
 
+// 4. 修改等待函数，增加错误检查
 bool wait_update_weather_done(TickType_t wait_ticks) {
     if (!update_weather_event_group) return false;
     
     EventBits_t bits = xEventGroupWaitBits(
         update_weather_event_group,
-        UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT,
-        pdTRUE,  // 清除标志位
-        pdTRUE,  // 等待所有标志位
+        UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT |
+        UPDATE_WEATHER_NOW_ERROR_BIT | UPDATE_WEATHER_3D_ERROR_BIT,
+        pdFALSE,     // 退出时清除
+        pdFALSE,   //不等待所有标志位
         wait_ticks
     );
-    return (bits & (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT)) == (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT); // 确保两个事件位都被设置
-}
 
+    // 检查是否有错误发生
+    if (bits & (UPDATE_WEATHER_NOW_ERROR_BIT | UPDATE_WEATHER_3D_ERROR_BIT)) {
+        ESP_LOGE(TAG, "Weather update failed: %lx", bits);
+        return false;
+    }
+
+    return (bits & (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT)) == 
+           (UPDATE_WEATHER_NOW_DONE_BIT | UPDATE_WEATHER_3D_DONE_BIT);
+}
 
 

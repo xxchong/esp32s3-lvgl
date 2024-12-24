@@ -148,8 +148,35 @@ void memory_monitor_task(void *pvParameters)
 {
     while (1)
     {
-        print_memory_info("Periodic Check");
-        vTaskDelay(pdMS_TO_TICKS(10000)); // 每10秒检查一次
+
+        vTaskDelay(pdMS_TO_TICKS(5000));  // 先等待5秒
+        if(wait_update_weather_done(pdMS_TO_TICKS(5000)))
+        {
+            ESP_LOGI(TAG, "天气数据获取完成");
+            cleanup_weather_update();
+
+            printf("当前天气体感温度: %s\n",now_weather_info.feels_like);
+            printf("当前天气温度: %s\n",now_weather_info.temp);
+            printf("当前天气天气状况: %s\n",now_weather_info.text);
+            printf("当前天气天气状况图标: %s\n",now_weather_info.icon);
+            printf("当前天气时间: %s\n",now_weather_info.time);
+
+
+            for(int i = 0; i < 3; i++)
+            {
+                printf("第%d天天气最高温度: %s\n",i+1,three_day_weather_info[i].tempMax);
+                printf("第%d天天气最低温度: %s\n",i+1,three_day_weather_info[i].tempMin);
+                printf("第%d天天气天气状况: %s\n",i+1,three_day_weather_info[i].text);
+                printf("第%d天天气天气状况图标: %s\n",i+1,three_day_weather_info[i].icon);
+            }
+
+
+        }else 
+        {
+            ESP_LOGI(TAG, "等待天气数据超时");
+        }
+
+
     }
 }
 #define SAMPLE_RATE 44100
@@ -180,6 +207,11 @@ void generate_sine_wave(uint8_t *buffer, size_t length, float frequency)
 
     phase = fmodf(phase + (2.0f * M_PI * frequency * samples_count) / SAMPLE_RATE, 2.0f * M_PI);
 }
+static TimerHandle_t weather_update_timer = NULL;
+static void weather_update_timer_cb(TimerHandle_t xTimer)
+{
+    start_weather_update();
+}
 // 主函数
 void app_main(void)
 {
@@ -192,14 +224,16 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
     // wifi STA工作模式初始化
-    // wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
+    wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
     // 等待WiFi连接
-    // ESP_LOGI(TAG, "等待 WiFi 连接...");
-    // while (!is_wifi_connected())
-    // {
-    //     vTaskDelay(pdMS_TO_TICKS(100));
-    // }
-    // ESP_LOGI(TAG, "WiFi 已连接");
+    ESP_LOGI(TAG, "等待 WiFi 连接...");
+    while (!is_wifi_connected())
+    {
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    ESP_LOGI(TAG, "WiFi 已连接");
+
+
 
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // ESP_LOGI(TAG, "扫描WiFi");
@@ -207,17 +241,25 @@ void app_main(void)
     // wifi_scan();
     // initialize_sntp(); // 获取时间
     // 测试打印当前时间
-    char timestr[64];
-    get_time_string(timestr, sizeof(timestr));
-    ESP_LOGI(TAG, "当前时间: %s", timestr);
-    ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
-    st7789_lcd_backlight(true);      // 打开背光huioyhuyh
-    ledc_init();                     // 初始化背光的pwm控制
-    set_backlight(20);
+    // char timestr[64];
+    // get_time_string(timestr, sizeof(timestr));
+    // ESP_LOGI(TAG, "当前时间: %s", timestr);
+    // ESP_ERROR_CHECK(lv_port_init()); // 初始化LVGL
+    // st7789_lcd_backlight(true);      // 打开背光huioyhuyh
+    // ledc_init();                     // 初始化背光的pwm控制
+    // set_backlight(20);
 
     // ble_driver_init();
     // setup_ui(&guider_ui);
     // events_init(&guider_ui);
+
+
+
+    weather_update_timer = xTimerCreate("weather_update", pdMS_TO_TICKS( 1000 * 30 ), pdTRUE, NULL, weather_update_timer_cb);
+
+    xTimerStart(weather_update_timer, 0);
+
+    start_weather_update();  // 立即触发一次更新
 
     // mqtt_init();
 
@@ -228,23 +270,23 @@ void app_main(void)
     // system_info_t *info = get_latest_system_info();
     // printf("CPU: %.1f%%\n", info->cpu.usage);
     // 创建 LVGL 任务
-    xTaskCreatePinnedToCore(
-        lv_task,                  // 任务函数
-        "lv_task_handler",        // 任务名称
-        8192,                     // 栈大小（字节）
-        NULL,                     // 参数
-        configMAX_PRIORITIES - 2, // 优先级
-        &lvgl_task_handle,        // 任务句柄
-        1                         // 在 Core 1 上运行
-    );
+    // xTaskCreatePinnedToCore(
+    //     lv_task,                  // 任务函数
+    //     "lv_task_handler",        // 任务名称
+    //     8192,                     // 栈大小（字节）
+    //     NULL,                     // 参数
+    //     configMAX_PRIORITIES - 2, // 优先级
+    //     &lvgl_task_handle,        // 任务句柄
+    //     1                         // 在 Core 1 上运行
+    // );
 
     // 创建内存监控任务
-    // xTaskCreate(
-    //     memory_monitor_task, // 任务函数
-    //     "memory_monitor",    // 任务名称
-    //     4096,                // 栈大小
-    //     NULL,                // 参数
-    //     1,                   // 优先级
-    //     NULL                 // 任务句柄
-    // );
+    xTaskCreate(
+        memory_monitor_task, // 任务函数
+        "memory_monitor",    // 任务名称
+        4096,                // 栈大小
+        NULL,                // 参数
+        3,                   // 优先级
+        NULL                 // 任务句柄
+    );
 }

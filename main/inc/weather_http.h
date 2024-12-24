@@ -8,7 +8,7 @@
 
 // 定义最大缓冲区大小
 #define COMPRESSED_BUFFER_SIZE   2048
-#define DECOMPRESSED_BUFFER_SIZE 4096
+#define DECOMPRESSED_BUFFER_SIZE 2048
 
 // 和风天气 API 配置
 #define WEATHER_API_HOST "devapi.qweather.com"
@@ -45,6 +45,9 @@ typedef struct {
 
 #define UPDATE_WEATHER_NOW_DONE_BIT BIT0
 #define UPDATE_WEATHER_3D_DONE_BIT BIT1
+#define UPDATE_WEATHER_NOW_ERROR_BIT (1 << 2)
+#define UPDATE_WEATHER_3D_ERROR_BIT  (1 << 3)
+
 
 
 esp_err_t get_http_data(void);

@@ -13,6 +13,8 @@
 #include "esp_partition.h"
 #include "esp_heap_caps.h"
 
+#define USE_FLASH_FONT_PSRAM
+
 
 typedef struct{
     uint16_t min;
@@ -41,38 +43,12 @@ static x_header_t __g_xbf_hd = {
 
 
 static uint8_t __g_font_buf[714];//如bin文件存在SPI FLASH可使用此buff
-
 esp_partition_t* partition_res=NULL;
-// static uint8_t *__user_font_getdata(int offset, int size)
-// {
-//     static uint8_t first_in = 1;  
-//     if(first_in==1)
-//     {      
-//         partition_res=esp_partition_find_first(0x01,0x40,NULL);//这个函数第一个参数是我们分区表的第四行的，第二列的参数，第二个是第三列的值
-//         first_in=0;
-//         if (partition_res == NULL)
-//         {
-//             printf("Failed to open file for reading\n");
-//             return NULL;
-//         }
-//         else
-//         {
-//              printf("Successfully open file for reading\n");
-//         }
-//     }
-//     esp_err_t res=esp_partition_read(partition_res,offset,__g_font_buf,size);//读取数据
-//     if(res!=ESP_OK)
-//     {
-//         printf("Failed to reading\n");
-//     }
 
-//     return __g_font_buf;
-// }
-
+#ifdef  USE_FLASH_FONT_PSRAM
 // 添加PSRAM缓存指针
 static uint8_t *font_psram_cache = NULL;
 static size_t font_cache_size = 0;
-
 // 修改数据获取函数
 static uint8_t *__user_font_getdata(int offset, int size)
 {
@@ -93,6 +69,7 @@ static uint8_t *__user_font_getdata(int offset, int size)
             return NULL;
         }
         font_cache_size = partition_size;
+        printf("partition_size: %d\n", partition_size);
 
         // 一次性将整个字体文件读入PSRAM
         esp_err_t res = esp_partition_read(partition_res, 0, font_psram_cache, partition_size);
@@ -114,8 +91,34 @@ static uint8_t *__user_font_getdata(int offset, int size)
     
     return NULL;
 }
+#else
+static uint8_t *__user_font_getdata(int offset, int size)
+{
+    static uint8_t first_in = 1;  
+    if(first_in==1)
+    {      
+        partition_res=esp_partition_find_first(0x01,0x40,NULL);//这个函数第一个参数是我们分区表的第四行的，第二列的参数，第二个是第三列的值
+        first_in=0;
+        if (partition_res == NULL)
+        {
+            printf("Failed to open file for reading\n");
+            return NULL;
+        }
+        else
+        {
+             printf("Successfully open file for reading\n");
+        }
+    }
+    esp_err_t res=esp_partition_read(partition_res,offset,__g_font_buf,size);//读取数据
+    if(res!=ESP_OK)
+    {
+        printf("Failed to reading\n");
+    }
 
+    return __g_font_buf;
+}
 
+#endif
 
 static const uint8_t * __user_font_get_bitmap(const lv_font_t * font, uint32_t unicode_letter) {
     if( unicode_letter>__g_xbf_hd.max || unicode_letter<__g_xbf_hd.min ) {
