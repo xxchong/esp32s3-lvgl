@@ -32,6 +32,7 @@
 #include "Gui-Guider/generated/gui_guider.h"
 #include "Gui-Guider/generated/events_init.h"
 #include "ble_driver.h"
+#include "AI/doubao.h"
 lv_ui guider_ui;
 
 lv_group_t *group;
@@ -149,32 +150,33 @@ void memory_monitor_task(void *pvParameters)
     while (1)
     {
 
-        vTaskDelay(pdMS_TO_TICKS(5000));  // 先等待5秒
-        if(wait_update_weather_done(pdMS_TO_TICKS(5000)))
-        {
-            ESP_LOGI(TAG, "天气数据获取完成");
-            cleanup_weather_update();
+        // vTaskDelay(pdMS_TO_TICKS(5000));  // 先等待5秒
+        // if(wait_update_weather_done(pdMS_TO_TICKS(5000)))
+        // {
+        //     ESP_LOGI(TAG, "天气数据获取完成");
+        //     cleanup_weather_update();
 
-            printf("当前天气体感温度: %s\n",now_weather_info.feels_like);
-            printf("当前天气温度: %s\n",now_weather_info.temp);
-            printf("当前天气天气状况: %s\n",now_weather_info.text);
-            printf("当前天气天气状况图标: %s\n",now_weather_info.icon);
-            printf("当前天气时间: %s\n",now_weather_info.time);
-
-
-            for(int i = 0; i < 3; i++)
-            {
-                printf("第%d天天气最高温度: %s\n",i+1,three_day_weather_info[i].tempMax);
-                printf("第%d天天气最低温度: %s\n",i+1,three_day_weather_info[i].tempMin);
-                printf("第%d天天气天气状况: %s\n",i+1,three_day_weather_info[i].text);
-                printf("第%d天天气天气状况图标: %s\n",i+1,three_day_weather_info[i].icon);
-            }
+        //     printf("当前天气体感温度: %s\n",now_weather_info.feels_like);
+        //     printf("当前天气温度: %s\n",now_weather_info.temp);
+        //     printf("当前天气天气状况: %s\n",now_weather_info.text);
+        //     printf("当前天气天气状况图标: %s\n",now_weather_info.icon);
+        //     printf("当前天气时间: %s\n",now_weather_info.time);
 
 
-        }else 
-        {
-            ESP_LOGI(TAG, "等待天气数据超时");
-        }
+        //     for(int i = 0; i < 3; i++)
+        //     {
+        //         printf("第%d天天气最高温度: %s\n",i+1,three_day_weather_info[i].tempMax);
+        //         printf("第%d天天气最低温度: %s\n",i+1,three_day_weather_info[i].tempMin);
+        //         printf("第%d天天气天气状况: %s\n",i+1,three_day_weather_info[i].text);
+        //         printf("第%d天天气天气状况图标: %s\n",i+1,three_day_weather_info[i].icon);
+        //     }
+
+
+        // }else 
+        // {
+        //     ESP_LOGI(TAG, "等待天气数据超时");
+        // }    
+      
 
 
     }
@@ -212,6 +214,40 @@ static void weather_update_timer_cb(TimerHandle_t xTimer)
 {
     start_weather_update();
 }
+
+// AI响应回调函数
+void ai_response_handler(const char* response)
+{
+    ESP_LOGI(TAG, "收到AI回复: %s", response);
+    // 在这里处理AI的回复
+    // 比如显示到屏幕上或者进行其他操作
+}
+
+
+void Json_test(char *response)
+{
+    cJSON *root = cJSON_Parse(response);
+    if (root == NULL) {
+        ESP_LOGE(TAG, "JSON parsing error");
+        return;
+    }
+
+    cJSON *messgaes = cJSON_GetObjectItem(root, "messages");
+    if(messgaes && cJSON_IsArray(messgaes))
+    {
+        
+        cJSON *message = cJSON_GetArrayItem(messgaes, 1); //得到第二个消息
+        
+        cJSON *content = cJSON_GetObjectItem(message, "content"); //得到消息的内容
+        ESP_LOGI(TAG, "content: %s", content->valuestring);
+        
+        
+    }
+
+    cJSON_Delete(root);
+}
+
+
 // 主函数
 void app_main(void)
 {
@@ -223,6 +259,11 @@ void app_main(void)
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+
+     // 添加一些延时
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+
     // wifi STA工作模式初始化
     wifi_sta_init((const char *)WIFI_SSID, (const char *)WIFI_PASSWORD);
     // 等待WiFi连接
@@ -232,6 +273,31 @@ void app_main(void)
         vTaskDelay(pdMS_TO_TICKS(100));
     }
     ESP_LOGI(TAG, "WiFi 已连接");
+
+
+
+    char *response = (char *)heap_caps_malloc(8192, MALLOC_CAP_SPIRAM);
+    if (response == NULL) {
+        ESP_LOGE(TAG, "Failed to allocate memory in PSRAM");
+        return;
+    }
+
+    esp_err_t err = chat_with_doubao("你好!", response, 2048);
+    
+    if (err == ESP_OK) {
+        ESP_LOGI(TAG, "Response: %s", response);
+        Json_test(response);
+    } else {
+        ESP_LOGE(TAG, "Failed to chat with doubao");
+    }
+
+    // 使用完后释放内存
+    heap_caps_free(response);
+
+ 
+    
+    // 清理资源
+    // ai_chat_cleanup();
 
 
 
@@ -255,11 +321,11 @@ void app_main(void)
 
 
 
-    weather_update_timer = xTimerCreate("weather_update", pdMS_TO_TICKS( 1000 * 30 ), pdTRUE, NULL, weather_update_timer_cb);
+    // weather_update_timer = xTimerCreate("weather_update", pdMS_TO_TICKS( 1000 * 12 ), pdTRUE, NULL, weather_update_timer_cb);
 
-    xTimerStart(weather_update_timer, 0);
+    // xTimerStart(weather_update_timer, 0);
 
-    start_weather_update();  // 立即触发一次更新
+    // start_weather_update();  // 立即触发一次更新
 
     // mqtt_init();
 
@@ -280,13 +346,13 @@ void app_main(void)
     //     1                         // 在 Core 1 上运行
     // );
 
-    // 创建内存监控任务
-    xTaskCreate(
-        memory_monitor_task, // 任务函数
-        "memory_monitor",    // 任务名称
-        4096,                // 栈大小
-        NULL,                // 参数
-        3,                   // 优先级
-        NULL                 // 任务句柄
-    );
+//     // 创建内存监控任务
+//     xTaskCreate(
+//         memory_monitor_task, // 任务函数
+//         "memory_monitor",    // 任务名称
+//         4096,                // 栈大小
+//         NULL,                // 参数
+//         3,                   // 优先级
+//         NULL                 // 任务句柄
+//     );
 }

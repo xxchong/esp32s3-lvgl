@@ -65,6 +65,10 @@
 #include "app_screen.h"
 #include "Clock.h"
 #include "Chart.h"
+
+#include "AI/doubao.h"
+
+
 #define USE_ENCODER_BY_BUTTON 1
 
 typedef struct

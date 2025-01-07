@@ -11,6 +11,7 @@ set(INCLUDE_DIRS
     "inc/Aliot"
     "inc/Udp"
     "inc/Audio"
+    "inc/AI"
     "Gui-Guider/custom"
     "Gui-Guider/generated"    # 确保这行存在
 )
