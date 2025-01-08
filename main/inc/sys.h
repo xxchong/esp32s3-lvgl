@@ -67,7 +67,7 @@
 #include "Chart.h"
 
 #include "AI/doubao.h"
-
+#include "AI/uart_doubao.h"
 
 #define USE_ENCODER_BY_BUTTON 1
 

@@ -5,5 +5,6 @@
 
 char * create_doubao_request_body(const char *message);
 esp_err_t chat_with_doubao(const char *message, char *response_buffer, size_t buffer_size);
+void Doubao_Prase_Json(char *response);
 
 #endif

@@ -66,7 +66,10 @@
         "wifi_scan_driver.h": "c",
         "freertos.h": "c",
         "chrono": "c",
-        "desktop_clock_1.h": "c"
+        "desktop_clock_1.h": "c",
+        "uart_doubao.h": "c",
+        "uart.h": "c",
+        "gui_guider.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"

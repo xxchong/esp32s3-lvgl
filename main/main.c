@@ -15,8 +15,6 @@
 #include "util.h"
 #include "pwm_ledc.h"
 #include "weather_http.h"
-#include "esp_heap_caps.h"
-#include "esp_system.h"
 #include "aliot.h"
 #include "system_monitor.h"
 #include "boot.h"
@@ -33,6 +31,7 @@
 #include "Gui-Guider/generated/events_init.h"
 #include "ble_driver.h"
 #include "AI/doubao.h"
+
 lv_ui guider_ui;
 
 lv_group_t *group;
@@ -149,36 +148,22 @@ void memory_monitor_task(void *pvParameters)
 {
     while (1)
     {
+        // 内部内存 (DRAM)
+        uint32_t internal_free = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        
+        // 外部内存 (PSRAM)
+        uint32_t psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+        
+        // 总可用内存
+        uint32_t total_free = esp_get_free_heap_size();
 
-        // vTaskDelay(pdMS_TO_TICKS(5000));  // 先等待5秒
-        // if(wait_update_weather_done(pdMS_TO_TICKS(5000)))
-        // {
-        //     ESP_LOGI(TAG, "天气数据获取完成");
-        //     cleanup_weather_update();
-
-        //     printf("当前天气体感温度: %s\n",now_weather_info.feels_like);
-        //     printf("当前天气温度: %s\n",now_weather_info.temp);
-        //     printf("当前天气天气状况: %s\n",now_weather_info.text);
-        //     printf("当前天气天气状况图标: %s\n",now_weather_info.icon);
-        //     printf("当前天气时间: %s\n",now_weather_info.time);
-
-
-        //     for(int i = 0; i < 3; i++)
-        //     {
-        //         printf("第%d天天气最高温度: %s\n",i+1,three_day_weather_info[i].tempMax);
-        //         printf("第%d天天气最低温度: %s\n",i+1,three_day_weather_info[i].tempMin);
-        //         printf("第%d天天气天气状况: %s\n",i+1,three_day_weather_info[i].text);
-        //         printf("第%d天天气天气状况图标: %s\n",i+1,three_day_weather_info[i].icon);
-        //     }
-
-
-        // }else 
-        // {
-        //     ESP_LOGI(TAG, "等待天气数据超时");
-        // }    
-      
-
-
+        ESP_LOGI(TAG, "内存状态:");
+        ESP_LOGI(TAG, "- 内部可用: %" PRIu32 " bytes (%.2f KB)", internal_free, internal_free / 1024.0f);
+        ESP_LOGI(TAG, "- 外部可用: %" PRIu32 " bytes (%.2f KB)", psram_free, psram_free / 1024.0f);
+        ESP_LOGI(TAG, "- 总可用: %" PRIu32 " bytes (%.2f KB)", total_free, total_free / 1024.0f);
+        
+        // 每5秒更新一次
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
 #define SAMPLE_RATE 44100
@@ -224,28 +209,6 @@ void ai_response_handler(const char* response)
 }
 
 
-void Json_test(char *response)
-{
-    cJSON *root = cJSON_Parse(response);
-    if (root == NULL) {
-        ESP_LOGE(TAG, "JSON parsing error");
-        return;
-    }
-
-    cJSON *messgaes = cJSON_GetObjectItem(root, "messages");
-    if(messgaes && cJSON_IsArray(messgaes))
-    {
-        
-        cJSON *message = cJSON_GetArrayItem(messgaes, 1); //得到第二个消息
-        
-        cJSON *content = cJSON_GetObjectItem(message, "content"); //得到消息的内容
-        ESP_LOGI(TAG, "content: %s", content->valuestring);
-        
-        
-    }
-
-    cJSON_Delete(root);
-}
 
 
 // 主函数
@@ -274,25 +237,13 @@ void app_main(void)
     }
     ESP_LOGI(TAG, "WiFi 已连接");
 
+  
+    uart_doubao_init(115200);
+    create_uart_doubao_task();
 
 
-    char *response = (char *)heap_caps_malloc(8192, MALLOC_CAP_SPIRAM);
-    if (response == NULL) {
-        ESP_LOGE(TAG, "Failed to allocate memory in PSRAM");
-        return;
-    }
 
-    esp_err_t err = chat_with_doubao("你好!", response, 2048);
-    
-    if (err == ESP_OK) {
-        ESP_LOGI(TAG, "Response: %s", response);
-        Json_test(response);
-    } else {
-        ESP_LOGE(TAG, "Failed to chat with doubao");
-    }
 
-    // 使用完后释放内存
-    heap_caps_free(response);
 
  
     
@@ -346,13 +297,14 @@ void app_main(void)
     //     1                         // 在 Core 1 上运行
     // );
 
-//     // 创建内存监控任务
-//     xTaskCreate(
-//         memory_monitor_task, // 任务函数
-//         "memory_monitor",    // 任务名称
-//         4096,                // 栈大小
-//         NULL,                // 参数
-//         3,                   // 优先级
-//         NULL                 // 任务句柄
-//     );
+    // 创建内存监控任务
+    xTaskCreatePinnedToCore(
+        memory_monitor_task, // 任务函数
+        "memory_monitor",    // 任务名称
+        4096,                // 栈大小
+        NULL,                // 参数
+        5,                   // 优先级
+        NULL,                 // 任务句柄
+        1                    // 在 Core 1 上运行
+    );
 }
