@@ -69,7 +69,8 @@
         "desktop_clock_1.h": "c",
         "uart_doubao.h": "c",
         "uart.h": "c",
-        "gui_guider.h": "c"
+        "gui_guider.h": "c",
+        "inmp441_driver.h": "c"
     },
     "idf.flashType": "UART",
     "C_Cpp.errorSquiggles": "disabled"
